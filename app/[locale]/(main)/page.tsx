@@ -24,12 +24,12 @@ interface PageSectionData {
   content: Record<string, any>;
 }
 
-// Загрузка публичных секций с API (с Redis-кэшированием на бэкенде)
+// Загрузка публичных секций с API (мгновенное отображение изменений)
 async function getPageSections(): Promise<PageSectionData[]> {
   const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'https://api-production-ed76.up.railway.app';
   try {
     const res = await fetch(`${apiUrl}/page-sections/public?pageKey=home`, {
-      next: { revalidate: 60 },
+      cache: 'no-store',
     });
     if (!res.ok) return [];
     return await res.json();
