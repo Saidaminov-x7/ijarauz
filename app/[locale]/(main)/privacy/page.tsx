@@ -8,7 +8,7 @@ export default async function PrivacyPage({
 }) {
   const { locale } = await params;
   const t = await getTranslations('Privacy');
-  const sections = await fetchDynamicPageSections('privacy');
+  const sections = await fetchDynamicPageSections('privacy', locale);
 
   return (
     <div className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8 py-10">

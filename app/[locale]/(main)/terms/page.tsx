@@ -8,7 +8,7 @@ export default async function TermsPage({
 }) {
   const { locale } = await params;
   const t = await getTranslations('Terms');
-  const sections = await fetchDynamicPageSections('terms');
+  const sections = await fetchDynamicPageSections('terms', locale);
 
   return (
     <div className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8 py-10">

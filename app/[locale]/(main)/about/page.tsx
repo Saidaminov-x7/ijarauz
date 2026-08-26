@@ -8,7 +8,7 @@ export default async function AboutPage({
 }) {
   const { locale } = await params;
   const t = await getTranslations('about');
-  const sections = await fetchDynamicPageSections('about');
+  const sections = await fetchDynamicPageSections('about', locale);
 
   return (
     <div className="min-h-screen bg-stone-50 dark:bg-stone-950">
