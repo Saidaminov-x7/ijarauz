@@ -1,0 +1,18 @@
+[
+  "/",
+  "/about",
+  "/add-listing",
+  "/catalog",
+  "/catalog/:id",
+  "/chat",
+  "/favorites",
+  "/forgot-password",
+  "/login",
+  "/maintenance",
+  "/pages/:slug",
+  "/privacy",
+  "/profile",
+  "/register",
+  "/reset-password",
+  "/terms"
+]
