@@ -71,7 +71,7 @@ export default async function HomePage({
 
   // Фильтруем скрытые и находящиеся на обслуживании секции
   const activeSections = sections.length > 0
-    ? sections.filter(section => section.isVisible && !section.isUnderMaintenance)
+    ? sections.filter(section => section.isVisible !== false && !section.isUnderMaintenance)
     : [
         { id: '1', sectionType: 'HERO_SEARCH', order: 0, content: {} },
         { id: '2', sectionType: 'BENEFITS', order: 1, content: {} },
