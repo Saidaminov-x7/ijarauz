@@ -8,6 +8,7 @@ export interface PublicSiteSettings {
   contactEmail: string;
   contactPhone: string;
   logoUrl: string | null;
+  navLinks?: any[] | null;
   googleAuthEnabled?: boolean;
   autoModerationEnabled?: boolean;
   maxImagesPerListing?: number;
@@ -36,6 +37,7 @@ export const getSiteSettings = async (): Promise<PublicSiteSettings> => {
       contactEmail: data.contactEmail || 'support@ijarauz.uz',
       contactPhone: data.contactPhone || '+998 71 200-00-00',
       logoUrl: data.logoUrl || null,
+      navLinks: data.navLinks || null,
       googleAuthEnabled: data.googleAuthEnabled ?? true,
       autoModerationEnabled: data.autoModerationEnabled ?? false,
       maxImagesPerListing: data.maxImagesPerListing ?? 10,

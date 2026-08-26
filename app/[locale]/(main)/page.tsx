@@ -1,3 +1,4 @@
+import React from 'react';
 import { getTranslations } from 'next-intl/server';
 import { SearchInput } from '@/components/ui/SearchInput';
 import { Button } from '@/components/ui/Button';
@@ -137,29 +138,44 @@ export default async function HomePage({
 
           // ─── 2. BENEFITS SECTION ─────────────────────────────────────────────
           if (section.sectionType === 'BENEFITS') {
+            const items = Array.isArray(content.items) ? content.items : null;
             return (
               <div key={section.id} className="mb-20 grid grid-cols-1 gap-8 md:grid-cols-3">
-                <div className="flex flex-col items-center text-center rounded-2xl bg-white p-8 shadow-sm dark:bg-stone-900">
-                  <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-teal-100 text-teal-600 dark:bg-teal-900/30 dark:text-teal-400">
-                    <ShieldCheck size={28} />
-                  </div>
-                  <h3 className="mb-2 text-xl font-bold text-stone-900 dark:text-white">{t('why1Title')}</h3>
-                  <p className="text-stone-600 dark:text-stone-400">{t('why1Text')}</p>
-                </div>
-                <div className="flex flex-col items-center text-center rounded-2xl bg-white p-8 shadow-sm dark:bg-stone-900">
-                  <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-teal-100 text-teal-600 dark:bg-teal-900/30 dark:text-teal-400">
-                    <Map size={28} />
-                  </div>
-                  <h3 className="mb-2 text-xl font-bold text-stone-900 dark:text-white">{t('why2Title')}</h3>
-                  <p className="text-stone-600 dark:text-stone-400">{t('why2Text')}</p>
-                </div>
-                <div className="flex flex-col items-center text-center rounded-2xl bg-white p-8 shadow-sm dark:bg-stone-900">
-                  <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-teal-100 text-teal-600 dark:bg-teal-900/30 dark:text-teal-400">
-                    <MessagesSquare size={28} />
-                  </div>
-                  <h3 className="mb-2 text-xl font-bold text-stone-900 dark:text-white">{t('why3Title')}</h3>
-                  <p className="text-stone-600 dark:text-stone-400">{t('why3Text')}</p>
-                </div>
+                {items ? (
+                  items.map((item: any, idx: number) => (
+                    <div key={idx} className="flex flex-col items-center text-center rounded-2xl bg-white p-8 shadow-sm dark:bg-stone-900">
+                      <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-teal-100 text-teal-600 dark:bg-teal-900/30 dark:text-teal-400">
+                        <ShieldCheck size={28} />
+                      </div>
+                      <h3 className="mb-2 text-xl font-bold text-stone-900 dark:text-white">{item.title}</h3>
+                      <p className="text-stone-600 dark:text-stone-400">{item.text || item.description}</p>
+                    </div>
+                  ))
+                ) : (
+                  <>
+                    <div className="flex flex-col items-center text-center rounded-2xl bg-white p-8 shadow-sm dark:bg-stone-900">
+                      <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-teal-100 text-teal-600 dark:bg-teal-900/30 dark:text-teal-400">
+                        <ShieldCheck size={28} />
+                      </div>
+                      <h3 className="mb-2 text-xl font-bold text-stone-900 dark:text-white">{t('why1Title')}</h3>
+                      <p className="text-stone-600 dark:text-stone-400">{t('why1Text')}</p>
+                    </div>
+                    <div className="flex flex-col items-center text-center rounded-2xl bg-white p-8 shadow-sm dark:bg-stone-900">
+                      <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-teal-100 text-teal-600 dark:bg-teal-900/30 dark:text-teal-400">
+                        <Map size={28} />
+                      </div>
+                      <h3 className="mb-2 text-xl font-bold text-stone-900 dark:text-white">{t('why2Title')}</h3>
+                      <p className="text-stone-600 dark:text-stone-400">{t('why2Text')}</p>
+                    </div>
+                    <div className="flex flex-col items-center text-center rounded-2xl bg-white p-8 shadow-sm dark:bg-stone-900">
+                      <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-teal-100 text-teal-600 dark:bg-teal-900/30 dark:text-teal-400">
+                        <MessagesSquare size={28} />
+                      </div>
+                      <h3 className="mb-2 text-xl font-bold text-stone-900 dark:text-white">{t('why3Title')}</h3>
+                      <p className="text-stone-600 dark:text-stone-400">{t('why3Text')}</p>
+                    </div>
+                  </>
+                )}
               </div>
             );
           }
@@ -275,14 +291,16 @@ export default async function HomePage({
           // ─── 5. CATEGORIES SECTION ───────────────────────────────────────────
           if (section.sectionType === 'CATEGORIES') {
             const title = content.title || t('categoriesTitle');
-            const categories = [
-              { name: 'Посуточно', icon: Key, href: `/${locale}/catalog?rental_type=daily` },
-              { name: 'Новостройки', icon: Building2, href: `/${locale}/catalog?building_type=new` },
-              { name: 'Элитные', icon: Sparkles, href: `/${locale}/catalog?class=elite` },
-              { name: 'Для студентов', icon: Home, href: `/${locale}/catalog?for_whom=students` },
-              { name: 'Долгосрочно', icon: Building, href: `/${locale}/catalog?rental_type=long` },
-              { name: 'Студии', icon: Home, href: `/${locale}/catalog?type_apartments=studio` },
-            ];
+            const categories = Array.isArray(content.categories) && content.categories.length > 0
+              ? content.categories
+              : [
+                  { name: 'Посуточно', icon: Key, href: `/${locale}/catalog?rental_type=daily` },
+                  { name: 'Новостройки', icon: Building2, href: `/${locale}/catalog?building_type=new` },
+                  { name: 'Элитные', icon: Sparkles, href: `/${locale}/catalog?class=elite` },
+                  { name: 'Для студентов', icon: Home, href: `/${locale}/catalog?for_whom=students` },
+                  { name: 'Долгосрочно', icon: Building, href: `/${locale}/catalog?rental_type=long` },
+                  { name: 'Студии', icon: Home, href: `/${locale}/catalog?type_apartments=studio` },
+                ];
 
             return (
               <div key={section.id} className="mb-16">
@@ -290,16 +308,21 @@ export default async function HomePage({
                   {title}
                 </h2>
                 <div className="grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-6">
-                  {categories.map(({ name, icon: Icon, href }) => (
-                    <Link
-                      key={name}
-                      href={href}
-                      className="flex h-24 flex-col items-center justify-center gap-2 rounded-2xl border border-stone-200 bg-white text-sm font-medium transition-colors hover:border-teal-600 hover:bg-teal-50 dark:border-stone-800 dark:bg-stone-900 dark:hover:border-teal-500 dark:hover:bg-teal-900/20"
-                    >
-                      <Icon size={24} className="text-stone-400 group-hover:text-teal-600" />
-                      <span className="text-stone-700 dark:text-stone-300">{name}</span>
-                    </Link>
-                  ))}
+                  {categories.map((cat: any) => {
+                    const name = typeof cat.name === 'object' ? cat.name[locale] || cat.name.ru || cat.name.uz || cat.name.en : (cat.name || cat.label);
+                    const href = cat.href?.startsWith('/') ? cat.href : `/${locale}/${cat.href || 'catalog'}`;
+                    const Icon = cat.icon || Building;
+                    return (
+                      <Link
+                        key={name}
+                        href={href}
+                        className="flex h-24 flex-col items-center justify-center gap-2 rounded-2xl border border-stone-200 bg-white text-sm font-medium transition-colors hover:border-teal-600 hover:bg-teal-50 dark:border-stone-800 dark:bg-stone-900 dark:hover:border-teal-500 dark:hover:bg-teal-900/20"
+                      >
+                        {React.isValidElement(Icon) ? Icon : <Building size={24} className="text-stone-400 group-hover:text-teal-600" />}
+                        <span className="text-stone-700 dark:text-stone-300 text-center text-xs sm:text-sm">{name}</span>
+                      </Link>
+                    );
+                  })}
                 </div>
               </div>
             );
@@ -423,6 +446,65 @@ export default async function HomePage({
                       {t('dailyViews')}
                     </div>
                   </div>
+                </div>
+              </div>
+            );
+          }
+
+          // ─── 8. TEXT_BLOCK / CUSTOM_HTML ─────────────────────────────────────
+          if (section.sectionType === 'TEXT_BLOCK' || section.sectionType === 'CUSTOM_HTML') {
+            const title = content.title || section.title;
+            const subtitle = content.subtitle;
+            const text = content.text || content.content || '';
+
+            return (
+              <div key={section.id} className="mb-20 max-w-4xl mx-auto rounded-3xl bg-white dark:bg-stone-900 p-8 shadow-sm">
+                {title && (
+                  <h2 className="mb-3 text-2xl font-bold text-stone-900 dark:text-white sm:text-3xl">
+                    {title}
+                  </h2>
+                )}
+                {subtitle && (
+                  <p className="mb-6 text-base text-stone-500 dark:text-stone-400">
+                    {subtitle}
+                  </p>
+                )}
+                <div className="prose dark:prose-invert max-w-none text-stone-700 dark:text-stone-300 leading-relaxed whitespace-pre-line">
+                  {text}
+                </div>
+              </div>
+            );
+          }
+
+          // ─── 9. FAQ_ACCORDION ────────────────────────────────────────────────
+          if (section.sectionType === 'FAQ_ACCORDION') {
+            const title = content.title || section.title || 'Часто задаваемые вопросы';
+            const items = Array.isArray(content.items) ? content.items : [];
+
+            return (
+              <div key={section.id} className="mb-20 max-w-3xl mx-auto">
+                {title && (
+                  <h2 className="mb-8 text-center text-3xl font-bold text-stone-900 dark:text-white">
+                    {title}
+                  </h2>
+                )}
+                <div className="space-y-4">
+                  {items.map((item: any, idx: number) => (
+                    <details
+                      key={idx}
+                      className="group rounded-2xl border border-stone-200/80 bg-white p-5 dark:border-white/5 dark:bg-stone-900 [&_summary::-webkit-details-marker]:hidden"
+                    >
+                      <summary className="flex cursor-pointer items-center justify-between gap-1.5 font-semibold text-stone-900 dark:text-white">
+                        <span>{item.question}</span>
+                        <span className="shrink-0 rounded-full bg-stone-100 p-1.5 text-stone-900 dark:bg-white/10 dark:text-white transition group-open:-rotate-180">
+                          ↓
+                        </span>
+                      </summary>
+                      <p className="mt-4 leading-relaxed text-sm text-stone-600 dark:text-stone-300">
+                        {item.answer}
+                      </p>
+                    </details>
+                  ))}
                 </div>
               </div>
             );

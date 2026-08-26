@@ -41,7 +41,14 @@
     "addListingTitle": "Renting out a place?",
     "addListingText": "Publish a listing for free and get requests from tenants.",
     "addListingButton": "Add a listing",
-    "popularCities": "Popular cities"
+    "popularCities": "Popular cities",
+    "categoriesTitle": "Housing categories",
+    "newListings": "Latest listings",
+    "platformStats": "Platform in numbers",
+    "totalListings": "Active listings",
+    "activeUsers": "Active users",
+    "cities": "Cities covered",
+    "dailyViews": "Daily views"
   },
   "nav": {
     "catalog": "Listings",

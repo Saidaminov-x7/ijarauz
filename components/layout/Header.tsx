@@ -244,20 +244,41 @@ export function Header({ locale: localeProp }: { locale?: string }) {
                 (searchOpen ? 'max-w-0 opacity-0 pointer-events-none' : 'max-w-xl opacity-100')
               }
             >
-              {navLinks.map(({ href, key }) => (
-                <Link
-                  key={href}
-                  href={to(href)}
-                  className={
-                    'whitespace-nowrap rounded-xl px-3.5 py-2 text-sm font-semibold transition-colors duration-250 ' +
-                    (isActive(href)
-                      ? 'bg-teal-50 text-teal-700 dark:bg-teal-950/50 dark:text-teal-300'
-                      : 'text-stone-600 hover:bg-stone-100 hover:text-stone-950 dark:text-stone-400 dark:hover:bg-white/5 dark:hover:text-white')
-                  }
-                >
-                  {t(key)}
-                </Link>
-              ))}
+              {Array.isArray(settings?.navLinks) && settings.navLinks.length > 0 ? (
+                settings.navLinks.map((item: any, idx: number) => {
+                  const label = typeof item.label === 'object' ? item.label[locale] || item.label.ru || item.label.uz || item.label.en : item.label;
+                  const href = item.url || item.href || '/';
+                  return (
+                    <Link
+                      key={idx}
+                      href={href.startsWith('http') ? href : to(href)}
+                      className={
+                        'whitespace-nowrap rounded-xl px-3.5 py-2 text-sm font-semibold transition-colors duration-250 ' +
+                        (isActive(href)
+                          ? 'bg-teal-50 text-teal-700 dark:bg-teal-950/50 dark:text-teal-300'
+                          : 'text-stone-600 hover:bg-stone-100 hover:text-stone-950 dark:text-stone-400 dark:hover:bg-white/5 dark:hover:text-white')
+                      }
+                    >
+                      {label}
+                    </Link>
+                  );
+                })
+              ) : (
+                navLinks.map(({ href, key }) => (
+                  <Link
+                    key={href}
+                    href={to(href)}
+                    className={
+                      'whitespace-nowrap rounded-xl px-3.5 py-2 text-sm font-semibold transition-colors duration-250 ' +
+                      (isActive(href)
+                        ? 'bg-teal-50 text-teal-700 dark:bg-teal-950/50 dark:text-teal-300'
+                        : 'text-stone-600 hover:bg-stone-100 hover:text-stone-950 dark:text-stone-400 dark:hover:bg-white/5 dark:hover:text-white')
+                    }
+                  >
+                    {t(key)}
+                  </Link>
+                ))
+              )}
             </nav>
           </div>
 
@@ -502,22 +523,45 @@ export function Header({ locale: localeProp }: { locale?: string }) {
 
         {/* Навигационные ссылки */}
         <nav className="flex-1 space-y-0.5 overflow-y-auto px-3 py-3">
-          {navLinks.map(({ href, key }) => (
-            <Link
-              key={href}
-              href={to(href)}
-              onClick={() => setMobileOpen(false)}
-              className={
-                'flex items-center justify-between rounded-xl px-4 py-3 text-sm font-medium transition-colors ' +
-                (isActive(href)
-                  ? 'bg-teal-50 text-teal-700 dark:bg-teal-950/50 dark:text-teal-300 font-semibold'
-                  : 'text-stone-700 hover:bg-stone-100 dark:text-stone-300 dark:hover:bg-white/5')
-              }
-            >
-              <span>{t(key)}</span>
-              <ChevronRight size={15} className="text-stone-400 opacity-50" />
-            </Link>
-          ))}
+          {Array.isArray(settings?.navLinks) && settings.navLinks.length > 0 ? (
+            settings.navLinks.map((item: any, idx: number) => {
+              const label = typeof item.label === 'object' ? item.label[locale] || item.label.ru || item.label.uz || item.label.en : item.label;
+              const href = item.url || item.href || '/';
+              return (
+                <Link
+                  key={idx}
+                  href={href.startsWith('http') ? href : to(href)}
+                  onClick={() => setMobileOpen(false)}
+                  className={
+                    'flex items-center justify-between rounded-xl px-4 py-3 text-sm font-medium transition-colors ' +
+                    (isActive(href)
+                      ? 'bg-teal-50 text-teal-700 dark:bg-teal-950/50 dark:text-teal-300 font-semibold'
+                      : 'text-stone-700 hover:bg-stone-100 dark:text-stone-300 dark:hover:bg-white/5')
+                  }
+                >
+                  <span>{label}</span>
+                  <ChevronRight size={15} className="text-stone-400 opacity-50" />
+                </Link>
+              );
+            })
+          ) : (
+            navLinks.map(({ href, key }) => (
+              <Link
+                key={href}
+                href={to(href)}
+                onClick={() => setMobileOpen(false)}
+                className={
+                  'flex items-center justify-between rounded-xl px-4 py-3 text-sm font-medium transition-colors ' +
+                  (isActive(href)
+                    ? 'bg-teal-50 text-teal-700 dark:bg-teal-950/50 dark:text-teal-300 font-semibold'
+                    : 'text-stone-700 hover:bg-stone-100 dark:text-stone-300 dark:hover:bg-white/5')
+                }
+              >
+                <span>{t(key)}</span>
+                <ChevronRight size={15} className="text-stone-400 opacity-50" />
+              </Link>
+            ))
+          )}
         </nav>
 
         <div className="shrink-0 space-y-3 border-t border-stone-200 p-4 dark:border-white/10 bg-stone-50/60 dark:bg-[#1C1C1C]">

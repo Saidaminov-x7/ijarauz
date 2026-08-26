@@ -41,7 +41,14 @@
     "addListingTitle": "Kvartira ijaraga beryapsizmi?",
     "addListingText": "E'lonni bepul joylashtiring va ijarachilardan so'rovlar oling.",
     "addListingButton": "E'lon joylash",
-    "popularCities": "Mashhur shaharlar"
+    "popularCities": "Mashhur shaharlar",
+    "categoriesTitle": "Uy-joy toifalari",
+    "newListings": "Yangi e'lonlar",
+    "platformStats": "Platforma raqamlarda",
+    "totalListings": "Faol e'lonlar",
+    "activeUsers": "Foydalanuvchilar",
+    "cities": "Shaharlar",
+    "dailyViews": "Kunlik ko'rishlar"
   },
   "nav": {
     "catalog": "E'lonlar",
