@@ -16,6 +16,7 @@ import {
   Scale,
   AlertTriangle,
   TrendingDown,
+  Calendar,
   X,
 } from 'lucide-react';
 import type { Listing } from '@/lib/data';
@@ -23,7 +24,7 @@ import { Gallery } from '@/components/ui/Gallery';
 import { MapView } from '@/components/ui/MapView';
 import { useFavoritesStore } from '@/store/useFavoritesStore';
 import { useCompareStore } from '@/store/useCompareStore';
-import { getSimilarListings, reportListing, getPriceHistory } from '@/lib/api';
+import { getSimilarListings, reportListing, getPriceHistory, createViewingRequest } from '@/lib/api';
 import { ListingCard } from '@/components/ListingCard';
 import { cn } from '@/lib/utils';
 import { Apartment } from '@/types';
@@ -56,6 +57,11 @@ export function ListingDetailClient({ listing, coordinates, locale }: Props) {
   const [reportComment, setReportComment] = useState('');
   const [isSubmittingReport, setIsSubmittingReport] = useState(false);
 
+  const [isViewingModalOpen, setIsViewingModalOpen] = useState(false);
+  const [preferredDate, setPreferredDate] = useState('');
+  const [viewingMessage, setViewingMessage] = useState('');
+  const [isSubmittingViewing, setIsSubmittingViewing] = useState(false);
+
   const gradient = gradients[listing.id % gradients.length];
   const hasImages = (listing.images?.length ?? 0) > 0;
   const isVerified = listing.isVerified ?? listing.verified;
@@ -85,6 +91,22 @@ export function ListingDetailClient({ listing, coordinates, locale }: Props) {
       toast.error('Не удалось отправить жалобу. Попробуйте позже.');
     } finally {
       setIsSubmittingReport(false);
+    }
+  }
+
+  async function handleSendViewingRequest(e: React.FormEvent) {
+    e.preventDefault();
+    setIsSubmittingViewing(true);
+    try {
+      await createViewingRequest(String(listing.id), preferredDate, viewingMessage);
+      toast.success('Заявка на просмотр отправлена! Владелец свяжется с вами для подтверждения.');
+      setIsViewingModalOpen(false);
+      setPreferredDate('');
+      setViewingMessage('');
+    } catch {
+      toast.error('Не удалось отправить заявку. Войдите в аккаунт или попробуйте позже.');
+    } finally {
+      setIsSubmittingViewing(false);
     }
   }
 
@@ -225,14 +247,25 @@ export function ListingDetailClient({ listing, coordinates, locale }: Props) {
 
       {/* CTA & Действия */}
       <div className="mt-8 flex flex-wrap items-center justify-between gap-4 pt-4 border-t border-stone-200 dark:border-white/10">
-        <button
-          type="button"
-          onClick={handleContact}
-          className="inline-flex items-center gap-2 rounded-2xl bg-teal-600 px-7 py-3.5 text-sm font-semibold text-white shadow-lg shadow-teal-600/25 transition-transform hover:-translate-y-0.5 hover:bg-teal-700"
-        >
-          <Phone size={16} />
-          Связаться с арендодателем
-        </button>
+        <div className="flex flex-wrap items-center gap-3">
+          <button
+            type="button"
+            onClick={handleContact}
+            className="inline-flex items-center gap-2 rounded-2xl bg-teal-600 px-6 py-3 text-sm font-semibold text-white shadow-lg shadow-teal-600/25 transition-transform hover:-translate-y-0.5 hover:bg-teal-700"
+          >
+            <Phone size={16} />
+            Связаться с арендодателем
+          </button>
+
+          <button
+            type="button"
+            onClick={() => setIsViewingModalOpen(true)}
+            className="inline-flex items-center gap-2 rounded-2xl border border-teal-600/40 bg-teal-50 dark:bg-teal-950/40 px-6 py-3 text-sm font-semibold text-teal-700 dark:text-teal-300 transition-transform hover:-translate-y-0.5 hover:bg-teal-100 dark:hover:bg-teal-900/60"
+          >
+            <Calendar size={16} className="text-teal-600 dark:text-teal-400" />
+            Записаться на просмотр
+          </button>
+        </div>
 
         <button
           type="button"
@@ -345,6 +378,70 @@ export function ListingDetailClient({ listing, coordinates, locale }: Props) {
                   className="rounded-xl bg-rose-600 px-5 py-2 text-xs font-semibold text-white hover:bg-rose-700 disabled:opacity-50"
                 >
                   {isSubmittingReport ? 'Отправка...' : 'Отправить жалобу'}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* Модальное окно записи на просмотр */}
+      {isViewingModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4 backdrop-blur-xs">
+          <div className="w-full max-w-md rounded-3xl bg-white p-6 shadow-2xl dark:bg-[#1c1c1c] border border-stone-200 dark:border-white/10 animate-in fade-in zoom-in-95">
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-lg font-bold text-stone-900 dark:text-white flex items-center gap-2">
+                <Calendar className="text-teal-600 dark:text-teal-400" size={20} />
+                Запись на просмотр объекта
+              </h3>
+              <button
+                onClick={() => setIsViewingModalOpen(false)}
+                className="text-stone-400 hover:text-stone-600 dark:hover:text-white"
+              >
+                <X size={20} />
+              </button>
+            </div>
+
+            <form onSubmit={handleSendViewingRequest} className="space-y-4">
+              <div>
+                <label className="block text-xs font-semibold text-stone-700 dark:text-stone-300 mb-1.5">
+                  Желаемая дата и время просмотра
+                </label>
+                <input
+                  type="datetime-local"
+                  value={preferredDate}
+                  onChange={(e) => setPreferredDate(e.target.value)}
+                  className="w-full rounded-xl border border-stone-200 bg-stone-50 p-2.5 text-sm dark:border-white/10 dark:bg-white/5 dark:text-white focus:outline-none focus:ring-2 focus:ring-teal-500"
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs font-semibold text-stone-700 dark:text-stone-300 mb-1.5">
+                  Сообщение владельцу
+                </label>
+                <textarea
+                  rows={3}
+                  value={viewingMessage}
+                  onChange={(e) => setViewingMessage(e.target.value)}
+                  placeholder="Здравствуйте! Хочу посмотреть квартиру..."
+                  className="w-full rounded-xl border border-stone-200 bg-stone-50 p-2.5 text-sm dark:border-white/10 dark:bg-white/5 dark:text-white focus:outline-none focus:ring-2 focus:ring-teal-500"
+                />
+              </div>
+
+              <div className="flex gap-2 justify-end pt-2">
+                <button
+                  type="button"
+                  onClick={() => setIsViewingModalOpen(false)}
+                  className="rounded-xl px-4 py-2 text-xs font-semibold text-stone-500 hover:bg-stone-100 dark:hover:bg-white/5"
+                >
+                  Отмена
+                </button>
+                <button
+                  type="submit"
+                  disabled={isSubmittingViewing}
+                  className="rounded-xl bg-teal-600 px-5 py-2 text-xs font-semibold text-white hover:bg-teal-700 disabled:opacity-50"
+                >
+                  {isSubmittingViewing ? 'Отправка...' : 'Записаться'}
                 </button>
               </div>
             </form>

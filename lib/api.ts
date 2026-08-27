@@ -425,3 +425,13 @@ export const deleteSavedSearch = async (id: string) => {
   return response.data;
 };
 
+export const createViewingRequest = async (listingId: string, preferredDate?: string, message?: string) => {
+  const response = await api.post(`/listings/${listingId}/viewing-requests`, { preferredDate, message });
+  return response.data;
+};
+
+export const getChatSummary = async (listingId: string) => {
+  const response = await api.get(`/ai-chat/chats/${listingId}/summary`);
+  return response.data;
+};
+
