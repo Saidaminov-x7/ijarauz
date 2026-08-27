@@ -35,6 +35,8 @@ interface ChatContact {
   listingTitle?: string;
 }
 
+// Contacts: only the AI Assistant is active. Peer-to-peer chats require backend chat endpoints.
+// TODO: Connect real peer-to-peer chat conversations via backend ChatMessage API (/chat/conversations)
 const INITIAL_CONTACTS: ChatContact[] = [
   {
     id: 'ai-assistant',
@@ -43,33 +45,6 @@ const INITIAL_CONTACTS: ChatContact[] = [
     time: 'Сейчас',
     isAi: true,
     isPinned: true,
-    online: true,
-  },
-  {
-    id: 'owner-1',
-    name: 'Алишер (Собственник)',
-    avatar: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=150&auto=format&fit=crop&q=80',
-    lastMessage: 'Здравствуйте! Да, 2-комнатная квартира на Юнусабаде свободна для просмотра.',
-    time: '12:45',
-    unread: 1,
-    online: true,
-    listingTitle: '2-комнатная квартира, Юнусабад',
-  },
-  {
-    id: 'owner-2',
-    name: 'Сардор Рахимов',
-    avatar: 'https://images.unsplash.com/photo-1570295999919-56ceb5ecca61?w=150&auto=format&fit=crop&q=80',
-    lastMessage: 'Студентам сдаем, договор аренды оформляем официально.',
-    time: 'Вчера',
-    online: false,
-    listingTitle: '1-комнатная рядом с ТГТУ',
-  },
-  {
-    id: 'support',
-    name: 'Служба заботы ijara.uz',
-    avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&auto=format&fit=crop&q=80',
-    lastMessage: 'Все объявления проходят модерацию. Приятного пользования!',
-    time: '20 авг',
     online: true,
   },
 ];
@@ -181,39 +156,9 @@ export default function ChatPage() {
       {
         id: 'welcome',
         sender: 'ai',
-        text: 'Здравствуйте! Я умный AI-ассистент ijara.uz. Напишите, какое жилье вы ищете (например: "Ищу 1-комнатную студенту возле ТГТУ до $250" или "Посуточно в Самарканде"), и я подберу варианты с точными фильтрами!',
+        text: 'Здравствуйте! Я умный AI-ассистент ijara.uz (Демо-режим). Напишите, какое жилье вы ищете (например: "Ищу 1-комнатную студенту возле ТГТУ до $250" или "Посуточно в Самарканде"), и я подберу варианты с точными фильтрами!',
         timestamp: '12:00',
         quickReplies: ['Студенту в Ташкенте до $300', '2-комнатная в Юнусабаде', 'Посуточно в центре', 'Для семьи с детьми'],
-      },
-    ],
-    'owner-1': [
-      {
-        id: 'o1-1',
-        sender: 'peer',
-        text: 'Здравствуйте! Вы интересовались 2-комнатной квартирой на Юнусабаде. Объект свободен, ремонт свежий, вся техника работает.',
-        timestamp: '12:44',
-      },
-      {
-        id: 'o1-2',
-        sender: 'peer',
-        text: 'Когда вам удобно подойти на просмотр?',
-        timestamp: '12:45',
-      },
-    ],
-    'owner-2': [
-      {
-        id: 'o2-1',
-        sender: 'peer',
-        text: 'Добрый день! Квартира сдается студентам, рядом ТГТУ. Коммунальные включены в стоимость.',
-        timestamp: 'Вчера 18:20',
-      },
-    ],
-    'support': [
-      {
-        id: 's-1',
-        sender: 'peer',
-        text: 'Добро пожаловать в сервис аренды ijara.uz! Если возникнут вопросы по оплате, бронированию или публикации — мы всегда на связи.',
-        timestamp: '20 авг',
       },
     ],
   });
@@ -252,19 +197,7 @@ export default function ChatPage() {
     );
 
     if (selectedContactId !== 'ai-assistant') {
-      // Peer simulated reply
-      setTimeout(() => {
-        const reply: Message = {
-          id: String(Date.now() + 1),
-          sender: 'peer',
-          text: 'Спасибо за сообщение! Я сейчас на связи и отвечу вам в ближайшее время.',
-          timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-        };
-        setConversations((prev) => ({
-          ...prev,
-          [selectedContactId]: [...(prev[selectedContactId] || []), reply],
-        }));
-      }, 1000);
+      // Real peer messages are stored locally until real backend API integration (/chat/conversations) is connected
       return;
     }
 
@@ -622,6 +555,16 @@ export default function ChatPage() {
                 </div>
               );
             })}
+
+            {filteredContacts.length === 1 && !searchContact && (
+              <div className="p-6 text-center text-xs text-stone-400">
+                <MessageSquare size={24} className="mx-auto mb-2 opacity-40" />
+                <p className="font-medium text-stone-600 dark:text-stone-300 mb-1">Личные сообщения</p>
+                <p className="text-[11px] text-stone-400">
+                  У вас пока нет активных диалогов с собственниками. Когда вы напишете по объявлению, чат появится здесь.
+                </p>
+              </div>
+            )}
           </div>
         </div>
 
@@ -670,9 +613,14 @@ export default function ChatPage() {
                           Закреплено
                         </span>
                       )}
+                      {selectedContact.isAi && (
+                        <span className="rounded-md bg-amber-50 px-1.5 py-0.2 text-[10px] font-semibold text-amber-700 dark:bg-amber-950/60 dark:text-amber-300 border border-amber-200 dark:border-amber-800/40">
+                          Демо
+                        </span>
+                      )}
                     </h3>
                     <p className="text-[11px] text-stone-500 dark:text-stone-400 truncate">
-                      {selectedContact.isAi ? 'Умный ассистент • Поиск жилья по параметрам' : selectedContact.online ? 'в сети' : 'был(а) недавно'}
+                      {selectedContact.isAi ? 'Умный ассистент (демо-режим) • Поиск жилья по параметрам' : selectedContact.online ? 'в сети' : 'был(а) недавно'}
                     </p>
                   </div>
                 </div>
@@ -681,7 +629,7 @@ export default function ChatPage() {
                   {selectedContact.isAi ? (
                     <div className="flex items-center gap-1.5 rounded-full bg-teal-50 px-3 py-1 text-xs font-semibold text-teal-700 dark:bg-teal-950/60 dark:text-teal-300">
                       <ShieldCheck size={14} />
-                      <span className="hidden sm:inline">AI Помощник</span>
+                      <span className="hidden sm:inline">AI Помощник (Демо)</span>
                     </div>
                   ) : (
                     <a
