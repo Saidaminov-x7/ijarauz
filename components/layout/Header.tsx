@@ -232,9 +232,25 @@ export function Header({ locale: localeProp }: { locale?: string }) {
               className="flex items-center shrink-0 hover:opacity-80 transition-opacity"
             >
               {settings?.logoUrl ? (
-                <img src={settings.logoUrl} alt={settings.siteName || "Ijarauz"} className="h-8" />
+                <img
+                  src={settings.logoUrl}
+                  alt={settings.siteName || "Ijarauz"}
+                  className="h-8 w-auto object-contain"
+                  onError={(e) => {
+                    e.currentTarget.onerror = null;
+                    e.currentTarget.src = '/logotip.png';
+                  }}
+                />
               ) : (
-                <img src="/logotip.png" alt="Ijarauz" className="h-8" />
+                <img
+                  src="/logotip.png"
+                  alt="Ijarauz"
+                  className="h-8 w-auto object-contain"
+                  onError={(e) => {
+                    e.currentTarget.onerror = null;
+                    e.currentTarget.src = '/logo.png';
+                  }}
+                />
               )}
             </Link>
 

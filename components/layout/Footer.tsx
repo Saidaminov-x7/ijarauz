@@ -113,7 +113,15 @@ export function Footer({ locale: localeProp }: { locale?: string }) {
         <div className="grid grid-cols-1 gap-0 sm:grid-cols-2 sm:gap-10 lg:grid-cols-4 lg:gap-12">
           <div className="flex flex-col gap-4 border-b border-stone-100 pb-6 dark:border-white/5 sm:border-0 sm:pb-0">
             <Link href={to('/')} className="flex items-center gap-2">
-              <img src={settings?.logoUrl || '/logotip.png'} alt={settings?.siteName || 'Ijarauz'} className="h-6" />
+              <img
+                src={settings?.logoUrl || '/logotip.png'}
+                alt={settings?.siteName || 'Ijarauz'}
+                className="h-6 w-auto object-contain"
+                onError={(e) => {
+                  e.currentTarget.onerror = null;
+                  e.currentTarget.src = '/logotip.png';
+                }}
+              />
             </Link>
             <p className="text-sm leading-relaxed text-stone-500 dark:text-stone-400">{t('slogan')}</p>
             <div className="flex gap-2">

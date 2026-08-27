@@ -105,13 +105,14 @@ export const getMe = async () => {
 // ─── LISTINGS ───────────────────────────────────────────────────────────────
 
 function formatListingToApartment(item: any): Apartment {
+  const backendBaseUrl = process.env.NEXT_PUBLIC_API_URL || 'https://api-production-ed76.up.railway.app';
   const images = Array.isArray(item.images) && item.images.length > 0
     ? item.images.map((img: any) => {
         // Если это Cloudinary URL — используем secure_url
         if (typeof img === 'string' && img.startsWith('http')) return img;
         if (img?.secure_url) return img.secure_url;
-        if (typeof img === 'string') return img;
-        if (img?.url) return img.url.startsWith('http') ? img.url : `/api${img.url}`;
+        if (typeof img === 'string') return img.startsWith('/') ? `${backendBaseUrl}${img}` : img;
+        if (img?.url) return img.url.startsWith('http') ? img.url : `${backendBaseUrl}${img.url}`;
         return '/placeholder-apartment.jpg';
       })
     : [];
