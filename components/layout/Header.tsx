@@ -6,10 +6,11 @@ import { useState, useEffect, useRef } from 'react';
 import { useLocale, useTranslations } from 'next-intl';
 import { useSiteSettings } from '@/hooks/useSiteSettings';
 import {
-  Search, X, Heart, ChevronRight, LogIn, UserPlus, Menu, ArrowLeft, User, MessageSquare, Sparkles,
+  Search, X, Heart, ChevronRight, LogIn, UserPlus, Menu, ArrowLeft, User, MessageSquare, Sparkles, Scale,
 } from 'lucide-react';
 import { ThemeToggle } from '@/components/ThemeToggle';
 import { useFavoritesStore } from '@/store/useFavoritesStore';
+import { useCompareStore } from '@/store/useCompareStore';
 import { useAuthStore } from '@/store/useAuthStore';
 import { getSearchSuggestions } from '@/lib/data';
 
@@ -130,6 +131,7 @@ export function Header({ locale: localeProp }: { locale?: string }) {
   const [scrolled, setScrolled] = useState(false);
 
   const favCount = useFavoritesStore((s) => s.ids.length);
+  const compareCount = useCompareStore((s) => s.ids.length);
   const { user, isAuthenticated, fetchUser } = useAuthStore();
   const searchRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
@@ -355,6 +357,15 @@ export function Header({ locale: localeProp }: { locale?: string }) {
               {favCount > 0 && (
                 <span className="absolute -right-1 -top-1 flex h-4.5 min-w-4.5 items-center justify-center rounded-full bg-teal-600 px-1 text-[10px] font-bold text-white shadow">
                   {favCount}
+                </span>
+              )}
+            </Link>
+
+            <Link href={to('/compare')} aria-label="Сравнение" title="Сравнение объектов" className={`${BTN_CLASS} relative`}>
+              <Scale size={17} />
+              {compareCount > 0 && (
+                <span className="absolute -right-1 -top-1 flex h-4.5 min-w-4.5 items-center justify-center rounded-full bg-teal-600 px-1 text-[10px] font-bold text-white shadow">
+                  {compareCount}
                 </span>
               )}
             </Link>

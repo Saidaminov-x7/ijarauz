@@ -2,8 +2,9 @@
 
 import type { Listing } from '@/lib/data';
 import Link from 'next/link';
-import { Heart } from 'lucide-react';
+import { Heart, ShieldCheck, Scale } from 'lucide-react';
 import { useFavoritesStore } from '@/store/useFavoritesStore';
+import { useCompareStore } from '@/store/useCompareStore';
 import { cn } from '@/lib/utils';
 
 const gradients = [
@@ -35,11 +36,23 @@ export function ListingCard({ item, locale }: { item: Listing; locale: string })
   const gradient = gradients[item.id % gradients.length];
   const isFavorite = useFavoritesStore((s) => s.isFavorite(item.id));
   const toggleFavorite = useFavoritesStore((s) => s.toggle);
+  const isInCompare = useCompareStore((s) => s.isInCompare(item.id));
+  const toggleCompare = useCompareStore((s) => s.toggle);
+
+  const isVerified = item.isVerified ?? item.verified;
 
   return (
-    <Link href={`/${locale}/catalog/${item.id}`}
-      className="group flex flex-col overflow-hidden rounded-2xl border border-stone-200/80 bg-white transition-all duration-300 hover:-translate-y-1 hover:shadow-xl hover:shadow-stone-900/8 dark:border-white/5 dark:bg-[#222222] dark:hover:shadow-black/40">
-
+    <Link
+      href={`/${locale}/catalog/${item.id}`}
+      className={cn(
+        'group flex flex-col overflow-hidden rounded-2xl border transition-all duration-300 hover:-translate-y-1 hover:shadow-xl dark:bg-[#222222] dark:hover:shadow-black/40',
+        item.promotionTier === 'URGENT'
+          ? 'border-rose-500/50 shadow-md shadow-rose-500/10 bg-rose-50/20 dark:bg-rose-950/10'
+          : item.promotionTier === 'TOP'
+          ? 'border-amber-500/50 shadow-md shadow-amber-500/10 bg-amber-50/20 dark:bg-amber-950/10'
+          : 'border-stone-200/80 bg-white dark:border-white/5 hover:shadow-stone-900/8'
+      )}
+    >
       {/* Плейсхолдер-обложка */}
       <div className={`relative aspect-4/3 overflow-hidden bg-linear-to-br ${gradient}`}>
         <div className="absolute inset-0 flex items-center justify-center text-white/25 transition-transform duration-500 group-hover:scale-110">
@@ -47,30 +60,61 @@ export function ListingCard({ item, locale }: { item: Listing; locale: string })
         </div>
         <div className="absolute inset-0 bg-linear-to-t from-black/25 to-transparent" />
 
-        <div className="absolute left-3 top-3 flex gap-1.5">
+        <div className="absolute left-3 top-3 flex flex-wrap gap-1.5">
           <span className="rounded-full bg-white/95 px-2.5 py-0.5 text-xs font-semibold text-stone-800 shadow-sm">
-            {typeLabel[item.type]}
+            {typeLabel[item.type] || item.type}
           </span>
-          {item.verified && (
-            <span className="rounded-full bg-teal-500/95 px-2.5 py-0.5 text-xs font-semibold text-white shadow-sm">
-              ✓ Проверено
+          {isVerified && (
+            <span className="inline-flex items-center gap-1 rounded-full bg-teal-500/95 px-2.5 py-0.5 text-xs font-semibold text-white shadow-sm">
+              <ShieldCheck size={12} /> Проверено
+            </span>
+          )}
+          {item.isPromoted && item.promotionTier === 'URGENT' && (
+            <span className="rounded-full bg-rose-600 px-2.5 py-0.5 text-xs font-bold text-white shadow-sm animate-pulse">
+              🔥 Срочно
+            </span>
+          )}
+          {item.isPromoted && item.promotionTier === 'TOP' && (
+            <span className="rounded-full bg-amber-500 px-2.5 py-0.5 text-xs font-bold text-white shadow-sm">
+              ⭐ ТОП
             </span>
           )}
         </div>
 
-        {/* Кнопка "в избранное" */}
-        <button
-          type="button"
-          aria-label={isFavorite ? 'Убрать из избранного' : 'Добавить в избранное'}
-          onClick={(e) => {
-            e.preventDefault();
-            e.stopPropagation();
-            toggleFavorite(item.id);
-          }}
-          className="absolute right-3 top-3 flex h-8 w-8 items-center justify-center rounded-full bg-white/95 text-stone-500 shadow-sm transition-colors hover:text-rose-500"
-        >
-          <Heart size={15} className={cn(isFavorite && 'fill-rose-500 text-rose-500')} />
-        </button>
+        {/* Кнопки действий (Избранное и Сравнение) */}
+        <div className="absolute right-3 top-3 flex items-center gap-1.5">
+          <button
+            type="button"
+            aria-label={isInCompare ? 'Убрать из сравнения' : 'Сравнить'}
+            onClick={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              toggleCompare(item.id);
+            }}
+            className={cn(
+              'flex h-8 w-8 items-center justify-center rounded-full shadow-sm transition-colors',
+              isInCompare
+                ? 'bg-primary-600 text-white'
+                : 'bg-white/95 text-stone-500 hover:text-primary-600'
+            )}
+            title={isInCompare ? 'В сравнении' : 'Добавить к сравнению'}
+          >
+            <Scale size={14} />
+          </button>
+
+          <button
+            type="button"
+            aria-label={isFavorite ? 'Убрать из избранного' : 'Добавить в избранное'}
+            onClick={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              toggleFavorite(item.id);
+            }}
+            className="flex h-8 w-8 items-center justify-center rounded-full bg-white/95 text-stone-500 shadow-sm transition-colors hover:text-rose-500"
+          >
+            <Heart size={15} className={cn(isFavorite && 'fill-rose-500 text-rose-500')} />
+          </button>
+        </div>
 
         {item.type === 'daily' && (
           <div className="absolute bottom-3 right-3">

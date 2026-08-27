@@ -5,6 +5,7 @@
   "/catalog",
   "/catalog/:id",
   "/chat",
+  "/compare",
   "/favorites",
   "/forgot-password",
   "/login",

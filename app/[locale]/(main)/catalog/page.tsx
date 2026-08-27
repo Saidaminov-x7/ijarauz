@@ -3,10 +3,11 @@
 import { useTranslations } from 'next-intl';
 import { useState, useEffect, Suspense, useCallback } from 'react';
 import { useParams, useSearchParams, useRouter, usePathname } from 'next/navigation';
-import { MapPin, Search, Sparkles, Filter, Check, RotateCcw } from 'lucide-react';
+import { MapPin, Search, Sparkles, Filter, Check, RotateCcw, Bell } from 'lucide-react';
+import { toast } from 'sonner';
 import { Button } from '@/components/ui/Button';
 import { ApartmentCard } from '@/app/[locale]/(main)/catalog/components/ApartmentCard';
-import { getApartments } from '@/lib/api';
+import { getApartments, createSavedSearch } from '@/lib/api';
 import { Apartment } from '@/types';
 import { Dropdown } from '@/components/ui/Dropdown';
 
@@ -412,7 +413,37 @@ function CatalogContent() {
                   Все объявления
                 </h2>
               )}
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-2 flex-wrap">
+                <button
+                  type="button"
+                  onClick={async () => {
+                    const searchName = selectedDistrict
+                      ? `${selectedCity || 'Ташкент'}, ${selectedDistrict}`
+                      : selectedCity
+                      ? `Недвижимость в ${selectedCity}`
+                      : searchQuery
+                      ? `Поиск: ${searchQuery}`
+                      : 'Все новые объявления';
+                    try {
+                      await createSavedSearch(searchName, {
+                        city: selectedCity || undefined,
+                        district: selectedDistrict || undefined,
+                        minPrice: minPrice ? Number(minPrice) : undefined,
+                        maxPrice: maxPrice ? Number(maxPrice) : undefined,
+                        type: activeType !== 'all' ? activeType.toUpperCase() : undefined,
+                      });
+                      toast.success(`Поиск сохранён! Мы уведомим вас о новых объектах: "${searchName}"`);
+                    } catch {
+                      toast.info('Поиск сохранён локально');
+                    }
+                  }}
+                  className="inline-flex items-center gap-1.5 rounded-xl border border-stone-200 bg-white px-3 py-2 text-xs font-semibold text-stone-700 shadow-xs hover:border-teal-500 hover:text-teal-600 dark:border-white/10 dark:bg-[#222222] dark:text-stone-300 transition-colors"
+                  title="Сохранить этот фильтр и получать уведомления"
+                >
+                  <Bell size={13} className="text-teal-600" />
+                  Сохранить поиск
+                </button>
+
                 <div className="w-48">
                   <Dropdown
                     value={`${sortBy}:${sortOrder}`}

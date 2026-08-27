@@ -142,7 +142,10 @@ function formatListingToApartment(item: any): Apartment {
     forStudents: !!item.forStudents || item.audience === 'students' || item.title?.toLowerCase().includes('студент'),
     audience: item.audience || (item.forStudents ? 'students' : 'all'),
     furnished: item.furnished !== undefined ? !!item.furnished : true,
-    verified: item.verified !== undefined ? !!item.verified : true,
+    verified: item.isVerified ?? item.verified ?? false,
+    isVerified: item.isVerified ?? item.verified ?? false,
+    isPromoted: item.isPromoted ?? false,
+    promotionTier: item.promotionTier ?? null,
     rating: item.rating || 4.8,
     reviews: item.reviews || 12,
     owner: item.owner ? {
@@ -360,3 +363,65 @@ export const uploadMedia = async (file: File, listingId?: string) => {
   }
   return response.data;
 };
+
+export const getSimilarListings = async (id: string): Promise<Apartment[]> => {
+  try {
+    const response = await api.get(`/listings/${id}/similar`);
+    const items = response.data || [];
+    return items.map(formatListingToApartment);
+  } catch (error) {
+    console.error('Error fetching similar listings:', error);
+    return [];
+  }
+};
+
+export const reportListing = async (
+  id: string,
+  reason: 'SCAM' | 'ALREADY_RENTED' | 'WRONG_PRICE' | 'WRONG_PHOTOS' | 'DUPLICATE' | 'OTHER',
+  comment?: string,
+) => {
+  const response = await api.post(`/listings/${id}/report`, { reason, comment });
+  return response.data;
+};
+
+export const getPriceHistory = async (id: string) => {
+  try {
+    const response = await api.get(`/listings/${id}/price-history`);
+    return response.data || [];
+  } catch (error) {
+    console.error('Error fetching price history:', error);
+    return [];
+  }
+};
+
+export const estimateFairPrice = async (data: {
+  city: string;
+  district?: string;
+  rooms: number;
+  area: number;
+  type?: string;
+}) => {
+  const response = await api.post('/listings/estimate-price', data);
+  return response.data;
+};
+
+export const getSavedSearches = async () => {
+  try {
+    const response = await api.get('/saved-searches');
+    return response.data || [];
+  } catch (error) {
+    console.error('Error fetching saved searches:', error);
+    return [];
+  }
+};
+
+export const createSavedSearch = async (name: string, filters: Record<string, any>) => {
+  const response = await api.post('/saved-searches', { name, filters });
+  return response.data;
+};
+
+export const deleteSavedSearch = async (id: string) => {
+  const response = await api.delete(`/saved-searches/${id}`);
+  return response.data;
+};
+

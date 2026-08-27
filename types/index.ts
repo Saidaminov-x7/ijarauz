@@ -79,6 +79,9 @@ export interface Apartment {
   verified?: boolean;
   rating?: number;
   reviews?: number;
+  isPromoted?: boolean;
+  promotionTier?: 'BASIC' | 'TOP' | 'URGENT';
+  isVerified?: boolean;
   createdAt?: string;
   updatedAt?: string;
 }

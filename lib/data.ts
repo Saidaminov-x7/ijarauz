@@ -23,6 +23,9 @@ export interface Listing {
   rating: number;
   reviews: number;
   verified: boolean;
+  isPromoted?: boolean;
+  promotionTier?: 'BASIC' | 'TOP' | 'URGENT';
+  isVerified?: boolean;
 }
 
 const CITY_COORDINATES: Record<string, { lat: number; lng: number }> = {

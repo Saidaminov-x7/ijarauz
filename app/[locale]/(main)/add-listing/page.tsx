@@ -11,9 +11,10 @@ import { Input } from '@/components/ui/Input';
 import { Textarea } from '@/components/ui/Textarea';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/Form';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/Select';
-import { createListing, publishListing, uploadMedia, getSiteSettings } from '@/lib/api';
+import { createListing, publishListing, uploadMedia, getSiteSettings, estimateFairPrice } from '@/lib/api';
+import { compressImage } from '@/lib/image-compress';
 import { useAuthStore } from '@/store/useAuthStore';
-import { UploadCloud, Image as ImageIcon } from 'lucide-react';
+import { UploadCloud, Image as ImageIcon, Sparkles } from 'lucide-react';
 import { Modal } from '@/components/ui/Modal';
 import { regions, regionNames } from '@/lib/regions';
 import ProtectedRoute from '@/components/ProtectedRoute';
@@ -58,6 +59,7 @@ function AddListingContent() {
   const [showModerationModal, setShowModerationModal] = useState(false);
   const [autoModerationEnabled, setAutoModerationEnabled] = useState(false);
   const [maxImagesPerListing, setMaxImagesPerListing] = useState(10);
+  const [priceEstimate, setPriceEstimate] = useState<{ min: number | null; max: number | null; average: number | null; sampleSize?: number } | null>(null);
 
   const form = useForm<ListingFormValues>({
     resolver: zodResolver(listingSchema),
@@ -69,7 +71,34 @@ function AddListingContent() {
 
   // Получаем список районов для выбранного города
   const selectedCity = form.watch('city');
+  const selectedDistrict = form.watch('district');
+  const selectedRooms = form.watch('rooms');
+  const selectedArea = form.watch('area');
+  const selectedType = form.watch('type');
   const districtOptions = selectedCity && regions[selectedCity] ? regions[selectedCity] : [];
+
+  useEffect(() => {
+    if (selectedCity && selectedRooms && selectedArea && Number(selectedRooms) >= 0 && Number(selectedArea) > 0) {
+      const timer = setTimeout(() => {
+        estimateFairPrice({
+          city: selectedCity,
+          district: selectedDistrict || undefined,
+          rooms: Number(selectedRooms),
+          area: Number(selectedArea),
+          type: selectedType,
+        }).then((res) => {
+          if (res && res.average) {
+            setPriceEstimate(res);
+          } else {
+            setPriceEstimate(null);
+          }
+        }).catch(() => setPriceEstimate(null));
+      }, 500);
+      return () => clearTimeout(timer);
+    } else {
+      setPriceEstimate(null);
+    }
+  }, [selectedCity, selectedDistrict, selectedRooms, selectedArea, selectedType]);
 
   useEffect(() => {
     fetchUser().then(() => {
@@ -102,8 +131,8 @@ function AddListingContent() {
         setServerError('Можно загружать только изображения');
         return;
       }
-      if (file.size > 10 * 1024 * 1024) { // 10MB
-        setServerError('Максимальный размер фото — 10MB');
+      if (file.size > 15 * 1024 * 1024) { // 15MB
+        setServerError('Максимальный размер исходного фото — 15MB');
         return;
       }
     }
@@ -133,11 +162,12 @@ function AddListingContent() {
         totalFloors: data.totalFloors ? Number(data.totalFloors) : undefined,
       });
 
-      // 2. Upload images if attached
+      // 2. Client-side compress and upload images
       if (selectedFiles.length > 0 && listing?.id) {
         for (const file of selectedFiles) {
           try {
-            await uploadMedia(file, listing.id);
+            const compressed = await compressImage(file, { maxWidth: 1920, quality: 0.82 });
+            await uploadMedia(compressed, listing.id);
           } catch (uploadErr) {
             console.error('Failed to upload image:', uploadErr);
             setServerError('Не удалось загрузить одно или несколько фото. Попробуйте позже.');
@@ -272,6 +302,14 @@ function AddListingContent() {
                   <FormControl>
                     <Input placeholder="1000" className="h-11 rounded-xl" {...field} />
                   </FormControl>
+                  {priceEstimate && priceEstimate.average && (
+                    <div className="mt-1.5 flex items-center gap-1.5 text-xs text-teal-700 dark:text-teal-300 bg-teal-50 dark:bg-teal-950/40 p-2 rounded-lg border border-teal-200 dark:border-teal-800/40">
+                      <Sparkles size={14} className="shrink-0 text-teal-600 dark:text-teal-400" />
+                      <span>
+                        Ориентир рынка в этом районе: <strong>${priceEstimate.min} - ${priceEstimate.max}</strong> (средняя: ${priceEstimate.average})
+                      </span>
+                    </div>
+                  )}
                   <FormMessage />
                 </FormItem>
               )}
