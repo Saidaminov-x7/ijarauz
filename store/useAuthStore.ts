@@ -21,11 +21,12 @@ interface AuthState {
   setUser: (user: AuthUser | null) => void;
   fetchUser: () => Promise<void>;
   logout: () => Promise<void>;
+  clearAuth: () => void;
 }
 
 let fetchUserPromise: Promise<void> | null = null;
 
-export const useAuthStore = create<AuthState>((set) => ({
+export const useAuthStore = create<AuthState>((set, get) => ({
   accessToken: null,
   user: null,
   isAuthenticated: false,
@@ -41,6 +42,10 @@ export const useAuthStore = create<AuthState>((set) => ({
 
   setUser: (user) => {
     set({ user, isAuthenticated: !!user, isLoading: false });
+  },
+
+  clearAuth: () => {
+    set({ accessToken: null, user: null, isAuthenticated: false, isLoading: false });
   },
 
   fetchUser: async () => {
@@ -64,12 +69,14 @@ export const useAuthStore = create<AuthState>((set) => ({
   },
 
   logout: async () => {
-    try {
-      await apiLogout();
-    } catch (e) {
-      console.error('Logout error:', e);
-    } finally {
-      set({ accessToken: null, user: null, isAuthenticated: false, isLoading: false });
+    const hadAuth = get().isAuthenticated || !!get().accessToken;
+    set({ accessToken: null, user: null, isAuthenticated: false, isLoading: false });
+    if (hadAuth) {
+      try {
+        await apiLogout();
+      } catch {
+        // Silently ignore network/401 errors during logout
+      }
     }
   },
 }));

@@ -89,7 +89,7 @@ const processQueue = (error: unknown, token: string | null = null) => {
   failedQueue = [];
 };
 
-const AUTH_SKIP = ['/auth/login', '/auth/register', '/auth/google', '/auth/refresh'];
+const AUTH_SKIP = ['/auth/login', '/auth/register', '/auth/google', '/auth/refresh', '/auth/logout'];
 
 api.interceptors.response.use(
   (response) => response,
@@ -145,7 +145,7 @@ api.interceptors.response.use(
     } catch (refreshError) {
       processQueue(refreshError, null);
       if (axios.isAxiosError(refreshError) && refreshError.response?.status === 401) {
-        useAuthStore.getState().logout();
+        useAuthStore.getState().clearAuth();
       }
       return Promise.reject(refreshError);
     } finally {
