@@ -157,8 +157,30 @@ function CatalogContent() {
       setApartments(sorted);
 
       if (sorted.length === 0) {
-        const recs = await getApartments(locale, undefined, { limit: 8 });
-        setRecommendations(recs);
+        // Умный поиск рекомендаций: сначала ищем в том же городе / регионе, но со смягченными фильтрами
+        let recs = await getApartments(locale, undefined, {
+          city: selectedCity || undefined,
+          limit: 12,
+        });
+
+        // Если в этом городе мало, дополняем популярными проверенными квартирами
+        if (recs.length < 4) {
+          const generalRecs = await getApartments(locale, undefined, { limit: 12 });
+          const existingIds = new Set(recs.map((r) => r.id));
+          const additions = generalRecs.filter((g) => !existingIds.has(g.id));
+          recs = [...recs, ...additions];
+        }
+
+        // Сортируем рекомендации по лучшему рейтингу и совпадению типа жилья
+        recs.sort((a, b) => {
+          if (activeType !== 'all') {
+            if (a.type === activeType && b.type !== activeType) return -1;
+            if (b.type === activeType && a.type !== activeType) return 1;
+          }
+          return (b.rating || 0) - (a.rating || 0);
+        });
+
+        setRecommendations(recs.slice(0, 8));
       } else {
         setRecommendations([]);
       }

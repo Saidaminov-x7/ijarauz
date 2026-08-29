@@ -52,7 +52,7 @@ interface AmenitiesFilterProps {
 
 export function AmenitiesFilter({ selected, onChange, className }: AmenitiesFilterProps) {
   const t = useTranslations('amenities');
-  const [isOpen, setIsOpen] = useState(true);
+  const [isOpen, setIsOpen] = useState(false);
 
   const toggle = (key: string) => {
     if (selected.includes(key)) {

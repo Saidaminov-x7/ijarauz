@@ -38,26 +38,25 @@ function AuthLayoutInner({ children, params }: AuthLayoutProps) {
           {/* Inner top gradient stripe */}
           <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-teal-400/50 to-transparent" />
 
-          {/* Card header: back button + logo */}
+          {/* Card header: Home button + logo */}
           <div className="flex items-center justify-between px-6 pt-5 pb-0">
-            <button
-              type="button"
-              onClick={() => router.back()}
-              className="group flex items-center gap-1.5 rounded-xl px-2.5 py-1.5 text-sm font-medium text-stone-400 transition-all hover:bg-white/5 hover:text-white"
-            >
-              <ArrowLeft
-                size={16}
-                className="transition-transform duration-200 group-hover:-translate-x-0.5"
-              />
-              Назад
-            </button>
-
             <Link
               href={`/${locale}`}
               className="flex items-center gap-1.5 text-sm text-stone-400 hover:opacity-80 transition-opacity"
             >
               <div className="h-2 w-2 rounded-full bg-teal-400 shadow-[0_0_6px_2px_rgba(52,211,153,0.4)]" />
               <span className="text-teal-400 font-semibold tracking-tight">ijara.uz</span>
+            </Link>
+
+            <Link
+              href={`/${locale}`}
+              className="group flex items-center gap-1.5 rounded-xl border border-white/10 bg-white/5 px-3 py-1.5 text-xs font-semibold text-stone-300 transition-all hover:bg-teal-500/20 hover:text-white hover:border-teal-500/30 shadow-xs"
+            >
+              <ArrowLeft
+                size={14}
+                className="transition-transform duration-200 group-hover:-translate-x-0.5"
+              />
+              <span>Вернуться домой</span>
             </Link>
           </div>
           

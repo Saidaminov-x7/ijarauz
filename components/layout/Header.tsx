@@ -205,10 +205,10 @@ export function Header({ locale: localeProp }: { locale?: string }) {
         <div className="mx-auto flex w-full max-w-[1440px] items-center justify-end px-4 sm:px-6 lg:px-8">
           <Link
             href={to('/')}
-            className="flex items-center gap-2 rounded-xl border border-stone-200 bg-white px-4 py-2 text-sm font-semibold text-stone-700 hover:bg-stone-50 dark:border-white/10 dark:bg-stone-900 dark:text-stone-300 dark:hover:bg-stone-800"
+            className="flex items-center gap-2 rounded-xl border border-stone-200 bg-white px-4 py-2 text-xs font-semibold text-stone-700 hover:bg-stone-50 dark:border-white/10 dark:bg-stone-900 dark:text-stone-300 dark:hover:bg-stone-800 shadow-xs"
           >
-            <ArrowLeft size={16} />
-            <span>Назад</span>
+            <ArrowLeft size={15} />
+            <span>Вернуться домой</span>
           </Link>
         </div>
       </header>
