@@ -20,7 +20,7 @@ interface CatalogMapViewProps {
 
 export function CatalogMapView({ apartments, locale }: CatalogMapViewProps) {
   return (
-    <div className="h-[400px] w-full overflow-hidden rounded-2xl border border-stone-200/80 shadow-sm dark:border-white/10 relative">
+    <div className="h-[380px] w-full overflow-hidden rounded-2xl border border-stone-200/80 shadow-md dark:border-white/10 relative z-0">
       <CatalogMapInner apartments={apartments} locale={locale} />
     </div>
   );

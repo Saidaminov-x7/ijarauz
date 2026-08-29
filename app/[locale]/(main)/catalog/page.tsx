@@ -30,16 +30,7 @@ const AUDIENCES = [
   { id: 'girls', label: 'Девушкам' },
 ];
 
-const CITIES: Record<string, string[]> = {
-  "Ташкент": [
-    "Юнусабадский", "Чиланзарский", "Мирабадский", "Яккасарайский",
-    "Мирзо-Улугбекский", "Шайхантахурский", "Алмазарский", "Сергелийский",
-    "Учтепинский", "Яшнабадский", "Бектемирский", "Янгихаётский"
-  ],
-  "Самарканд": ["Центральный", "Сиабский", "Багишамальский"],
-  "Бухара": ["Центральный", "Старый город"],
-  "Фергана": ["Центральный", "Киргули"],
-};
+import { regions, regionNames } from '@/lib/regions';
 
 const containerVariants: Variants = {
   hidden: { opacity: 0 },
@@ -342,57 +333,64 @@ function CatalogContent() {
                 </div>
               </div>
 
-              {/* 3. Location / Город и Районы */}
-              <div className="mb-6">
-                <h3 className="text-xs font-bold uppercase tracking-wider text-stone-500 dark:text-stone-400 mb-3">
+              {/* 3. Location / Выпадающие списки: Город и Районы */}
+              <div className="mb-6 space-y-3">
+                <h3 className="text-xs font-bold uppercase tracking-wider text-stone-500 dark:text-stone-400">
                   Местоположение
                 </h3>
-                <div className="flex flex-wrap gap-1.5 mb-2">
-                  {Object.keys(CITIES).map((city) => {
-                    const active = selectedCity === city;
-                    return (
-                      <button
-                        key={city}
-                        type="button"
-                        onClick={() => handleCityClick(city)}
-                        className={`rounded-lg px-2.5 py-1 text-xs font-medium transition-colors ${
-                          active
-                            ? 'bg-teal-600 text-white font-semibold'
-                            : 'bg-stone-100 text-stone-700 hover:bg-stone-200 dark:bg-white/5 dark:text-stone-300 dark:hover:bg-white/10'
-                        }`}
-                      >
+                
+                {/* Дропдаун выбора города / региона */}
+                <div>
+                  <label className="block text-[11px] font-medium text-stone-400 mb-1">
+                    Город / Область:
+                  </label>
+                  <select
+                    value={selectedCity || ''}
+                    onChange={(e) => {
+                      const val = e.target.value || null;
+                      setSelectedCity(val);
+                      setSelectedDistrict(null);
+                      updateUrlParams({ city: val, district: null });
+                    }}
+                    className="h-10 w-full rounded-xl border border-stone-200 bg-stone-50 px-3 text-xs text-stone-900 outline-none focus:border-teal-500 focus:bg-white dark:border-white/10 dark:bg-white/5 dark:text-white cursor-pointer"
+                  >
+                    <option value="">Все регионы Узбекистана</option>
+                    {regionNames.map((city) => (
+                      <option key={city} value={city}>
                         {city}
-                      </button>
-                    );
-                  })}
+                      </option>
+                    ))}
+                  </select>
                 </div>
 
-                {selectedCity && CITIES[selectedCity] && (
-                  <div className="mt-3 space-y-1 rounded-xl border border-stone-100 bg-stone-50/50 p-2 dark:border-white/5 dark:bg-white/5 max-h-44 overflow-y-auto">
-                    <p className="px-2 py-1 text-[11px] font-semibold text-stone-400">Районы ({selectedCity}):</p>
-                    {CITIES[selectedCity].map((district) => {
-                      const active = selectedDistrict === district;
-                      return (
-                        <button
-                          key={district}
-                          type="button"
-                          onClick={() => handleDistrictClick(district)}
-                          className={`w-full text-left px-2.5 py-1.5 text-xs rounded-lg transition-colors flex items-center justify-between ${
-                            active
-                              ? 'bg-teal-50 text-teal-700 font-semibold dark:bg-teal-950/60 dark:text-teal-400'
-                              : 'text-stone-600 hover:bg-white dark:text-stone-300 dark:hover:bg-white/10'
-                          }`}
-                        >
-                          <span>{district}</span>
-                          {active && <Check size={12} />}
-                        </button>
-                      );
-                    })}
-                  </div>
-                )}
+                {/* Дропдаун выбора района (активен только если выбран город) */}
+                <div>
+                  <label className="block text-[11px] font-medium text-stone-400 mb-1">
+                    Район:
+                  </label>
+                  <select
+                    disabled={!selectedCity || !regions[selectedCity] || regions[selectedCity].length === 0}
+                    value={selectedDistrict || ''}
+                    onChange={(e) => {
+                      const val = e.target.value || null;
+                      setSelectedDistrict(val);
+                      updateUrlParams({ district: val });
+                    }}
+                    className="h-10 w-full rounded-xl border border-stone-200 bg-stone-50 px-3 text-xs text-stone-900 outline-none focus:border-teal-500 focus:bg-white disabled:opacity-50 disabled:cursor-not-allowed dark:border-white/10 dark:bg-white/5 dark:text-white cursor-pointer"
+                  >
+                    <option value="">
+                      {!selectedCity ? 'Сначала выберите город выше' : 'Все районы'}
+                    </option>
+                    {selectedCity && regions[selectedCity]?.map((dist) => (
+                      <option key={dist} value={dist}>
+                        {dist}
+                      </option>
+                    ))}
+                  </select>
+                </div>
               </div>
 
-              {/* 4. Price Range */}
+              {/* 4. Price Range с контрастным читаемым текстом */}
               <div className="mb-6">
                 <h3 className="text-xs font-bold uppercase tracking-wider text-stone-500 dark:text-stone-400 mb-3">
                   Цена ($ / месяц)
@@ -406,7 +404,7 @@ function CatalogContent() {
                       updateUrlParams({ minPrice: e.target.value });
                     }}
                     placeholder="От ($)"
-                    className="h-10 w-full rounded-xl border border-stone-200 bg-stone-50 px-3 text-xs text-stone-900 placeholder-stone-400 outline-none focus:border-teal-500 focus:bg-white dark:border-white/10 dark:bg-white/5 dark:text-white"
+                    className="h-10 w-full rounded-xl border border-stone-200 bg-white px-3 text-xs font-semibold text-stone-900 placeholder-stone-400 outline-none focus:border-teal-500 dark:border-white/10 dark:bg-[#1E1E1E] dark:text-white"
                   />
                   <input
                     type="number"
@@ -416,12 +414,12 @@ function CatalogContent() {
                       updateUrlParams({ maxPrice: e.target.value });
                     }}
                     placeholder="До ($)"
-                    className="h-10 w-full rounded-xl border border-stone-200 bg-stone-50 px-3 text-xs text-stone-900 placeholder-stone-400 outline-none focus:border-teal-500 focus:bg-white dark:border-white/10 dark:bg-white/5 dark:text-white"
+                    className="h-10 w-full rounded-xl border border-stone-200 bg-white px-3 text-xs font-semibold text-stone-900 placeholder-stone-400 outline-none focus:border-teal-500 dark:border-white/10 dark:bg-[#1E1E1E] dark:text-white"
                   />
                 </div>
               </div>
 
-              {/* 5. Amenities / Удобства */}
+              {/* 5. Amenities / Удобства в виде выпадающего списка с кастомными чекбоксами */}
               <div className="mb-6">
                 <h3 className="text-xs font-bold uppercase tracking-wider text-stone-500 dark:text-stone-400 mb-3">
                   Удобства
@@ -432,25 +430,9 @@ function CatalogContent() {
                 />
               </div>
 
-              {/* 6. Additional Checkboxes */}
-              <div className="mb-6 space-y-2 border-t border-stone-100 pt-4 dark:border-white/5">
-                <label className="flex items-center gap-2.5 text-xs font-medium text-stone-700 dark:text-stone-300 cursor-pointer select-none">
-                  <input
-                    type="checkbox"
-                    checked={furnished}
-                    onChange={(e) => {
-                      setFurnished(e.target.checked);
-                      updateUrlParams({ furnished: e.target.checked ? 'true' : null });
-                    }}
-                    className="h-4 w-4 rounded text-teal-600 focus:ring-teal-500 accent-teal-600"
-                  />
-                  С мебелью и техникой
-                </label>
-              </div>
-
               <Button
                 onClick={fetchListings}
-                className="w-full h-11 bg-teal-600 hover:bg-teal-700 text-white font-semibold rounded-xl shadow-md shadow-teal-900/20"
+                className="w-full h-11 bg-teal-600 hover:bg-teal-700 text-white font-semibold rounded-xl shadow-md shadow-teal-900/20 cursor-pointer"
               >
                 Показать результаты
               </Button>
@@ -578,6 +560,7 @@ function CatalogContent() {
                     <ApartmentCard
                       apartment={apartment}
                       locale={locale}
+                      activeAmenities={selectedAmenities}
                     />
                   </motion.div>
                 ))}

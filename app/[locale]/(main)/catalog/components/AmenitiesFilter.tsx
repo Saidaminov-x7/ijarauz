@@ -1,6 +1,6 @@
 'use client';
 
-import React from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { useTranslations } from 'next-intl';
 import {
   Wifi,
@@ -17,6 +17,9 @@ import {
   Dumbbell,
   Waves,
   Bath,
+  ChevronDown,
+  Check,
+  Sparkles,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
@@ -50,6 +53,18 @@ interface AmenitiesFilterProps {
 
 export function AmenitiesFilter({ selected, onChange, className }: AmenitiesFilterProps) {
   const t = useTranslations('amenities');
+  const [isOpen, setIsOpen] = useState(false);
+  const dropdownRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+        setIsOpen(false);
+      }
+    }
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
 
   const toggle = (key: string) => {
     if (selected.includes(key)) {
@@ -60,74 +75,80 @@ export function AmenitiesFilter({ selected, onChange, className }: AmenitiesFilt
   };
 
   return (
-    <div className={cn('grid grid-cols-2 gap-1.5', className)}>
-      {Object.entries(AMENITY_CONFIG).map(([key, { translationKey, icon: Icon }]) => {
-        const active = selected.includes(key);
-        return (
-          <button
-            key={key}
-            type="button"
-            onClick={() => toggle(key)}
-            className={cn(
-              'flex items-center gap-2 px-2.5 py-2 rounded-xl border text-xs font-medium transition-all text-left',
-              active
-                ? 'border-teal-500 bg-teal-50 text-teal-700 font-semibold dark:bg-teal-950/60 dark:text-teal-300 dark:border-teal-600 shadow-xs'
-                : 'border-stone-200 bg-stone-50 text-stone-700 hover:bg-stone-100 hover:border-stone-300 dark:border-white/10 dark:bg-white/5 dark:text-stone-300 dark:hover:bg-white/10'
-            )}
-          >
-            <Icon className={cn('w-3.5 h-3.5 shrink-0', active ? 'text-teal-600 dark:text-teal-400' : 'text-stone-400')} />
-            <span className="truncate">{t(translationKey as any)}</span>
-          </button>
-        );
-      })}
-    </div>
-  );
-}
+    <div className={cn('relative', className)} ref={dropdownRef}>
+      {/* Кнопка-дропдаун для удобств */}
+      <button
+        type="button"
+        onClick={() => setIsOpen(!isOpen)}
+        className="flex h-11 w-full items-center justify-between rounded-xl border border-stone-200 bg-stone-50 px-3.5 text-xs text-stone-900 outline-none transition-all hover:border-teal-500 focus:border-teal-500 dark:border-white/10 dark:bg-white/5 dark:text-white cursor-pointer"
+      >
+        <div className="flex items-center gap-2 truncate">
+          <Sparkles size={14} className="text-teal-600 dark:text-teal-400 shrink-0" />
+          <span className="truncate">
+            {selected.length === 0
+              ? 'Выберите удобства...'
+              : `Выбрано: ${selected.length} удобств`}
+          </span>
+        </div>
+        <ChevronDown size={14} className={cn('text-stone-400 transition-transform duration-200 shrink-0', isOpen && 'rotate-180')} />
+      </button>
 
-export function QuickAmenityChips({
-  selected,
-  onChange,
-  className,
-}: {
-  selected: string[];
-  onChange: (amenities: string[]) => void;
-  className?: string;
-}) {
-  const t = useTranslations('amenities');
+      {/* Выпадающий список с кастомными стильными чекбоксами */}
+      {isOpen && (
+        <div className="absolute left-0 top-full z-40 mt-1.5 w-full rounded-2xl border border-stone-200 bg-white p-2.5 shadow-2xl dark:border-white/10 dark:bg-[#1E1E1E] max-h-64 overflow-y-auto space-y-1">
+          {Object.entries(AMENITY_CONFIG).map(([key, { translationKey, icon: Icon }]) => {
+            const active = selected.includes(key);
+            return (
+              <button
+                key={key}
+                type="button"
+                onClick={() => toggle(key)}
+                className={cn(
+                  'flex w-full items-center justify-between px-3 py-2 rounded-xl text-xs font-medium transition-colors text-left cursor-pointer',
+                  active
+                    ? 'bg-teal-50 text-teal-800 dark:bg-teal-950/60 dark:text-teal-300 font-semibold'
+                    : 'text-stone-700 hover:bg-stone-100 dark:text-stone-300 dark:hover:bg-white/10'
+                )}
+              >
+                <div className="flex items-center gap-2.5 truncate">
+                  <Icon className={cn('w-4 h-4 shrink-0', active ? 'text-teal-600 dark:text-teal-400' : 'text-stone-400')} />
+                  <span className="truncate">{t(translationKey as any)}</span>
+                </div>
+                <div
+                  className={cn(
+                    'flex h-4 w-4 shrink-0 items-center justify-center rounded border transition-colors',
+                    active
+                      ? 'border-teal-600 bg-teal-600 text-white'
+                      : 'border-stone-300 dark:border-stone-600 bg-transparent'
+                  )}
+                >
+                  {active && <Check size={11} strokeWidth={3} />}
+                </div>
+              </button>
+            );
+          })}
+        </div>
+      )}
 
-  const toggle = (key: string) => {
-    if (selected.includes(key)) {
-      onChange(selected.filter((a) => a !== key));
-    } else {
-      onChange([...selected, key]);
-    }
-  };
-
-  return (
-    <div className={cn('flex items-center gap-1.5 flex-wrap', className)}>
-      {TOP_AMENITIES.map((key) => {
-        const item = AMENITY_CONFIG[key];
-        if (!item) return null;
-        const Icon = item.icon;
-        const active = selected.includes(key);
-
-        return (
-          <button
-            key={key}
-            type="button"
-            onClick={() => toggle(key)}
-            className={cn(
-              'inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full border text-xs font-medium transition-all cursor-pointer select-none',
-              active
-                ? 'border-teal-600 bg-teal-600 text-white font-semibold shadow-xs'
-                : 'border-stone-200 bg-white text-stone-700 hover:border-teal-500 hover:text-teal-600 dark:border-white/10 dark:bg-[#1E1E1E] dark:text-stone-300 dark:hover:border-teal-500'
-            )}
-          >
-            <Icon className={cn('w-3.5 h-3.5', active ? 'text-white' : 'text-stone-400')} />
-            <span>{t(item.translationKey as any)}</span>
-          </button>
-        );
-      })}
+      {/* Быстрые выбранные теги под дропдауном */}
+      {selected.length > 0 && (
+        <div className="flex flex-wrap gap-1.5 pt-2.5">
+          {selected.map((key) => {
+            const item = AMENITY_CONFIG[key];
+            if (!item) return null;
+            return (
+              <span
+                key={key}
+                onClick={() => toggle(key)}
+                className="inline-flex items-center gap-1 rounded-lg bg-teal-50 px-2 py-1 text-[11px] font-semibold text-teal-700 dark:bg-teal-950/60 dark:text-teal-300 border border-teal-500/20 cursor-pointer hover:bg-rose-50 hover:text-rose-600 hover:border-rose-300 transition-colors"
+                title="Нажмите чтобы удалить"
+              >
+                {t(item.translationKey as any)} ✕
+              </span>
+            );
+          })}
+        </div>
+      )}
     </div>
   );
 }

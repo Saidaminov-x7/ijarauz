@@ -1,24 +1,31 @@
 'use client';
 
 import Link from 'next/link';
-import { Heart, Star, CheckCircle, ShieldCheck } from 'lucide-react';
+import { Heart, Star, CheckCircle, Scale } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { useFavoritesStore } from '@/store/useFavoritesStore';
+import { useCompareStore } from '@/store/useCompareStore';
 import { useAuthStore } from '@/store/useAuthStore';
 import { toggleFavorite as toggleFavoriteApi } from '@/lib/api';
 import { Apartment } from '@/types';
 import { cn } from '@/lib/utils';
+import { toast } from 'sonner';
 
 interface ApartmentCardProps {
   apartment: Apartment;
   locale: string;
+  activeAmenities?: string[];
 }
 
-export function ApartmentCard({ apartment, locale }: ApartmentCardProps) {
+export function ApartmentCard({ apartment, locale, activeAmenities = [] }: ApartmentCardProps) {
   const t = useTranslations('catalog');
+  const tAmenities = useTranslations('amenities');
   const numericId = Number(apartment.id) || 0;
+  
   const isFavorite = useFavoritesStore((s) => s.isFavorite(numericId));
   const toggleLocalFavorite = useFavoritesStore((s) => s.toggle);
+  const isInCompare = useCompareStore((s) => s.isInCompare(numericId));
+  const toggleCompare = useCompareStore((s) => s.toggle);
   const isAuthenticated = useAuthStore((s) => s.isAuthenticated);
 
   const handleFavoriteClick = async (e: React.MouseEvent) => {
@@ -33,6 +40,17 @@ export function ApartmentCard({ apartment, locale }: ApartmentCardProps) {
       } catch (err) {
         console.error('Failed to sync favorite with backend:', err);
       }
+    }
+  };
+
+  const handleCompareClick = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    toggleCompare(numericId);
+    if (!isInCompare) {
+      toast.success('Объект добавлен в список сравнения');
+    } else {
+      toast.info('Объект удалён из сравнения');
     }
   };
 
@@ -57,6 +75,12 @@ export function ApartmentCard({ apartment, locale }: ApartmentCardProps) {
     }
     return { text: 'Квартира', bg: 'bg-teal-600/90 text-white' };
   };
+
+  // Вычисляем отсутствующие удобства из числа выбранных пользователем в фильтрах
+  const apartmentAmenities = (apartment.amenities || []).map((a) => a.toUpperCase());
+  const missingAmenities = activeAmenities.filter(
+    (req) => !apartmentAmenities.includes(req.toUpperCase())
+  );
 
   const badge = getCategoryBadge();
 
@@ -88,15 +112,33 @@ export function ApartmentCard({ apartment, locale }: ApartmentCardProps) {
             )}
           </div>
 
-          {/* Favorite button */}
-          <button
-            type="button"
-            onClick={handleFavoriteClick}
-            aria-label={isFavorite ? 'Убрать из избранного' : 'Добавить в избранное'}
-            className="absolute right-3 top-3 flex h-8 w-8 items-center justify-center rounded-full bg-black/40 text-white backdrop-blur-md transition-transform hover:scale-110 hover:bg-black/60 active:scale-95"
-          >
-            <Heart size={16} className={cn(isFavorite && 'fill-rose-500 text-rose-500')} />
-          </button>
+          {/* Action buttons (Compare & Favorite) */}
+          <div className="absolute right-3 top-3 flex items-center gap-1.5">
+            <button
+              type="button"
+              onClick={handleCompareClick}
+              aria-label="Сравнить объект"
+              className={cn(
+                'flex h-8 w-8 items-center justify-center rounded-full backdrop-blur-md transition-transform hover:scale-110 active:scale-95 cursor-pointer shadow-sm',
+                isInCompare
+                  ? 'bg-teal-600 text-white'
+                  : 'bg-black/40 text-white hover:bg-black/60'
+              )}
+              title={isInCompare ? 'В сравнении' : 'Добавить к сравнению'}
+            >
+              <Scale size={14} />
+            </button>
+
+            <button
+              type="button"
+              onClick={handleFavoriteClick}
+              aria-label={isFavorite ? 'Убрать из избранного' : 'Добавить в избранное'}
+              className="flex h-8 w-8 items-center justify-center rounded-full bg-black/40 text-white backdrop-blur-md transition-transform hover:scale-110 hover:bg-black/60 active:scale-95 cursor-pointer shadow-sm"
+              title="В избранное"
+            >
+              <Heart size={15} className={cn(isFavorite && 'fill-rose-500 text-rose-500')} />
+            </button>
+          </div>
         </div>
 
         <div className="p-4">
@@ -142,6 +184,13 @@ export function ApartmentCard({ apartment, locale }: ApartmentCardProps) {
               </div>
             )}
           </div>
+
+          {/* Плашка похожей квартиры по критериям (если не хватает какого-то удобства из фильтра) */}
+          {missingAmenities.length > 0 && (
+            <div className="mt-2.5 rounded-lg bg-amber-500/10 px-2 py-1 text-[11px] font-medium text-amber-700 dark:text-amber-300 border border-amber-500/20">
+              ⚡ Подходит по критериям (кроме: {missingAmenities.map((m) => tAmenities(m.toLowerCase() as any) || m).join(', ')})
+            </div>
+          )}
         </div>
       </Link>
     </div>

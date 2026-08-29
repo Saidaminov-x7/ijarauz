@@ -41,7 +41,7 @@ import { ListingCard } from '@/components/ListingCard';
 import { AMENITY_CONFIG } from '@/app/[locale]/(main)/catalog/components/AmenitiesFilter';
 import { cn } from '@/lib/utils';
 import { Apartment } from '@/types';
-import { Panorama360Viewer, ShareModal, LandlordReviewsSection } from '@/components/listing/InteractiveListingModules';
+import { ShareModal, LandlordReviewsSection } from '@/components/listing/InteractiveListingModules';
 
 interface Props {
   listing: Listing;
@@ -58,7 +58,6 @@ export function ListingDetailClient({ listing, coordinates, locale }: Props) {
   const isInCompare = useCompareStore((s) => s.isInCompare(listing.id));
   const toggleCompare = useCompareStore((s) => s.toggle);
 
-  const [activeMediaTab, setActiveMediaTab] = useState<'photos' | '360'>('photos');
   const [isShareModalOpen, setIsShareModalOpen] = useState(false);
   const [isPhoneRevealed, setIsPhoneRevealed] = useState(false);
 
@@ -77,8 +76,10 @@ export function ListingDetailClient({ listing, coordinates, locale }: Props) {
   const hasImages = (listing.images?.length ?? 0) > 0;
   const isVerified = listing.isVerified ?? listing.verified;
 
-  // Расчёт цены в сумах (UZS) при курсе ~12,800
-  const priceInUzs = (listing.price * 12800).toLocaleString('ru-RU');
+  // Актуальный курс доллара к UZS (~12,850 сум за $1) с округлением ВНИЗ до сотен тысяч (5,500,000)
+  const rawUzs = listing.price * 12850;
+  const roundedUzs = Math.floor(rawUzs / 100000) * 100000;
+  const priceInUzs = roundedUzs.toLocaleString('ru-RU');
 
   // Калькулятор депозита и коммунальных услуг
   const depositAmount = listing.price; // 1 месяц залога
@@ -163,7 +164,11 @@ export function ListingDetailClient({ listing, coordinates, locale }: Props) {
 
           <button
             type="button"
-            onClick={() => toggleCompare(listing.id)}
+            onClick={() => {
+              toggleCompare(listing.id);
+              if (!isInCompare) toast.success('Добавлено в сравнение');
+              else toast.info('Удалено из сравнения');
+            }}
             className={cn(
               'flex h-9 px-3.5 items-center gap-1.5 rounded-xl border transition-colors text-xs font-semibold cursor-pointer shadow-xs',
               isInCompare
@@ -224,49 +229,18 @@ export function ListingDetailClient({ listing, coordinates, locale }: Props) {
 
       {/* Главная секция: Галерея + Sticky Карточка цен & Владельца */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
-        {/* Левая колонка (2 части): Медиа, Характеристики, Описание, Удобства, Карта, Отзывы */}
+        {/* Левая колонка: Медиа, Характеристики, Описание, Удобства, Карта, Отзывы */}
         <div className="lg:col-span-2 space-y-8">
-          {/* Галерея фотографий и 3D Панорама (360°) */}
+          {/* Галерея фотографий */}
           <div className="rounded-2xl border border-stone-200/80 dark:border-white/10 bg-white dark:bg-[#1A1A1A] p-4 shadow-sm space-y-4 overflow-hidden">
-            <div className="flex items-center gap-2 border-b border-stone-100 dark:border-white/5 pb-3">
-              <button
-                type="button"
-                onClick={() => setActiveMediaTab('photos')}
-                className={cn(
-                  'px-4 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer shadow-xs',
-                  activeMediaTab === 'photos'
-                    ? 'bg-teal-600 text-white'
-                    : 'bg-stone-100 dark:bg-white/5 text-stone-600 dark:text-stone-400 hover:text-stone-900 dark:hover:text-white'
-                )}
-              >
-                📷 Фотографии ({hasImages ? listing.images!.length : 1})
-              </button>
-              <button
-                type="button"
-                onClick={() => setActiveMediaTab('360')}
-                className={cn(
-                  'px-4 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer flex items-center gap-1.5 shadow-xs',
-                  activeMediaTab === '360'
-                    ? 'bg-teal-600 text-white'
-                    : 'bg-stone-100 dark:bg-white/5 text-stone-600 dark:text-stone-400 hover:text-stone-900 dark:hover:text-white'
-                )}
-              >
-                🔄 3D Панорама (360°)
-              </button>
-            </div>
-
-            {activeMediaTab === 'photos' ? (
-              hasImages ? (
-                <Gallery images={listing.images!} alt={listing.title} />
-              ) : listing.image ? (
-                <Gallery images={[listing.image]} alt={listing.title} />
-              ) : (
-                <div className="relative aspect-16/9 w-full rounded-2xl bg-stone-100 dark:bg-white/5 flex items-center justify-center text-stone-400">
-                  <Home size={64} />
-                </div>
-              )
+            {hasImages ? (
+              <Gallery images={listing.images!} alt={listing.title} />
+            ) : listing.image ? (
+              <Gallery images={[listing.image]} alt={listing.title} />
             ) : (
-              <Panorama360Viewer imageUrl={listing.images?.[0] || listing.image || 'https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?w=1600'} />
+              <div className="relative aspect-16/9 w-full rounded-2xl bg-stone-100 dark:bg-white/5 flex items-center justify-center text-stone-400">
+                <Home size={64} />
+              </div>
             )}
           </div>
 
@@ -377,7 +351,7 @@ export function ListingDetailClient({ listing, coordinates, locale }: Props) {
             </div>
           )}
 
-          {/* Расположение на карте */}
+          {/* Расположение на карте с блюром, кнопками показа/скрытия и маршрутом */}
           <div className="rounded-2xl border border-stone-200/80 bg-white p-6 dark:border-white/10 dark:bg-[#1A1A1A] shadow-xs space-y-4">
             <h2 className="text-lg font-bold text-stone-900 dark:text-white flex items-center gap-2">
               <Compass size={18} className="text-teal-500" />
@@ -386,14 +360,14 @@ export function ListingDetailClient({ listing, coordinates, locale }: Props) {
             <MapView lat={coordinates.lat} lng={coordinates.lng} label={listing.title} />
           </div>
 
-          {/* Отзывы об арендодателе */}
+          {/* Отзывы об арендодателе (интерактивные с пересчетом рейтинга) */}
           <LandlordReviewsSection
             landlordName={listing.author?.name || 'Владелец'}
             rating={listing.rating || 4.9}
           />
         </div>
 
-        {/* Правая колонка (1 часть): Sticky карточка цены, калькулятор и контакты */}
+        {/* Правая колонка: Sticky карточка цены, калькулятор и контакты */}
         <div className="space-y-6 lg:sticky lg:top-24">
           {/* Главный блок цены и аренды */}
           <div className="rounded-2xl border border-stone-200/80 bg-white p-6 dark:border-white/10 dark:bg-[#1A1A1A] shadow-lg space-y-5">
