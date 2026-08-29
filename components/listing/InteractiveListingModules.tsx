@@ -187,62 +187,73 @@ export function ShareModal({
   );
 }
 
+import { getListingReviews, createListingReview, type ReviewItem } from '@/lib/api';
+import { useAuthStore } from '@/store/useAuthStore';
+
 /**
- * 2. Отзывы и Рейтинг арендодателя с карточным фоном и честным пересчётом средней оценки
+ * 2. Отзывы и Рейтинг арендодателя с реальной базой данных и пересчётом средней оценки
  */
 export function LandlordReviewsSection({
+  listingId,
   landlordName = "Владелец",
-  rating = 4.9,
+  rating = 5.0,
 }: {
+  listingId?: string;
   landlordName?: string;
   rating?: number;
 }) {
-  const [reviews, setReviews] = useState([
-    {
-      id: 1,
-      author: 'Азиз Каримов',
-      date: '12 февраля 2026',
-      rating: 5,
-      comment: 'Отличный хозяин, квартира полностью соответствует фотографиям. Залог вернул вовремя без лишних вопросов!',
-    },
-    {
-      id: 2,
-      author: 'Елена Смирнова',
-      date: '28 января 2026',
-      rating: 5,
-      comment: 'Тихий район, мебель новая, коммуналка адекватная. Очень вежливый собственник.',
-    },
-  ]);
-
+  const { isAuthenticated } = useAuthStore();
+  const [reviews, setReviews] = useState<ReviewItem[]>([]);
+  const [averageRating, setAverageRating] = useState(rating);
+  const [isLoading, setIsLoading] = useState(false);
   const [newComment, setNewComment] = useState('');
   const [newRating, setNewRating] = useState(5);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  // Динамический точный расчёт среднего рейтинга
-  const totalScore = reviews.reduce((acc, r) => acc + r.rating, 0);
-  const currentAverageRating = reviews.length > 0
-    ? (totalScore / reviews.length).toFixed(1)
-    : rating.toFixed(1);
+  useEffect(() => {
+    if (!listingId) return;
+    let isMounted = true;
+    setIsLoading(true);
+    getListingReviews(listingId)
+      .then((data) => {
+        if (!isMounted) return;
+        setReviews(data.items || []);
+        if (data.totalReviews > 0) {
+          setAverageRating(data.averageRating);
+        }
+      })
+      .catch(() => {})
+      .finally(() => {
+        if (isMounted) setIsLoading(false);
+      });
+    return () => {
+      isMounted = false;
+    };
+  }, [listingId]);
 
-  const handleAddReview = (e: React.FormEvent) => {
+  const handleAddReview = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!newComment.trim()) return;
+    if (!isAuthenticated) {
+      toast.error('Пожалуйста, войдите в аккаунт, чтобы оставить отзыв');
+      return;
+    }
+    if (!listingId) return;
+
     setIsSubmitting(true);
-    setTimeout(() => {
-      setReviews([
-        {
-          id: Date.now(),
-          author: 'Вы (Арендатор)',
-          date: 'Только что',
-          rating: newRating,
-          comment: newComment.trim(),
-        },
-        ...reviews,
-      ]);
+    try {
+      const created = await createListingReview(listingId, newRating, newComment.trim());
+      const updatedReviews = [created, ...reviews];
+      setReviews(updatedReviews);
+      const totalScore = updatedReviews.reduce((acc, r) => acc + r.rating, 0);
+      setAverageRating(Number((totalScore / updatedReviews.length).toFixed(1)));
       setNewComment('');
+      toast.success('Спасибо! Ваш отзыв опубликован и учтен в рейтинге.');
+    } catch (err: any) {
+      toast.error(err?.response?.data?.message || 'Не удалось отправить отзыв');
+    } finally {
       setIsSubmitting(false);
-      toast.success('Спасибо! Ваш отзыв добавлен и учтен в рейтинге.');
-    }, 300);
+    }
   };
 
   return (
@@ -258,32 +269,49 @@ export function LandlordReviewsSection({
         </div>
         <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-900/40 text-amber-600 dark:text-amber-400 font-bold text-sm">
           <Star size={16} className="fill-amber-400 text-amber-400" />
-          {currentAverageRating} / 5.0
+          {averageRating.toFixed(1)} / 5.0
         </div>
       </div>
 
       {/* Список отзывов */}
-      <div className="space-y-3">
-        {reviews.map((rev) => (
-          <div
-            key={rev.id}
-            className="p-4 rounded-xl border border-stone-100 dark:border-white/5 bg-stone-50/70 dark:bg-white/5 space-y-2"
-          >
-            <div className="flex items-center justify-between">
-              <span className="text-xs font-bold text-stone-900 dark:text-white">{rev.author}</span>
-              <span className="text-[11px] text-stone-400">{rev.date}</span>
+      {isLoading ? (
+        <div className="space-y-2">
+          <div className="h-20 rounded-xl bg-stone-100 dark:bg-white/5 animate-pulse" />
+          <div className="h-20 rounded-xl bg-stone-100 dark:bg-white/5 animate-pulse" />
+        </div>
+      ) : reviews.length === 0 ? (
+        <div className="p-6 rounded-xl border border-dashed border-stone-200 dark:border-white/10 text-center text-xs text-stone-500 dark:text-stone-400">
+          Пока нет отзывов об этом объекте. Будьте первым, кто поделится своим опытом!
+        </div>
+      ) : (
+        <div className="space-y-3">
+          {reviews.map((rev) => (
+            <div
+              key={rev.id}
+              className="p-4 rounded-xl border border-stone-100 dark:border-white/5 bg-stone-50/70 dark:bg-white/5 space-y-2"
+            >
+              <div className="flex items-center justify-between">
+                <span className="text-xs font-bold text-stone-900 dark:text-white">{rev.author}</span>
+                <span className="text-[11px] text-stone-400">
+                  {new Date(rev.createdAt).toLocaleDateString('ru-RU', {
+                    day: 'numeric',
+                    month: 'long',
+                    year: 'numeric',
+                  })}
+                </span>
+              </div>
+              <div className="flex items-center gap-1 text-amber-400">
+                {Array.from({ length: rev.rating }).map((_, i) => (
+                  <Star key={i} size={13} className="fill-amber-400" />
+                ))}
+              </div>
+              <p className="text-xs text-stone-600 dark:text-stone-300 leading-relaxed">
+                {rev.comment}
+              </p>
             </div>
-            <div className="flex items-center gap-1 text-amber-400">
-              {Array.from({ length: rev.rating }).map((_, i) => (
-                <Star key={i} size={13} className="fill-amber-400" />
-              ))}
-            </div>
-            <p className="text-xs text-stone-600 dark:text-stone-300 leading-relaxed">
-              {rev.comment}
-            </p>
-          </div>
-        ))}
-      </div>
+          ))}
+        </div>
+      )}
 
       {/* Форма добавления отзыва */}
       <form onSubmit={handleAddReview} className="space-y-3 p-4 rounded-xl border border-stone-200/70 dark:border-white/5 bg-stone-50/50 dark:bg-stone-900/50">
@@ -308,7 +336,7 @@ export function LandlordReviewsSection({
           onChange={(e) => setNewComment(e.target.value)}
           placeholder="Опишите ваши впечатления от общения с хозяином и состояния квартиры..."
           rows={2}
-          className="w-full p-3 rounded-xl border border-stone-200 dark:border-white/10 bg-white dark:bg-white/5 text-xs text-stone-900 dark:text-white placeholder-stone-400 outline-none focus:border-teal-500 transition-all resize-none"
+          className="w-full p-3 rounded-xl border border-stone-200 dark:border-white/10 bg-white dark:bg-white/5 text-xs text-stone-900 dark:text-white placeholder-stone-400 outline-none focus:border-blue-500 transition-all resize-none"
         />
         <div className="flex justify-end">
           <button

@@ -1,7 +1,7 @@
 'use client';
 
-import { useState, useRef, useEffect } from 'react';
-import { useRouter, useParams } from 'next/navigation';
+import { useState, useRef, useEffect, Suspense } from 'react';
+import { useRouter, useParams, useSearchParams } from 'next/navigation';
 import {
   MessageSquare, Sparkles, Send, Bot, User as UserIcon,
   ChevronRight, ArrowLeft, ShieldCheck, MapPin, Building,
@@ -10,8 +10,9 @@ import {
 } from 'lucide-react';
 import { useAuthStore } from '@/store/useAuthStore';
 import { Apartment } from '@/types';
-import { getApartments } from '@/lib/api';
+import { getApartments, getChatConversations, getChatMessages, sendChatMessage, type ChatConversationItem } from '@/lib/api';
 import { VoiceAndMediaChat } from '@/components/chat/VoiceAndMediaChat';
+import { toast } from 'sonner';
 
 interface Message {
   id: string;
@@ -21,6 +22,7 @@ interface Message {
   matchedListings?: Apartment[];
   appliedFilters?: Record<string, string>;
   quickReplies?: string[];
+  listing?: any;
 }
 
 interface ChatContact {
@@ -34,21 +36,18 @@ interface ChatContact {
   isPinned?: boolean;
   online?: boolean;
   listingTitle?: string;
+  listing?: any;
 }
 
-// Contacts: only the AI Assistant is active. Peer-to-peer chats require backend chat endpoints.
-// TODO: Connect real peer-to-peer chat conversations via backend ChatMessage API (/chat/conversations)
-const INITIAL_CONTACTS: ChatContact[] = [
-  {
-    id: 'ai-assistant',
-    name: 'ijara AI Ассистент',
-    lastMessage: 'Нажмите, чтобы подобрать квартиру или комнату',
-    time: 'Сейчас',
-    isAi: true,
-    isPinned: true,
-    online: true,
-  },
-];
+const AI_CONTACT: ChatContact = {
+  id: 'ai-assistant',
+  name: 'ijara AI Ассистент',
+  lastMessage: 'Нажмите, чтобы подобрать квартиру или комнату',
+  time: 'Сейчас',
+  isAi: true,
+  isPinned: true,
+  online: true,
+};
 
 // ─── Multilingual AI Knowledge Base ─────────────────────────────────────────
 
@@ -98,36 +97,33 @@ const KNOWLEDGE_BASE: Array<{ keywords: string[]; response: LangMsg; quickReplie
     keywords: ['цена', 'стоимость', 'сколько', 'narx', 'qancha', 'price', 'cost', 'how much'],
     response: {
       ru: 'Цены на аренду в Ташкенте: комнаты от $80/мес, 1-комнатные от $150/мес, 2-комнатные от $250/мес. Посуточно: от $20/сутки. Укажите район и бюджет — найду точнее!',
-      uz: 'Toshkentda ijara narxlari: xonalar $80/oydan, 1 xonali $150/oydan, 2 xonali $250/oydan. Kunlik: $20/kundan. Tuman va budjetingizni aytng — aniqroq topaman!',
-      en: 'Rental prices in Tashkent: rooms from $80/mo, 1-room from $150/mo, 2-room from $250/mo. Daily: from $20/day. Tell me your district and budget for a precise search!',
+      uz: 'Toshkentda ijara narxlari: xonalar $80/oydan, 1 xonali $150/oydan, 2 xonali $250/oydan. Kunlik: $20/kundan. Tuman va budjetni ko\'rsating — aniq topaman!',
+      en: 'Rent prices in Tashkent: rooms from $80/mo, 1-room from $150/mo, 2-room from $250/mo. Daily: from $20/day. Specify district and budget!',
     },
     quickReplies: {
-      ru: 'До $200 в месяц|Посуточно|Квартиры в Ташкенте',
-      uz: 'Oyiga $200 gacha|Kunlik|Toshkentda kvartiralar',
-      en: 'Up to $200/mo|Daily rental|Apartments in Tashkent',
+      ru: 'Недорогие до $200|Посуточно в Ташкенте',
+      uz: 'Arzon $200 gacha|Toshkentda kunlik',
+      en: 'Budget under $200|Daily in Tashkent',
     },
   },
 ];
 
-function getLang(locale: string): 'ru' | 'uz' | 'en' {
-  if (locale === 'uz') return 'uz';
-  if (locale === 'en') return 'en';
-  return 'ru';
+function getAIText(msg: LangMsg, lang: string): string {
+  if (lang === 'uz') return msg.uz;
+  if (lang === 'en') return msg.en;
+  return msg.ru;
 }
 
-function getAIText(msg: LangMsg, locale: string): string {
-  return msg[getLang(locale)];
+function getQuickRepliesForLang(replies: LangMsg, lang: string): string[] {
+  const str = getAIText(replies, lang);
+  return str.split('|').filter(Boolean);
 }
 
-function getQuickRepliesForLang(qr: LangMsg, locale: string): string[] {
-  return getAIText(qr, locale).split('|').filter(Boolean);
-}
-
-// Rate limiter: max 5 AI messages per 30 seconds
+// ── Rate limiter (client-side burst guard) ───────────────────────────
 const rateLimitWindow: number[] = [];
+
 function checkRateLimit(): { allowed: boolean; waitSeconds: number } {
   const now = Date.now();
-  // Remove entries older than 30s
   while (rateLimitWindow.length > 0 && now - rateLimitWindow[0] > 30000) {
     rateLimitWindow.shift();
   }
@@ -139,14 +135,20 @@ function checkRateLimit(): { allowed: boolean; waitSeconds: number } {
   return { allowed: true, waitSeconds: 0 };
 }
 
-export default function ChatPage() {
+function ChatContent() {
   const router = useRouter();
   const params = useParams();
+  const searchParams = useSearchParams();
   const locale = (params?.locale as string) || 'ru';
   const user = useAuthStore((s) => s.user);
+  const isAuthenticated = useAuthStore((s) => s.isAuthenticated);
 
-  const [contacts, setContacts] = useState<ChatContact[]>(INITIAL_CONTACTS);
-  const [selectedContactId, setSelectedContactId] = useState<string>('ai-assistant');
+  const peerIdParam = searchParams ? searchParams.get('peerId') : null;
+  const listingIdParam = searchParams ? searchParams.get('listingId') : null;
+
+  const [contacts, setContacts] = useState<ChatContact[]>([AI_CONTACT]);
+  const [selectedContactId, setSelectedContactId] = useState<string>(peerIdParam || 'ai-assistant');
+  const [activeListingId, setActiveListingId] = useState<string | null>(listingIdParam || null);
   const [searchContact, setSearchContact] = useState<string>('');
   const [inputText, setInputText] = useState('');
   const [isTyping, setIsTyping] = useState(false);
@@ -157,12 +159,67 @@ export default function ChatPage() {
       {
         id: 'welcome',
         sender: 'ai',
-        text: 'Здравствуйте! Я умный AI-ассистент ijara.uz (Демо-режим). Напишите, какое жилье вы ищете (например: "Ищу 1-комнатную студенту возле ТГТУ до $250" или "Посуточно в Самарканде"), и я подберу варианты с точными фильтрами!',
+        text: 'Здравствуйте! Я умный AI-ассистент ijara.uz. Напишите, какое жилье вы ищете (например: "Ищу 1-комнатную студенту возле ТГТУ до $250" или "Посуточно в Самарканде"), и я подберу варианты с точными фильтрами!',
         timestamp: '12:00',
         quickReplies: ['Студенту в Ташкенте до $300', '2-комнатная в Юнусабаде', 'Посуточно в центре', 'Для семьи с детьми'],
       },
     ],
   });
+
+  // Загрузка диалогов с сервера
+  useEffect(() => {
+    if (!isAuthenticated) return;
+    getChatConversations().then((serverConvs) => {
+      const peerContacts: ChatContact[] = serverConvs.map((c) => ({
+        id: c.peerId,
+        name: c.peerName,
+        avatar: c.peerAvatar || undefined,
+        lastMessage: c.lastMessage,
+        time: new Date(c.time).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+        unread: c.unread,
+        isAi: false,
+        listingTitle: c.listing?.title,
+        listing: c.listing,
+      }));
+
+      // Если в URL передан peerId, но диалога еще не было в списке
+      if (peerIdParam && !peerContacts.some((p) => p.id === peerIdParam)) {
+        peerContacts.unshift({
+          id: peerIdParam,
+          name: 'Арендодатель',
+          lastMessage: 'Начните диалог с собственником',
+          time: 'Сейчас',
+          isAi: false,
+        });
+      }
+
+      setContacts([AI_CONTACT, ...peerContacts]);
+    });
+  }, [isAuthenticated, peerIdParam]);
+
+  // Загрузка истории сообщений для выбранного собеседника
+  useEffect(() => {
+    if (selectedContactId === 'ai-assistant' || !isAuthenticated) return;
+    getChatMessages(selectedContactId).then((data) => {
+      if (!data) return;
+      if (data.peer) {
+        setContacts((prev) =>
+          prev.map((c) => (c.id === selectedContactId ? { ...c, name: data.peer.name, avatar: data.peer.avatar || c.avatar } : c))
+        );
+      }
+      const loadedMessages: Message[] = data.messages.map((m) => ({
+        id: m.id,
+        sender: m.senderId === user?.id ? 'user' : 'peer',
+        text: m.text,
+        timestamp: new Date(m.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+        listing: m.listing,
+      }));
+      setConversations((prev) => ({
+        ...prev,
+        [selectedContactId]: loadedMessages,
+      }));
+    });
+  }, [selectedContactId, isAuthenticated, user?.id]);
 
   const messagesContainerRef = useRef<HTMLDivElement>(null);
   const selectedContact = contacts.find((c) => c.id === selectedContactId) || contacts[0];
@@ -198,7 +255,15 @@ export default function ChatPage() {
     );
 
     if (selectedContactId !== 'ai-assistant') {
-      // Real peer messages are stored locally until real backend API integration (/chat/conversations) is connected
+      try {
+        await sendChatMessage({
+          recipientId: selectedContactId,
+          listingId: activeListingId,
+          message: text,
+        });
+      } catch (err: any) {
+        toast.error(err?.response?.data?.message || 'Не удалось отправить сообщение');
+      }
       return;
     }
 
@@ -751,5 +816,13 @@ export default function ChatPage() {
 
       </div>
     </div>
+  );
+}
+
+export default function ChatPage() {
+  return (
+    <Suspense fallback={<div className="p-12 text-center text-stone-400">Загрузка диалогов...</div>}>
+      <ChatContent />
+    </Suspense>
   );
 }

@@ -462,3 +462,115 @@ export const getChatSummary = async (listingId: string) => {
   return response.data;
 };
 
+// ─── REVIEWS (ОТЗЫВЫ) ───────────────────────────────────────────────────────
+
+export interface ReviewItem {
+  id: string;
+  author: string;
+  authorAvatar?: string | null;
+  rating: number;
+  comment: string;
+  createdAt: string;
+}
+
+export interface ListingReviewsResponse {
+  listingId: string;
+  ownerId: string;
+  averageRating: number;
+  totalReviews: number;
+  items: ReviewItem[];
+}
+
+export const getListingReviews = async (listingId: string): Promise<ListingReviewsResponse> => {
+  try {
+    const response = await api.get(`/listings/${listingId}/reviews`);
+    return response.data;
+  } catch (e) {
+    return {
+      listingId,
+      ownerId: '',
+      averageRating: 5.0,
+      totalReviews: 0,
+      items: [],
+    };
+  }
+};
+
+export const createListingReview = async (listingId: string, rating: number, comment: string): Promise<ReviewItem> => {
+  const response = await api.post(`/listings/${listingId}/reviews`, { rating, comment });
+  return response.data;
+};
+
+// ─── PEER-TO-PEER CHAT (ЧАТ С АРЕНДОДАТЕЛЕМ) ────────────────────────────────
+
+export interface ChatConversationItem {
+  id: string;
+  peerId: string;
+  peerName: string;
+  peerAvatar?: string | null;
+  peerPhone?: string | null;
+  lastMessage: string;
+  time: string;
+  unread: number;
+  listing?: {
+    id: string;
+    title: string;
+    city: string;
+    price: number;
+    image?: string | null;
+  } | null;
+}
+
+export interface ChatMessagesHistoryResponse {
+  peer: {
+    id: string;
+    name: string;
+    avatar?: string | null;
+    phone?: string | null;
+  };
+  messages: Array<{
+    id: string;
+    sender: 'user' | 'peer';
+    senderId: string;
+    recipientId: string;
+    text: string;
+    timestamp: string;
+    readStatus: string;
+    listing?: {
+      id: string;
+      title: string;
+      city: string;
+      price: number;
+      image?: string | null;
+    } | null;
+  }>;
+}
+
+export const getChatConversations = async (): Promise<ChatConversationItem[]> => {
+  try {
+    const response = await api.get('/chat/conversations');
+    return response.data || [];
+  } catch (e) {
+    return [];
+  }
+};
+
+export const getChatMessages = async (peerId: string): Promise<ChatMessagesHistoryResponse | null> => {
+  try {
+    const response = await api.get(`/chat/conversations/${peerId}`);
+    return response.data;
+  } catch (e) {
+    return null;
+  }
+};
+
+export const sendChatMessage = async (payload: {
+  recipientId: string;
+  listingId?: string | null;
+  message: string;
+}) => {
+  const response = await api.post('/chat/messages', payload);
+  return response.data;
+};
+
+

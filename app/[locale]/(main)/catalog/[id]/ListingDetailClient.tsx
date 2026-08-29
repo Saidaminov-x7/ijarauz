@@ -360,6 +360,7 @@ export function ListingDetailClient({ listing, coordinates, locale }: Props) {
 
           {/* Отзывы об арендодателе (интерактивные с пересчетом рейтинга) */}
           <LandlordReviewsSection
+            listingId={String(listing.id)}
             landlordName={listing.author?.name || 'Владелец'}
             rating={listing.rating || 4.9}
           />
@@ -403,6 +404,16 @@ export function ListingDetailClient({ listing, coordinates, locale }: Props) {
                   </p>
                 </div>
               </div>
+
+              {/* Кнопка прямого чата с арендодателем */}
+              <button
+                type="button"
+                onClick={() => router.push(`/${locale}/chat?peerId=${listing.author?.id || (listing as any).ownerId || 'owner'}&listingId=${listing.id}`)}
+                className="w-full h-11 flex items-center justify-center gap-2 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs shadow-md shadow-blue-600/20 transition-all cursor-pointer"
+              >
+                <MessageSquare size={15} />
+                Написать собственнику (Чат)
+              </button>
 
               {isPhoneRevealed ? (
                 <a
