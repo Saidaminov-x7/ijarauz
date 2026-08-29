@@ -1,7 +1,13 @@
 import axios, { AxiosError, AxiosRequestConfig } from 'axios';
 import { useAuthStore } from '@/store/useAuthStore';
 
-const externalBaseURL = process.env.NEXT_PUBLIC_API_URL || 'https://api-production-ed76.up.railway.app';
+const externalBaseURL = process.env.NEXT_PUBLIC_API_URL;
+if (!externalBaseURL) {
+  throw new Error(
+    'NEXT_PUBLIC_API_URL не задан. Укажи переменную окружения перед сборкой/запуском — без неё приложение не может обратиться к backend API.',
+  );
+}
+export { externalBaseURL };
 const baseURL = typeof window !== 'undefined' ? '/api/backend' : externalBaseURL;
 const PROACTIVE_REFRESH_BEFORE_MS = 5 * 60 * 1000; // 5 minutes
 

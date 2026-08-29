@@ -1,5 +1,5 @@
-import api from './axios';
-export { api };
+import api, { externalBaseURL } from './axios';
+export { api, externalBaseURL };
 export { getSiteSettings } from './siteSettings';
 import {
   getCachedCatalogResults,
@@ -106,7 +106,7 @@ export const getMe = async () => {
 // ─── LISTINGS ───────────────────────────────────────────────────────────────
 
 function formatListingToApartment(item: any): Apartment {
-  const backendBaseUrl = process.env.NEXT_PUBLIC_API_URL || 'https://api-production-ed76.up.railway.app';
+  const backendBaseUrl = externalBaseURL;
   const images = Array.isArray(item.images) && item.images.length > 0
     ? item.images.map((img: any) => {
         // Если это Cloudinary URL — используем secure_url

@@ -84,7 +84,10 @@ const nextConfig = {
     ];
   },
   async rewrites() {
-    const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'https://api-production-ed76.up.railway.app';
+    const apiUrl = process.env.NEXT_PUBLIC_API_URL;
+    if (!apiUrl) {
+      throw new Error('NEXT_PUBLIC_API_URL не задан в переменных окружения сборки');
+    }
     return [
       {
         source: '/api/backend/:path*',

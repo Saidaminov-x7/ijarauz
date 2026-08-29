@@ -19,8 +19,12 @@ export async function proxy(request: NextRequest) {
 
   // Maintenance mode check via backend API
   const isMaintenancePage = pathname.includes('/maintenance');
-  const API_BASE_URL =
-    process.env.NEXT_PUBLIC_API_URL || 'https://api-production-ed76.up.railway.app';
+  const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL;
+  if (!API_BASE_URL) {
+    throw new Error(
+      'NEXT_PUBLIC_API_URL не задан. Укажи переменную окружения перед сборкой/запуском — без неё приложение не может обратиться к backend API.',
+    );
+  }
 
   try {
     const maintenanceRes = await fetch(`${API_BASE_URL}/site-settings/public`, {

@@ -6,6 +6,7 @@ import Link from 'next/link';
 import { ArrowLeft, Calendar, User, FileText, AlertCircle } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
 import { DynamicSectionRenderer, type DynamicSectionData } from '@/components/DynamicSectionRenderer';
+import { externalBaseURL } from '@/lib/axios';
 
 interface PageData {
   id: string;
@@ -23,8 +24,7 @@ interface PageData {
   } | null;
 }
 
-const API_BASE_URL =
-  process.env.NEXT_PUBLIC_API_URL || 'https://api-production-ed76.up.railway.app';
+const API_BASE_URL = externalBaseURL;
 
 export default function DynamicPage() {
   const params = useParams();

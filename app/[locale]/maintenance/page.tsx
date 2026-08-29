@@ -1,13 +1,13 @@
 import { AlertTriangle, Hammer, RefreshCw } from 'lucide-react';
 import Link from 'next/link';
+import { externalBaseURL } from '@/lib/axios';
 
 interface MaintenancePageProps {
   params: Promise<{ locale: string }>;
   searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
 }
 
-const API_BASE_URL =
-  process.env.NEXT_PUBLIC_API_URL || 'https://api-production-ed76.up.railway.app';
+const API_BASE_URL = externalBaseURL;
 
 async function getSiteSettings() {
   try {

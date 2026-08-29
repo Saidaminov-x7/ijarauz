@@ -4,8 +4,9 @@ import {
   fetchDynamicPageSections,
   type PlatformStatsData,
 } from '@/components/DynamicSectionRenderer';
+import { externalBaseURL } from '@/lib/axios';
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'https://api-production-ed76.up.railway.app';
+const API_URL = externalBaseURL;
 
 async function getPopularListings() {
   try {

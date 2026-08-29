@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import { externalBaseURL } from '@/lib/axios';
 
 interface ThemeTokens {
   primaryColor: string;
@@ -24,7 +25,7 @@ export function DesignTokensInjector() {
   const [tokens, setTokens] = useState<ThemeTokens>(DEFAULTS);
 
   useEffect(() => {
-    const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'https://api-production-ed76.up.railway.app';
+    const apiUrl = externalBaseURL;
     
     fetch(`${apiUrl}/site-settings/public/theme`, { cache: 'no-store' })
       .then((res) => {

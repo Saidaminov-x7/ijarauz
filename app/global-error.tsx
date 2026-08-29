@@ -11,18 +11,20 @@ export default function GlobalError({
 }) {
   useEffect(() => {
     try {
-      const backendBaseUrl = process.env.NEXT_PUBLIC_API_URL || 'https://api-production-ed76.up.railway.app';
-      fetch(`${backendBaseUrl}/error-reports`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          message: error.message || 'Unknown global error',
-          stack: error.stack || '',
-          url: typeof window !== 'undefined' ? window.location.href : '',
-          userAgent: typeof navigator !== 'undefined' ? navigator.userAgent : '',
-          severity: 'error',
-        }),
-      }).catch(() => {});
+      const backendBaseUrl = process.env.NEXT_PUBLIC_API_URL;
+      if (backendBaseUrl) {
+        fetch(`${backendBaseUrl}/error-reports`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            message: error.message || 'Unknown global error',
+            stack: error.stack || '',
+            url: typeof window !== 'undefined' ? window.location.href : '',
+            userAgent: typeof navigator !== 'undefined' ? navigator.userAgent : '',
+            severity: 'error',
+          }),
+        }).catch(() => {});
+      }
     } catch {
       // ignore reporting errors
     }

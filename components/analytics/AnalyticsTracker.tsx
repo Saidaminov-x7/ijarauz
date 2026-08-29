@@ -2,6 +2,7 @@
 
 import { useEffect } from 'react';
 import { usePathname } from 'next/navigation';
+import { externalBaseURL } from '@/lib/axios';
 
 export function AnalyticsTracker() {
   const pathname = usePathname();
@@ -23,7 +24,7 @@ export function AnalyticsTracker() {
       }
 
       // 2. Отправляем неблокирующий запрос (fire-and-forget)
-      const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'https://api-production-ed76.up.railway.app';
+      const apiUrl = externalBaseURL;
       fetch(`${apiUrl}/analytics/visit`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },

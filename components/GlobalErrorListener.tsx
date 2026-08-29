@@ -1,10 +1,11 @@
 'use client';
 
 import { useEffect } from 'react';
+import { externalBaseURL } from '@/lib/axios';
 
 export function GlobalErrorListener() {
   useEffect(() => {
-    const backendBaseUrl = process.env.NEXT_PUBLIC_API_URL || 'https://api-production-ed76.up.railway.app';
+    const backendBaseUrl = externalBaseURL;
 
     const sendReport = (payload: { message: string; stack?: string; severity?: string }) => {
       try {

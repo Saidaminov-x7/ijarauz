@@ -1,6 +1,7 @@
 import React from 'react';
 import Link from 'next/link';
 import * as Icons from 'lucide-react';
+import { externalBaseURL } from '@/lib/axios';
 import { SearchInput } from '@/components/ui/SearchInput';
 import { Button } from '@/components/ui/Button';
 import { ApartmentCard } from '@/app/[locale]/(main)/catalog/components/ApartmentCard';
@@ -41,7 +42,7 @@ export async function fetchDynamicPageSections(
   pageKey: string,
   locale: string = 'ru',
 ): Promise<DynamicSectionData[]> {
-  const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'https://api-production-ed76.up.railway.app';
+  const apiUrl = externalBaseURL;
   try {
     const res = await fetch(
       `${apiUrl}/page-sections/public?pageKey=${encodeURIComponent(pageKey)}&locale=${locale}`,
