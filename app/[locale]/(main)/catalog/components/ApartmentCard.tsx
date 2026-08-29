@@ -1,5 +1,6 @@
 'use client';
 
+import React from 'react';
 import Link from 'next/link';
 import { Heart, Star, CheckCircle, Scale } from 'lucide-react';
 import { useTranslations } from 'next-intl';
@@ -82,14 +83,35 @@ export function ApartmentCard({ apartment, locale, activeAmenities = [] }: Apart
     (req) => !apartmentAmenities.includes(req.toUpperCase())
   );
 
+  // Все доступные изображения
+  const allImages = React.useMemo(() => {
+    const list: string[] = [];
+    if (Array.isArray(apartment.images) && apartment.images.length > 0) {
+      apartment.images.forEach((img: any) => {
+        if (typeof img === 'string' && img.trim()) list.push(img);
+        else if (img?.url && typeof img.url === 'string') list.push(img.url);
+        else if (img?.secure_url && typeof img.secure_url === 'string') list.push(img.secure_url);
+      });
+    }
+    if (list.length === 0 && apartment.image && typeof apartment.image === 'string') {
+      list.push(apartment.image);
+    }
+    return list;
+  }, [apartment.images, apartment.image]);
+
+  const [activeImgIndex, setActiveImgIndex] = React.useState(0);
+
   const badge = getCategoryBadge();
 
   return (
     <div className="group relative overflow-hidden rounded-2xl border border-stone-200/80 bg-white transition-[transform,box-shadow] duration-200 hover:-translate-y-1 hover:shadow-xl hover:shadow-stone-900/8 dark:border-white/5 dark:bg-[#1E1E1E] dark:hover:shadow-black/40">
       <Link href={`/${locale}/catalog/${apartment.id}`} className="block">
-        <div className="relative aspect-4/3 overflow-hidden bg-stone-100 dark:bg-stone-800">
+        <div
+          onMouseLeave={() => setActiveImgIndex(0)}
+          className="relative aspect-4/3 overflow-hidden bg-stone-100 dark:bg-stone-800 select-none cursor-pointer group/card-image"
+        >
           <img
-            src={apartment.image || '/placeholder-apartment.jpg'}
+            src={allImages[activeImgIndex] || apartment.image || '/placeholder-apartment.jpg'}
             alt={apartment.title}
             className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
             onError={(e) => {
@@ -99,8 +121,40 @@ export function ApartmentCard({ apartment, locale, activeAmenities = [] }: Apart
             }}
           />
 
+          {/* Интерактивные невидимые зоны для Hover Image Scrubbing */}
+          {allImages.length > 1 && (
+            <div className="absolute inset-0 flex z-10">
+              {allImages.map((_, idx) => (
+                <div
+                  key={idx}
+                  className="flex-1 h-full"
+                  onMouseEnter={() => setActiveImgIndex(idx)}
+                />
+              ))}
+            </div>
+          )}
+
+          {/* Сегментированный индикатор прокрутки фото (Hover Image Sequence Bar) */}
+          {allImages.length > 1 && (
+            <div className="absolute top-2.5 inset-x-3 flex items-center gap-1 pointer-events-none z-20 opacity-0 group-hover/card-image:opacity-100 transition-opacity duration-200">
+              {allImages.map((_, idx) => (
+                <div
+                  key={idx}
+                  className="h-1 flex-1 rounded-full bg-black/40 backdrop-blur-xs overflow-hidden"
+                >
+                  <div
+                    className={cn(
+                      'h-full w-full bg-white transition-all duration-150',
+                      idx === activeImgIndex ? 'opacity-100 scale-100' : 'opacity-0 scale-0'
+                    )}
+                  />
+                </div>
+              ))}
+            </div>
+          )}
+
           {/* Badges on image */}
-          <div className="absolute left-3 top-3 flex items-center gap-1.5">
+          <div className="absolute left-3 bottom-3 flex items-center gap-1.5 z-20 pointer-events-none">
             <span className={cn('rounded-lg px-2.5 py-1 text-xs font-semibold backdrop-blur-md shadow-sm', badge.bg)}>
               {badge.text}
             </span>
@@ -113,7 +167,7 @@ export function ApartmentCard({ apartment, locale, activeAmenities = [] }: Apart
           </div>
 
           {/* Action buttons (Compare & Favorite) */}
-          <div className="absolute right-3 top-3 flex items-center gap-1.5">
+          <div className="absolute right-3 top-3 flex items-center gap-1.5 z-20">
             <button
               type="button"
               onClick={handleCompareClick}
