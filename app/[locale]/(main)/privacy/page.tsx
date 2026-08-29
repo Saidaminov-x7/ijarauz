@@ -11,31 +11,49 @@ export default async function PrivacyPage({
   const sections = await fetchDynamicPageSections('privacy', locale);
 
   return (
-    <div className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8 py-10">
-      <h1 className="mb-8 text-3xl font-bold text-stone-900 dark:text-white">
-        {t('title')}
-      </h1>
+    <div className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8 py-12">
+      <div className="mb-8 border-b border-stone-200 dark:border-stone-800 pb-6">
+        <h1 className="text-3xl sm:text-4xl font-bold text-stone-900 dark:text-white tracking-tight">
+          {t('title')}
+        </h1>
+        <p className="mt-2 text-sm text-stone-500 dark:text-stone-400">
+          {t('lastUpdated')}
+        </p>
+      </div>
 
       {sections && sections.length > 0 ? (
         <DynamicSectionRenderer sections={sections} locale={locale} />
       ) : (
-        <div className="prose max-w-none dark:prose-invert prose-headings:text-stone-900 prose-p:text-stone-600 dark:prose-headings:text-white dark:prose-p:text-stone-300">
-          <p>{t('lastUpdated')}</p>
-          
-          <h2>{t('section1Title')}</h2>
-          <p>{t('section1Text')}</p>
-          
-          <h2>{t('section2Title')}</h2>
-          <p>{t('section2Text')}</p>
-          
-          <h2>{t('section3Title')}</h2>
-          <p>{t('section3Text')}</p>
-          
-          <h2>{t('section4Title')}</h2>
-          <p>{t('section4Text')}</p>
-          
-          <h2>{t('section5Title')}</h2>
-          <p>{t('section5Text')}</p>
+        <div className="prose max-w-none dark:prose-invert prose-headings:text-stone-900 prose-headings:font-bold prose-p:text-stone-600 dark:prose-headings:text-white dark:prose-p:text-stone-300 prose-p:leading-relaxed space-y-6">
+          <section>
+            <h2 className="text-xl">{t('section1Title')}</h2>
+            <p>{t('section1Text')}</p>
+          </section>
+
+          <section>
+            <h2 className="text-xl">{t('section2Title')}</h2>
+            <p>{t('section2Text')}</p>
+          </section>
+
+          <section>
+            <h2 className="text-xl">{t('section3Title')}</h2>
+            <p>{t('section3Text')}</p>
+          </section>
+
+          <section>
+            <h2 className="text-xl">{t('section4Title')}</h2>
+            <p>{t('section4Text')}</p>
+          </section>
+
+          <section>
+            <h2 className="text-xl">{t('section5Title')}</h2>
+            <p>{t('section5Text')}</p>
+          </section>
+
+          <section>
+            <h2 className="text-xl">{t('section6Title')}</h2>
+            <p>{t('section6Text')}</p>
+          </section>
         </div>
       )}
     </div>
