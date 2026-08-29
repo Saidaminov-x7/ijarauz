@@ -484,18 +484,21 @@ export function Header({ locale: localeProp }: { locale?: string }) {
         </div>
       </header>
 
-      {/* Mobile Drawer */}
+      {/* Mobile Drawer с премиальной плавной анимацией */}
       <div
         onClick={() => setMobileOpen(false)}
         className={
-          'fixed inset-0 z-50 bg-black/40 backdrop-blur-[2px] transition-opacity duration-300 md:hidden ' +
+          'fixed inset-0 z-50 bg-black/60 backdrop-blur-sm transition-opacity duration-300 md:hidden ' +
           (mobileOpen ? 'pointer-events-auto opacity-100' : 'pointer-events-none opacity-0')
         }
       />
 
       <div
+        style={{
+          transitionTimingFunction: 'cubic-bezier(0.16, 1, 0.3, 1)',
+        }}
         className={
-          'fixed left-0 top-0 z-50 flex h-full w-full max-w-sm flex-col bg-white shadow-2xl transition-transform duration-300 ease-out dark:bg-[#1A1A1A] md:hidden ' +
+          'fixed left-0 top-0 z-50 flex h-full w-full max-w-sm flex-col bg-white shadow-2xl transition-transform duration-400 dark:bg-[#1A1A1A] md:hidden ' +
           (mobileOpen ? 'translate-x-0' : '-translate-x-full')
         }
       >

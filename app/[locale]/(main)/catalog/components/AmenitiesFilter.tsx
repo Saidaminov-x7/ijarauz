@@ -1,6 +1,6 @@
 'use client';
 
-import React from 'react';
+import React, { useState } from 'react';
 import { useTranslations } from 'next-intl';
 import {
   Wifi,
@@ -18,7 +18,10 @@ import {
   Waves,
   Bath,
   Check,
+  ChevronDown,
+  Sparkles,
 } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { cn } from '@/lib/utils';
 
 export const AMENITY_CONFIG: Record<
@@ -49,6 +52,7 @@ interface AmenitiesFilterProps {
 
 export function AmenitiesFilter({ selected, onChange, className }: AmenitiesFilterProps) {
   const t = useTranslations('amenities');
+  const [isOpen, setIsOpen] = useState(true);
 
   const toggle = (key: string) => {
     if (selected.includes(key)) {
@@ -59,27 +63,58 @@ export function AmenitiesFilter({ selected, onChange, className }: AmenitiesFilt
   };
 
   return (
-    <div className={cn('flex flex-wrap gap-2', className)}>
-      {Object.entries(AMENITY_CONFIG).map(([key, { translationKey, icon: Icon }]) => {
-        const active = selected.includes(key);
-        return (
-          <button
-            key={key}
-            type="button"
-            onClick={() => toggle(key)}
-            className={cn(
-              'inline-flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-semibold transition-all cursor-pointer border shadow-xs',
-              active
-                ? 'bg-teal-600 border-teal-600 text-white shadow-teal-900/20'
-                : 'bg-stone-50 hover:bg-stone-100 dark:bg-white/5 dark:hover:bg-white/10 text-stone-700 dark:text-stone-300 border-stone-200 dark:border-white/10'
-            )}
+    <div className={cn('space-y-2.5', className)}>
+      {/* Кнопка-триггер для раскрытия/скрытия набора кнопок */}
+      <button
+        type="button"
+        onClick={() => setIsOpen(!isOpen)}
+        className="flex h-10 w-full items-center justify-between rounded-xl border border-stone-200 bg-stone-50 px-3.5 text-xs font-semibold text-stone-900 transition-colors hover:border-teal-500 dark:border-white/10 dark:bg-white/5 dark:text-white cursor-pointer select-none"
+      >
+        <div className="flex items-center gap-2">
+          <Sparkles size={14} className="text-teal-600 dark:text-teal-400" />
+          <span>{selected.length === 0 ? 'Выбрать удобства...' : `Выбрано: ${selected.length}`}</span>
+        </div>
+        <ChevronDown
+          size={14}
+          className={cn('text-stone-400 transition-transform duration-300', isOpen && 'rotate-180')}
+        />
+      </button>
+
+      {/* Анимированное раскрытие и исчезновение кнопок */}
+      <AnimatePresence initial={false}>
+        {isOpen && (
+          <motion.div
+            initial={{ height: 0, opacity: 0 }}
+            animate={{ height: 'auto', opacity: 1 }}
+            exit={{ height: 0, opacity: 0 }}
+            transition={{ duration: 0.25, ease: [0.16, 1, 0.3, 1] }}
+            className="overflow-hidden"
           >
-            <Icon size={14} className={cn(active ? 'text-white' : 'text-teal-600 dark:text-teal-400')} />
-            <span>{t(translationKey as any)}</span>
-            {active && <Check size={12} strokeWidth={3} className="ml-0.5" />}
-          </button>
-        );
-      })}
+            <div className="flex flex-wrap gap-1.5 pt-1">
+              {Object.entries(AMENITY_CONFIG).map(([key, { translationKey, icon: Icon }]) => {
+                const active = selected.includes(key);
+                return (
+                  <button
+                    key={key}
+                    type="button"
+                    onClick={() => toggle(key)}
+                    className={cn(
+                      'inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl text-xs font-semibold transition-all cursor-pointer border shadow-xs',
+                      active
+                        ? 'bg-teal-600 border-teal-600 text-white shadow-teal-900/20'
+                        : 'bg-stone-50 hover:bg-stone-100 dark:bg-white/5 dark:hover:bg-white/10 text-stone-700 dark:text-stone-300 border-stone-200 dark:border-white/10'
+                    )}
+                  >
+                    <Icon size={13} className={cn(active ? 'text-white' : 'text-teal-600 dark:text-teal-400')} />
+                    <span>{t(translationKey as any)}</span>
+                    {active && <Check size={11} strokeWidth={3} className="ml-0.5" />}
+                  </button>
+                );
+              })}
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }

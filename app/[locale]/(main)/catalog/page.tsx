@@ -251,26 +251,8 @@ function CatalogContent() {
         <LayoutGroup>
           {/* Верхняя контрольная панель каталога */}
           <motion.div layout className="mb-6 flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
-            {/* Левая группа: [Кнопка Фильтры] + [Все объявления] + [Показать карту] */}
+            {/* Левая группа: [Все объявления / Найдено X] + [Показать на карте] */}
             <div className="flex items-center gap-3 flex-wrap">
-              {/* Кнопка "Фильтры" высотой в стандартную кнопку h-10 */}
-              <button
-                type="button"
-                onClick={() => setIsFiltersOpen(!isFiltersOpen)}
-                className={`inline-flex h-10 items-center gap-2 px-4 rounded-xl border text-xs font-bold transition-all cursor-pointer shadow-xs ${
-                  isFiltersOpen
-                    ? 'bg-teal-600 border-teal-600 text-white shadow-teal-900/20'
-                    : 'bg-white border-stone-200 text-stone-800 hover:border-teal-500 dark:bg-[#1E1E1E] dark:border-white/10 dark:text-white'
-                }`}
-              >
-                <SlidersHorizontal size={14} className={isFiltersOpen ? 'text-white' : 'text-teal-600 dark:text-teal-400'} />
-                <span>Фильтры</span>
-                <ChevronDown
-                  size={14}
-                  className={`transition-transform duration-300 ${isFiltersOpen ? 'rotate-180 text-white' : 'text-stone-400'}`}
-                />
-              </button>
-
               {/* Заголовок Все объявления / Найдено X */}
               {isFiltered ? (
                 <div className="flex items-center gap-2">
@@ -294,13 +276,13 @@ function CatalogContent() {
                 className="inline-flex h-10 items-center gap-1.5 px-3.5 rounded-xl border border-teal-600/30 bg-teal-50 text-teal-700 dark:bg-teal-950/40 dark:text-teal-300 text-xs font-bold hover:bg-teal-100 dark:hover:bg-teal-900/50 transition-all cursor-pointer shadow-xs"
               >
                 <MapPin size={14} className="text-teal-600 dark:text-teal-400" />
-                {showCatalogMap ? 'Скрыть карту' : 'Показать на карте'}
+                <span>{showCatalogMap ? 'Скрыть карту' : 'Показать на карте'}</span>
               </button>
             </div>
 
-            {/* Правая группа: [Сортировка] + [Сохранить поиск] */}
-            <div className="flex items-center gap-2.5 flex-wrap self-end md:self-auto">
-              <div className="w-48">
+            {/* Правая группа: [Сортировка] + [Кнопка Фильтры] + [Уведомлять о новых] */}
+            <div className="flex items-center gap-2.5 flex-wrap w-full md:w-auto justify-start md:justify-end">
+              <div className="w-44 sm:w-48">
                 <Dropdown
                   value={`${sortBy}:${sortOrder}`}
                   onChange={(value) => {
@@ -319,14 +301,33 @@ function CatalogContent() {
                 />
               </div>
 
+              {/* Кнопка "Фильтры" справа рядом с уведомлениями */}
+              <button
+                type="button"
+                onClick={() => setIsFiltersOpen(!isFiltersOpen)}
+                className={`inline-flex h-10 items-center gap-2 px-3.5 sm:px-4 rounded-xl border text-xs font-bold transition-all cursor-pointer shadow-xs ${
+                  isFiltersOpen
+                    ? 'bg-teal-600 border-teal-600 text-white shadow-teal-900/20'
+                    : 'bg-white border-stone-200 text-stone-800 hover:border-teal-500 dark:bg-[#1E1E1E] dark:border-white/10 dark:text-white'
+                }`}
+              >
+                <SlidersHorizontal size={14} className={isFiltersOpen ? 'text-white' : 'text-teal-600 dark:text-teal-400'} />
+                <span>Фильтры</span>
+                <ChevronDown
+                  size={14}
+                  className={`transition-transform duration-300 ${isFiltersOpen ? 'rotate-180 text-white' : 'text-stone-400'}`}
+                />
+              </button>
+
               <button
                 type="button"
                 onClick={() => setIsSavedSearchModalOpen(true)}
                 className="inline-flex h-10 items-center gap-1.5 rounded-xl border border-stone-200 bg-white px-3.5 text-xs font-semibold text-stone-700 shadow-xs hover:border-teal-500 hover:text-teal-600 dark:border-white/10 dark:bg-[#1E1E1E] dark:text-stone-300 transition-colors cursor-pointer"
-                title="Сохранить этот поиск и получать уведомления"
+                title="Получать уведомления о новых похожих квартирах"
               >
-                <Bell size={14} className="text-amber-500" />
-                <span>Сохранить</span>
+                <Bell size={14} className="text-amber-500 shrink-0" />
+                <span className="hidden sm:inline">Уведомлять о новых</span>
+                <span className="sm:hidden">Уведомления</span>
               </button>
             </div>
           </motion.div>
@@ -366,15 +367,15 @@ function CatalogContent() {
 
           {/* Главный блок: Боковой фильтр (если открыт) + Сетка карточек (адаптивная: 3 или 4 в ряд) */}
           <div className="flex flex-col lg:flex-row gap-8 items-start">
-            {/* Сворачиваемый плавно сайдбар фильтров */}
+            {/* Сворачиваемый плавно сайдбар фильтров (идеально для десктопа и мобильных) */}
             <AnimatePresence initial={false}>
               {isFiltersOpen && (
                 <motion.aside
                   key="catalog-sidebar"
-                  initial={{ width: 0, opacity: 0, scale: 0.95 }}
-                  animate={{ width: 320, opacity: 1, scale: 1 }}
-                  exit={{ width: 0, opacity: 0, scale: 0.95 }}
-                  transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
+                  initial={{ opacity: 0, height: 0, scale: 0.98 }}
+                  animate={{ opacity: 1, height: 'auto', scale: 1 }}
+                  exit={{ opacity: 0, height: 0, scale: 0.98 }}
+                  transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
                   className="w-full lg:w-80 shrink-0 overflow-hidden"
                 >
                   <div className="w-full sm:w-80 rounded-2xl border border-stone-200/80 bg-white p-5 shadow-sm dark:border-white/10 dark:bg-[#1A1A1A] space-y-6">

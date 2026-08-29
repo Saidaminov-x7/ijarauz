@@ -5,7 +5,7 @@ import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
 import { useTheme } from 'next-themes';
 import Link from 'next/link';
 import 'leaflet/dist/leaflet.css';
-import { getDefaultMarkerIcon, patchLeafletDefaultIcon } from '@/lib/leaflet-icon';
+import L from 'leaflet';
 import type { Apartment } from '@/types';
 
 interface CatalogMapProps {
@@ -23,17 +23,44 @@ const CITY_DEFAULT_CENTERS: Record<string, [number, number]> = {
   Наманган: [40.9983, 71.6726],
 };
 
+function createCustomPriceMarker(price: number) {
+  return L.divIcon({
+    className: 'custom-map-price-marker',
+    html: `
+      <div style="
+        background: #0d9488;
+        color: #ffffff;
+        font-weight: 800;
+        font-size: 11px;
+        padding: 4px 8px;
+        border-radius: 20px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.35);
+        border: 2px solid #ffffff;
+        display: flex;
+        align-items: center;
+        gap: 3px;
+        white-space: nowrap;
+        transform: translate(-50%, -50%);
+        transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+        cursor: pointer;
+      ">
+        <span>$${price}</span>
+      </div>
+    `,
+    iconSize: [40, 24],
+    iconAnchor: [20, 12],
+    popupAnchor: [0, -14],
+  });
+}
+
 export default function CatalogMapInner({ apartments, locale }: CatalogMapProps) {
   const [ready, setReady] = useState(false);
   const { resolvedTheme } = useTheme();
   const isDark = resolvedTheme === 'dark';
 
   useEffect(() => {
-    patchLeafletDefaultIcon();
     setReady(true);
   }, []);
-
-  const icon = useMemo(() => (ready ? getDefaultMarkerIcon() : null), [ready]);
 
   const markers = useMemo(() => {
     return apartments.map((apt, idx) => {
@@ -51,13 +78,18 @@ export default function CatalogMapInner({ apartments, locale }: CatalogMapProps)
 
   const defaultCenter = markers[0]?.position || [41.2995, 69.2401];
 
-  if (!ready || !icon) {
+  if (!ready) {
     return (
       <div className="flex h-full min-h-[22rem] w-full items-center justify-center bg-stone-100 text-sm text-stone-400 dark:bg-white/5 dark:text-stone-500">
         Загрузка интерактивной карты объявлений…
       </div>
     );
   }
+
+  // Премиальные тайлы Carto Voyager (светлая тема) и Carto Dark Matter (тёмная тема)
+  const tileUrl = isDark
+    ? 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png'
+    : 'https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png';
 
   return (
     <div className="relative h-full w-full overflow-hidden">
@@ -70,27 +102,25 @@ export default function CatalogMapInner({ apartments, locale }: CatalogMapProps)
         style={{ height: '100%', width: '100%', minHeight: 350 }}
       >
         <TileLayer
-          url={
-            isDark
-              ? 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png'
-              : 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png'
-          }
-          attribution={
-            isDark
-              ? '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>'
-              : '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-          }
+          url={tileUrl}
+          attribution='&copy; <a href="https://carto.com/">CARTO</a> &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
         />
         {markers.map((apt) => (
-          <Marker key={apt.id} position={apt.position} icon={icon}>
+          <Marker
+            key={apt.id}
+            position={apt.position}
+            icon={createCustomPriceMarker(apt.price)}
+          >
             <Popup className="custom-popup">
-              <div className="p-1 space-y-1.5 max-w-[200px]">
+              <div className="p-1 space-y-2 max-w-[210px]">
                 {apt.image && (
-                  <img
-                    src={apt.image}
-                    alt={apt.title}
-                    className="w-full h-24 object-cover rounded-lg"
-                  />
+                  <div className="relative aspect-4/3 overflow-hidden rounded-xl bg-stone-100">
+                    <img
+                      src={apt.image}
+                      alt={apt.title}
+                      className="w-full h-full object-cover"
+                    />
+                  </div>
                 )}
                 <h4 className="text-xs font-bold text-stone-900 leading-snug line-clamp-1">
                   {apt.title}
@@ -98,15 +128,15 @@ export default function CatalogMapInner({ apartments, locale }: CatalogMapProps)
                 <p className="text-[11px] text-stone-500 line-clamp-1">
                   {apt.district || apt.city || 'Ташкент'}
                 </p>
-                <div className="flex items-center justify-between pt-1">
+                <div className="flex items-center justify-between pt-1 border-t border-stone-100">
                   <span className="text-xs font-black text-teal-600">
                     ${apt.price}/мес
                   </span>
                   <Link
                     href={`/${locale}/catalog/${apt.id}`}
-                    className="text-[10px] font-bold px-2 py-0.5 rounded bg-teal-600 text-white hover:bg-teal-700"
+                    className="text-[11px] font-bold px-3 py-1 rounded-lg bg-teal-600 text-white hover:bg-teal-700 transition-colors shadow-xs"
                   >
-                    Открыть →
+                    Смотреть
                   </Link>
                 </div>
               </div>
