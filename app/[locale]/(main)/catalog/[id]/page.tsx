@@ -4,6 +4,7 @@ import { Metadata } from 'next';
 import { MapView } from '@/components/ui/MapView';
 import { ApartmentImage } from '@/components/ui/ApartmentImage';
 import { getApartmentById, getPopularApartmentIds } from '@/lib/api';
+import { ListingDetailClient } from './ListingDetailClient';
 
 interface ApartmentPageProps {
   params: Promise<{
@@ -113,104 +114,49 @@ export default async function ApartmentPage({ params }: ApartmentPageProps) {
     },
   };
 
+  // Преобразуем Apartment в Listing для богатого интерактивного UI
+  const listingData = {
+    id: Number(apartment.id) || 1,
+    title: apartment.title,
+    description: apartment.description,
+    price: apartment.price,
+    city: apartment.city || 'Ташкент',
+    district: apartment.district || apartment.location || 'Ташкент',
+    type: (apartment.type as any) || 'apartment',
+    rooms: apartment.rooms || 1,
+    area: apartment.area || 50,
+    floor: apartment.floor || 1,
+    totalFloors: apartment.totalFloors || 9,
+    furnished: true,
+    image: images[0] || '',
+    images: images,
+    features: amenities,
+    forStudents: !!apartment.forStudents || apartment.audience === 'students',
+    rating: apartment.rating || 4.9,
+    reviews: apartment.reviews || 5,
+    verified: !!apartment.isVerified || !!apartment.verified,
+    isVerified: !!apartment.isVerified || !!apartment.verified,
+    isPromoted: !!apartment.isPromoted,
+    promotionTier: apartment.promotionTier,
+    author: {
+      name: (apartment as any).author?.name || 'Собственник',
+      phone: (apartment as any).author?.phone || '+998 90 123 45 67',
+    },
+  };
+
+  const coordinates = (apartment as any).coordinates || { lat: 41.2995, lng: 69.2401 };
+
   return (
-    <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-10">
+    <>
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold text-stone-900 dark:text-white">
-          {apartment.title}
-        </h1>
-        <p className="mt-1 text-sm text-stone-500 dark:text-stone-400">
-          {apartment.location}
-        </p>
-      </div>
-      
-      <div className="grid grid-cols-1 gap-8 md:grid-cols-2">
-        <div>
-          <div className="mb-4 rounded-lg overflow-hidden">
-            <ApartmentImage
-              src={images[0]}
-              alt={apartment.title}
-              className="w-full h-auto object-cover"
-            />
-          </div>
-          {images.length > 1 && (
-            <div className="grid grid-cols-3 gap-2">
-              {images.slice(1, 4).map((image: string, index: number) => (
-                <div key={index} className="rounded-lg overflow-hidden">
-                  <ApartmentImage
-                    src={image}
-                    alt={`${apartment.title} - ${index + 1}`}
-                    className="w-full h-24 object-cover"
-                  />
-                </div>
-              ))}
-            </div>
-          )}
-        </div>
-        <div>
-          <div className="mb-4">
-            <span className="text-2xl font-bold text-teal-600">
-              ${apartment.price} / {t('month')}
-            </span>
-          </div>
-          {apartment.description && (
-            <div className="mb-6">
-              <p className="text-stone-600 dark:text-stone-300">
-                {apartment.description}
-              </p>
-            </div>
-          )}
-          <div className="grid grid-cols-2 gap-4 mb-6">
-            <div>
-              <span className="text-sm text-stone-500 dark:text-stone-400">
-                {t('rooms')}:
-              </span>
-              <span className="ml-2 font-medium">
-                {apartment.rooms}
-              </span>
-            </div>
-            <div>
-              <span className="text-sm text-stone-500 dark:text-stone-400">
-                {t('area')}:
-              </span>
-              <span className="ml-2 font-medium">
-                {apartment.area} м²
-              </span>
-            </div>
-            {apartment.floor !== undefined && (
-              <div>
-                <span className="text-sm text-stone-500 dark:text-stone-400">
-                  {t('floor')}:
-                </span>
-                <span className="ml-2 font-medium">
-                  {apartment.floor} {apartment.totalFloors ? `/ ${apartment.totalFloors}` : ''}
-                </span>
-              </div>
-            )}
-          </div>
-          {amenities.length > 0 && (
-            <div className="mb-6">
-              <h3 className="text-sm font-medium text-stone-700 dark:text-stone-300 mb-2">
-                {t('amenities')}:
-              </h3>
-              <div className="flex flex-wrap gap-2">
-                {amenities.map((amenity: string, index: number) => (
-                  <span key={index} className="px-3 py-1 text-sm rounded-full bg-stone-100 dark:bg-stone-700 text-stone-700 dark:text-stone-300">
-                    {amenity}
-                  </span>
-                ))}
-              </div>
-            </div>
-          )}
-          <button className="w-full rounded-lg bg-teal-600 px-6 py-3 text-sm font-semibold text-white transition-colors hover:bg-teal-700">
-            {t('contactOwner')}
-          </button>
-        </div>
-      </div>
-    </div>
+      <ListingDetailClient
+        listing={listingData as any}
+        coordinates={coordinates}
+        locale={locale}
+      />
+    </>
   );
 }
