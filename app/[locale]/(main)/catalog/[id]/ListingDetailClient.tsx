@@ -487,6 +487,7 @@ export function ListingDetailClient({ listing, coordinates, locale }: Props) {
                   <option value="WRONG_PRICE">Не соответствует указанная цена</option>
                   <option value="WRONG_PHOTOS">Фейковые или чужие фотографии</option>
                   <option value="DUPLICATE">Дубликат другого объявления</option>
+                  <option value="REALTOR">Это риелтор / Агентство (требует комиссию)</option>
                   <option value="OTHER">Другая причина</option>
                 </select>
               </div>
