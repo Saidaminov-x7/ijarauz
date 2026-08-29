@@ -145,13 +145,13 @@ export function ListingCard({ item, locale }: { item: Listing; locale: string })
 
         <div className="absolute inset-0 bg-linear-to-t from-black/50 via-transparent to-black/25 pointer-events-none" />
 
-        {/* Скользящие сегменты прогресса фото (Hover Image Sequence Bar) */}
+        {/* Скользящие сегменты прогресса фото (Hover Image Sequence Bar) внизу */}
         {allImages.length > 1 && (
-          <div className="absolute top-2.5 inset-x-3 flex items-center gap-1 pointer-events-none z-20 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+          <div className="absolute bottom-2.5 inset-x-3 flex items-center gap-1 pointer-events-none z-20 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
             {allImages.map((_, idx) => (
               <div
                 key={idx}
-                className="h-1 flex-1 rounded-full bg-white/30 backdrop-blur-xs overflow-hidden"
+                className="h-1 flex-1 rounded-full bg-black/40 backdrop-blur-xs overflow-hidden"
               >
                 <div
                   className={cn(
@@ -164,26 +164,9 @@ export function ListingCard({ item, locale }: { item: Listing; locale: string })
           </div>
         )}
 
-        {/* Нижние индикаторы фото (Sliding Window Dots) */}
-        {allImages.length > 1 && (
-          <div className="absolute bottom-2.5 left-1/2 -translate-x-1/2 flex items-center gap-1.5 px-2 py-1 rounded-full bg-black/40 backdrop-blur-xs pointer-events-none z-10 transition-opacity duration-200">
-            {visibleIndices.map((idx) => (
-              <div
-                key={idx}
-                className={cn(
-                  'h-1 rounded-full transition-all duration-200',
-                  idx === activeImgIndex
-                    ? 'w-4 bg-white shadow-xs'
-                    : 'w-1.5 bg-white/40'
-                )}
-              />
-            ))}
-          </div>
-        )}
-
         {/* Бейджи (Пилюли со стеклянным и аккуратным эффектом) */}
         <div className="absolute left-3 top-3 right-20 flex flex-wrap items-center gap-1.5 pointer-events-none z-20">
-          <span className="inline-flex items-center rounded-full bg-slate-950/65 backdrop-blur-md px-2.5 py-1 text-[11px] font-semibold text-white tracking-wide border border-white/20 shadow-md">
+          <span className="inline-flex items-center rounded-full bg-black/60 backdrop-blur-md px-2.5 py-1 text-[11px] font-semibold text-white tracking-wide border border-white/20 shadow-md">
             {typeLabel[item.type] || item.type}
           </span>
           {isVerified && (

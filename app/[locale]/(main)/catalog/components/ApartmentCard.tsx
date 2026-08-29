@@ -134,28 +134,9 @@ export function ApartmentCard({ apartment, locale, activeAmenities = [] }: Apart
             </div>
           )}
 
-          {/* Сегментированный индикатор прокрутки фото (Hover Image Sequence Bar) */}
-          {allImages.length > 1 && (
-            <div className="absolute top-2.5 inset-x-3 flex items-center gap-1 pointer-events-none z-20 opacity-0 group-hover/card-image:opacity-100 transition-opacity duration-200">
-              {allImages.map((_, idx) => (
-                <div
-                  key={idx}
-                  className="h-1 flex-1 rounded-full bg-black/40 backdrop-blur-xs overflow-hidden"
-                >
-                  <div
-                    className={cn(
-                      'h-full w-full bg-white transition-all duration-150',
-                      idx === activeImgIndex ? 'opacity-100 scale-100' : 'opacity-0 scale-0'
-                    )}
-                  />
-                </div>
-              ))}
-            </div>
-          )}
-
           {/* Badges on image (Стеклянные стильные пилюли) */}
           <div className="absolute left-3 top-3 right-20 flex flex-wrap items-center gap-1.5 z-20 pointer-events-none">
-            <span className="inline-flex items-center rounded-full bg-slate-950/65 backdrop-blur-md px-2.5 py-1 text-[11px] font-semibold text-white tracking-wide border border-white/20 shadow-md">
+            <span className="inline-flex items-center rounded-full bg-black/60 backdrop-blur-md px-2.5 py-1 text-[11px] font-semibold text-white tracking-wide border border-white/20 shadow-md">
               {badge.text}
             </span>
             {apartment.verified && (
@@ -175,6 +156,25 @@ export function ApartmentCard({ apartment, locale, activeAmenities = [] }: Apart
               </span>
             )}
           </div>
+
+          {/* Сегментированный индикатор прокрутки фото (Hover Image Sequence Bar) внизу */}
+          {allImages.length > 1 && (
+            <div className="absolute bottom-2.5 inset-x-3 flex items-center gap-1 pointer-events-none z-20 opacity-0 group-hover/card-image:opacity-100 transition-opacity duration-200">
+              {allImages.map((_, idx) => (
+                <div
+                  key={idx}
+                  className="h-1 flex-1 rounded-full bg-black/50 backdrop-blur-xs overflow-hidden"
+                >
+                  <div
+                    className={cn(
+                      'h-full w-full bg-white transition-all duration-150',
+                      idx === activeImgIndex ? 'opacity-100 scale-100' : 'opacity-0 scale-0'
+                    )}
+                  />
+                </div>
+              ))}
+            </div>
+          )}
 
           {/* Action buttons (Compare & Favorite) */}
           <div className="absolute right-3 top-3 flex items-center gap-1.5 z-30">
