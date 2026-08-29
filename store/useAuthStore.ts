@@ -23,6 +23,8 @@ interface AuthState {
   logout: () => Promise<void>;
 }
 
+let fetchUserPromise: Promise<void> | null = null;
+
 export const useAuthStore = create<AuthState>((set) => ({
   accessToken: null,
   user: null,
@@ -42,17 +44,23 @@ export const useAuthStore = create<AuthState>((set) => ({
   },
 
   fetchUser: async () => {
+    if (fetchUserPromise) return fetchUserPromise;
     set({ isLoading: true });
-    try {
-      const userData = await getMe();
-      if (userData) {
-        set({ user: userData, isAuthenticated: true, isLoading: false });
-      } else {
+    fetchUserPromise = (async () => {
+      try {
+        const userData = await getMe();
+        if (userData) {
+          set({ user: userData, isAuthenticated: true, isLoading: false });
+        } else {
+          set({ user: null, isAuthenticated: false, isLoading: false });
+        }
+      } catch {
         set({ user: null, isAuthenticated: false, isLoading: false });
+      } finally {
+        fetchUserPromise = null;
       }
-    } catch {
-      set({ user: null, isAuthenticated: false, isLoading: false });
-    }
+    })();
+    return fetchUserPromise;
   },
 
   logout: async () => {

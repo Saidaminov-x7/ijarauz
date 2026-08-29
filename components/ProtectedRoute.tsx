@@ -12,15 +12,11 @@ interface ProtectedRouteProps {
 }
 
 const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
-  const { isAuthenticated, isLoading, fetchUser } = useAuthStore();
+  const { isAuthenticated, isLoading } = useAuthStore();
   const router = useRouter();
   const pathname = usePathname();
   const params = useParams();
   const locale = (params?.locale as string) || 'ru';
-
-  useEffect(() => {
-    fetchUser();
-  }, [fetchUser]);
 
   useEffect(() => {
     if (!isLoading && !isAuthenticated) {

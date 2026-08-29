@@ -149,19 +149,12 @@ function AddListingContent() {
   }, [selectedCity, selectedDistrict, selectedRooms, selectedArea, selectedType]);
 
   useEffect(() => {
-    fetchUser().then(() => {
-      const state = useAuthStore.getState();
-      if (!state.isAuthenticated) {
-        router.push(`/${locale}/login?redirect=/add-listing`);
-      }
-    });
-    
     // Проверяем настройки автомодерации
     getSiteSettings().then((settings) => {
       setAutoModerationEnabled(settings.autoModerationEnabled || false);
       setMaxImagesPerListing(settings.maxImagesPerListing || 10);
     });
-  }, [fetchUser, locale, router]);
+  }, []);
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (!e.target.files) return;

@@ -132,13 +132,9 @@ export function Header({ locale: localeProp }: { locale?: string }) {
 
   const favCount = useFavoritesStore((s) => s.ids.length);
   const compareCount = useCompareStore((s) => s.ids.length);
-  const { user, isAuthenticated, fetchUser } = useAuthStore();
+  const { user, isAuthenticated } = useAuthStore();
   const searchRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
-
-  useEffect(() => {
-    fetchUser();
-  }, [fetchUser]);
 
   useEffect(() => {
     document.body.style.overflow = mobileOpen ? 'hidden' : '';
