@@ -116,7 +116,7 @@ export default async function ApartmentPage({ params }: ApartmentPageProps) {
 
   // Преобразуем Apartment в Listing для богатого интерактивного UI
   const listingData = {
-    id: Number(apartment.id) || 1,
+    id: apartment.id,
     title: apartment.title,
     description: apartment.description,
     price: apartment.price,

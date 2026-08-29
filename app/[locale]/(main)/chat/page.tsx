@@ -29,6 +29,7 @@ interface ChatContact {
   id: string;
   name: string;
   avatar?: string;
+  peerPhone?: string;
   lastMessage: string;
   time: string;
   unread?: number;
@@ -167,58 +168,69 @@ function ChatContent() {
   });
 
   // Загрузка диалогов с сервера
-  useEffect(() => {
+  const fetchConversations = async () => {
     if (!isAuthenticated) return;
-    getChatConversations().then((serverConvs) => {
-      const peerContacts: ChatContact[] = serverConvs.map((c) => ({
-        id: c.peerId,
-        name: c.peerName,
-        avatar: c.peerAvatar || undefined,
-        lastMessage: c.lastMessage,
-        time: new Date(c.time).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-        unread: c.unread,
+    const serverConvs = await getChatConversations();
+    const peerContacts: ChatContact[] = serverConvs.map((c) => ({
+      id: c.peerId,
+      name: c.peerName,
+      avatar: c.peerAvatar || undefined,
+      peerPhone: c.peerPhone || undefined,
+      lastMessage: c.lastMessage,
+      time: new Date(c.time).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+      unread: c.unread,
+      isAi: false,
+      listingTitle: c.listing?.title,
+      listing: c.listing,
+    }));
+
+    // Если в URL передан peerId, но диалога еще не было в списке
+    if (peerIdParam && !peerContacts.some((p) => p.id === peerIdParam)) {
+      peerContacts.unshift({
+        id: peerIdParam,
+        name: 'Арендодатель',
+        lastMessage: 'Начните диалог с собственником',
+        time: 'Сейчас',
         isAi: false,
-        listingTitle: c.listing?.title,
-        listing: c.listing,
-      }));
+      });
+    }
 
-      // Если в URL передан peerId, но диалога еще не было в списке
-      if (peerIdParam && !peerContacts.some((p) => p.id === peerIdParam)) {
-        peerContacts.unshift({
-          id: peerIdParam,
-          name: 'Арендодатель',
-          lastMessage: 'Начните диалог с собственником',
-          time: 'Сейчас',
-          isAi: false,
-        });
-      }
+    setContacts([AI_CONTACT, ...peerContacts]);
+  };
 
-      setContacts([AI_CONTACT, ...peerContacts]);
-    });
+  useEffect(() => {
+    fetchConversations();
+    const interval = setInterval(fetchConversations, 12000);
+    return () => clearInterval(interval);
   }, [isAuthenticated, peerIdParam]);
 
   // Загрузка истории сообщений для выбранного собеседника
+  const fetchMessages = async () => {
+    if (selectedContactId === 'ai-assistant' || !isAuthenticated || !selectedContactId) return;
+    const data = await getChatMessages(selectedContactId);
+    if (!data) return;
+    if (data.peer) {
+      setContacts((prev) =>
+        prev.map((c) => (c.id === selectedContactId ? { ...c, name: data.peer.name, avatar: data.peer.avatar || c.avatar, peerPhone: data.peer.phone || c.peerPhone } : c))
+      );
+    }
+    const loadedMessages: Message[] = data.messages.map((m) => ({
+      id: m.id,
+      sender: m.senderId === user?.id ? 'user' : 'peer',
+      text: m.text,
+      timestamp: new Date(m.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+      listing: m.listing,
+    }));
+    setConversations((prev) => ({
+      ...prev,
+      [selectedContactId]: loadedMessages,
+    }));
+  };
+
   useEffect(() => {
-    if (selectedContactId === 'ai-assistant' || !isAuthenticated) return;
-    getChatMessages(selectedContactId).then((data) => {
-      if (!data) return;
-      if (data.peer) {
-        setContacts((prev) =>
-          prev.map((c) => (c.id === selectedContactId ? { ...c, name: data.peer.name, avatar: data.peer.avatar || c.avatar } : c))
-        );
-      }
-      const loadedMessages: Message[] = data.messages.map((m) => ({
-        id: m.id,
-        sender: m.senderId === user?.id ? 'user' : 'peer',
-        text: m.text,
-        timestamp: new Date(m.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-        listing: m.listing,
-      }));
-      setConversations((prev) => ({
-        ...prev,
-        [selectedContactId]: loadedMessages,
-      }));
-    });
+    fetchMessages();
+    const interval = setInterval(fetchMessages, 4000);
+    return () => clearInterval(interval);
   }, [selectedContactId, isAuthenticated, user?.id]);
 
   const messagesContainerRef = useRef<HTMLDivElement>(null);
@@ -234,6 +246,12 @@ function ChatContent() {
   const handleSendMessage = async (customText?: string) => {
     const text = (customText || inputText).trim();
     if (!text) return;
+
+    if (selectedContactId !== 'ai-assistant' && !isAuthenticated) {
+      toast.error('Пожалуйста, войдите в аккаунт, чтобы написать собственнику');
+      router.push(`/${locale}/login?redirect=${encodeURIComponent(window.location.pathname + window.location.search)}`);
+      return;
+    }
 
     setInputText('');
 
@@ -261,6 +279,9 @@ function ChatContent() {
           listingId: activeListingId,
           message: text,
         });
+        // Мгновенно обновляем диалоги и историю
+        fetchMessages();
+        fetchConversations();
       } catch (err: any) {
         toast.error(err?.response?.data?.message || 'Не удалось отправить сообщение');
       }
@@ -697,14 +718,16 @@ function ChatContent() {
                       <ShieldCheck size={14} />
                       <span className="hidden sm:inline">AI Помощник (Демо)</span>
                     </div>
-                  ) : (
+                  ) : selectedContact.peerPhone ? (
                     <a
-                      href="tel:+998901234567"
-                      className="flex h-9 w-9 items-center justify-center rounded-xl border border-stone-200 text-stone-600 hover:bg-stone-50 dark:border-white/10 dark:text-stone-300 dark:hover:bg-white/5"
+                      href={`tel:${selectedContact.peerPhone}`}
+                      className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-500/20 text-emerald-600 dark:text-emerald-400 text-xs font-bold hover:bg-emerald-100 transition-colors"
+                      title={selectedContact.peerPhone}
                     >
-                      <Phone size={16} />
+                      <Phone size={14} />
+                      <span className="hidden sm:inline">{selectedContact.peerPhone}</span>
                     </a>
-                  )}
+                  ) : null}
                 </div>
               </div>
 
