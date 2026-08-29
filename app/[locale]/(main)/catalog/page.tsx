@@ -8,7 +8,7 @@ import { motion, type Variants } from 'framer-motion';
 import { toast } from 'sonner';
 import { Button } from '@/components/ui/Button';
 import { ApartmentCard } from '@/app/[locale]/(main)/catalog/components/ApartmentCard';
-import { AmenitiesFilter, QuickAmenityChips, AMENITY_CONFIG } from '@/app/[locale]/(main)/catalog/components/AmenitiesFilter';
+import { AmenitiesFilter, AMENITY_CONFIG } from '@/app/[locale]/(main)/catalog/components/AmenitiesFilter';
 import { getApartments, createSavedSearch } from '@/lib/api';
 import { Apartment } from '@/types';
 import { Dropdown } from '@/components/ui/Dropdown';
@@ -455,15 +455,6 @@ function CatalogContent() {
 
           {/* Listings Main Section */}
           <div className="flex-1 min-w-0">
-            {/* Quick Amenity Chips */}
-            <div className="mb-4 flex items-center gap-2 overflow-x-auto pb-1 scrollbar-none">
-              <span className="text-xs font-semibold text-stone-400 shrink-0">Быстрые фильтры:</span>
-              <QuickAmenityChips
-                selected={selectedAmenities}
-                onChange={handleAmenitiesChange}
-              />
-            </div>
-
             {/* Active removable amenity tags */}
             {selectedAmenities.length > 0 && (
               <div className="mb-4 flex items-center gap-1.5 flex-wrap">
@@ -531,7 +522,7 @@ function CatalogContent() {
                       toast.info('Поиск сохранён локально');
                     }
                   }}
-                  className="inline-flex items-center gap-1.5 rounded-xl border border-stone-200 bg-white px-3 py-2 text-xs font-semibold text-stone-700 shadow-xs hover:border-teal-500 hover:text-teal-600 dark:border-white/10 dark:bg-[#222222] dark:text-stone-300 transition-colors"
+                  className="inline-flex h-10 items-center gap-1.5 rounded-xl border border-stone-200 bg-white px-3.5 text-xs font-semibold text-stone-700 shadow-xs hover:border-teal-500 hover:text-teal-600 dark:border-white/10 dark:bg-[#222222] dark:text-stone-300 transition-colors"
                   title="Сохранить этот фильтр и получать уведомления"
                 >
                   <Bell size={13} className="text-teal-600" />

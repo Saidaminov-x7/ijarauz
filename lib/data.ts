@@ -21,11 +21,14 @@ export interface Listing {
   audience?: Audience;
   phone?: string;
   rating: number;
-  reviews: number;
-  verified: boolean;
+  reviews?: number;
+  verified?: boolean;
+  isVerified?: boolean;
   isPromoted?: boolean;
   promotionTier?: 'BASIC' | 'TOP' | 'URGENT';
-  isVerified?: boolean;
+  author?: { id?: string; name?: string; phone?: string; avatar?: string; createdAt?: string };
+  owner?: { id?: string; name?: string; phone?: string; avatar?: string; createdAt?: string };
+  createdAt?: string;
 }
 
 const CITY_COORDINATES: Record<string, { lat: number; lng: number }> = {

@@ -8,11 +8,13 @@ import { Footer } from '@/components/layout/Footer';
 import { ScrollToTop } from '@/components/ui/ScrollToTop';
 
 const NO_CHROME = ['/login', '/register', '/forgot-password', '/reset-password'];
+const NO_FOOTER = ['/chat'];
 
 function Chrome({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const locale = useLocale();
   const hideChrome = NO_CHROME.some((r) => pathname === `/${locale}${r}` || pathname.startsWith(`/${locale}${r}/`));
+  const hideFooter = hideChrome || NO_FOOTER.some((r) => pathname === `/${locale}${r}` || pathname.startsWith(`/${locale}${r}/`));
 
   if (hideChrome) {
     return <>{children}</>;
@@ -20,12 +22,12 @@ function Chrome({ children }: { children: React.ReactNode }) {
 
   return (
     <>
-      <Suspense fallback={<div className="h-14 border-b border-transparent" />}>
+      <Suspense fallback={<div className="h-20 border-b border-transparent" />}>
         <Header locale={locale} />
       </Suspense>
-      <main className="flex-1">{children}</main>
-      <Footer locale={locale} />
-      <ScrollToTop />
+      <main className="flex-1 flex flex-col">{children}</main>
+      {!hideFooter && <Footer locale={locale} />}
+      {!hideFooter && <ScrollToTop />}
     </>
   );
 }

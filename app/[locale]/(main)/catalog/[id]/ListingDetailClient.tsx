@@ -1,7 +1,8 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import Link from 'next/link';
+import { useRouter } from 'next/navigation';
+import { useTranslations } from 'next-intl';
 import { toast } from 'sonner';
 import {
   ArrowLeft,
@@ -16,10 +17,11 @@ import {
   Scale,
   AlertTriangle,
   TrendingDown,
-  TrendingUp,
   Calendar,
   X,
   Share2,
+  MessageSquare,
+  User,
 } from 'lucide-react';
 import type { Listing } from '@/lib/data';
 import { Gallery } from '@/components/ui/Gallery';
@@ -28,6 +30,7 @@ import { useFavoritesStore } from '@/store/useFavoritesStore';
 import { useCompareStore } from '@/store/useCompareStore';
 import { getSimilarListings, reportListing, getPriceHistory, createViewingRequest } from '@/lib/api';
 import { ListingCard } from '@/components/ListingCard';
+import { AMENITY_CONFIG } from '@/app/[locale]/(main)/catalog/components/AmenitiesFilter';
 import { cn } from '@/lib/utils';
 import { Apartment } from '@/types';
 
@@ -47,6 +50,9 @@ interface Props {
 }
 
 export function ListingDetailClient({ listing, coordinates, locale }: Props) {
+  const router = useRouter();
+  const tAmenities = useTranslations('amenities');
+
   const isFavorite = useFavoritesStore((s) => s.isFavorite(listing.id));
   const toggleFavorite = useFavoritesStore((s) => s.toggle);
   const isInCompare = useCompareStore((s) => s.isInCompare(listing.id));
@@ -72,6 +78,14 @@ export function ListingDetailClient({ listing, coordinates, locale }: Props) {
     getSimilarListings(String(listing.id)).then(setSimilarListings);
     getPriceHistory(String(listing.id)).then(setPriceHistory);
   }, [listing.id]);
+
+  function handleBack() {
+    if (typeof window !== 'undefined' && window.history.length > 1) {
+      router.back();
+    } else {
+      router.push(`/${locale}/catalog`);
+    }
+  }
 
   function handleContact() {
     toast.success('Заявка отправлена! Арендодатель свяжется с вами.');
@@ -135,14 +149,16 @@ export function ListingDetailClient({ listing, coordinates, locale }: Props) {
   }
 
   return (
-    <div className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8 py-10">
-      <Link
-        href={`/${locale}/catalog`}
-        className="mb-6 inline-flex items-center gap-1.5 text-sm font-medium text-stone-500 hover:text-stone-800 dark:text-stone-400 dark:hover:text-white"
+    <div className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8 py-8">
+      {/* Кнопка Назад с сохранением фильтров */}
+      <button
+        type="button"
+        onClick={handleBack}
+        className="mb-6 inline-flex items-center gap-2 rounded-xl border border-stone-200 bg-white px-3.5 py-2 text-xs font-semibold text-stone-700 shadow-xs hover:border-teal-500 hover:text-teal-600 dark:border-white/10 dark:bg-[#222222] dark:text-stone-300 dark:hover:border-teal-500 transition-colors cursor-pointer"
       >
         <ArrowLeft size={14} />
-        Назад в каталог
-      </Link>
+        <span>Назад в каталог</span>
+      </button>
 
       {/* Галерея или градиент-плейсхолдер */}
       {hasImages ? (
@@ -186,10 +202,10 @@ export function ListingDetailClient({ listing, coordinates, locale }: Props) {
             type="button"
             onClick={handleShare}
             aria-label="Поделиться"
-            className="flex h-11 px-3.5 items-center gap-1.5 rounded-xl border border-stone-200 text-stone-600 hover:text-teal-600 hover:border-teal-500 bg-white dark:border-white/10 dark:bg-[#222222] dark:text-stone-300 dark:hover:border-teal-500 transition-colors text-xs font-semibold"
+            className="flex h-10 px-3.5 items-center gap-1.5 rounded-xl border border-stone-200 text-stone-600 hover:text-teal-600 hover:border-teal-500 bg-white dark:border-white/10 dark:bg-[#222222] dark:text-stone-300 dark:hover:border-teal-500 transition-colors text-xs font-semibold"
             title="Поделиться объявлением"
           >
-            <Share2 size={16} />
+            <Share2 size={15} />
             <span className="hidden sm:inline">Поделиться</span>
           </button>
 
@@ -198,23 +214,23 @@ export function ListingDetailClient({ listing, coordinates, locale }: Props) {
             onClick={() => toggleCompare(listing.id)}
             aria-label={isInCompare ? 'Убрать из сравнения' : 'Добавить в сравнение'}
             className={cn(
-              'flex h-11 w-11 items-center justify-center rounded-xl border transition-colors',
+              'flex h-10 w-10 items-center justify-center rounded-xl border transition-colors',
               isInCompare
                 ? 'border-teal-500 bg-teal-50 text-teal-600 dark:bg-teal-950/40 dark:text-teal-400'
                 : 'border-stone-200 text-stone-500 hover:text-teal-600 bg-white dark:bg-[#222222] dark:border-white/10 dark:text-stone-400'
             )}
             title={isInCompare ? 'В сравнении' : 'Добавить к сравнению'}
           >
-            <Scale size={18} />
+            <Scale size={16} />
           </button>
 
           <button
             type="button"
             onClick={() => toggleFavorite(listing.id)}
             aria-label={isFavorite ? 'Убрать из избранного' : 'Добавить в избранное'}
-            className="flex h-11 w-11 items-center justify-center rounded-xl border border-stone-200 bg-white text-stone-500 transition-colors hover:text-rose-500 dark:border-white/10 dark:bg-[#222222] dark:text-stone-400"
+            className="flex h-10 w-10 items-center justify-center rounded-xl border border-stone-200 bg-white text-stone-500 transition-colors hover:text-rose-500 dark:border-white/10 dark:bg-[#222222] dark:text-stone-400"
           >
-            <Heart size={18} className={cn(isFavorite && 'fill-rose-500 text-rose-500')} />
+            <Heart size={16} className={cn(isFavorite && 'fill-rose-500 text-rose-500')} />
           </button>
 
           <div className="text-right pl-2">
@@ -224,7 +240,7 @@ export function ListingDetailClient({ listing, coordinates, locale }: Props) {
         </div>
       </div>
 
-      {/* История изменения цены (A2) */}
+      {/* История изменения цены */}
       {priceHistory.length > 0 && (
         <div className="mt-5 rounded-2xl border border-stone-200/80 bg-white p-4.5 dark:border-white/10 dark:bg-[#222222]">
           <div className="flex items-center justify-between gap-2 mb-3">
@@ -283,10 +299,10 @@ export function ListingDetailClient({ listing, coordinates, locale }: Props) {
       {/* Ключевые параметры */}
       <div className="mt-6 grid grid-cols-2 gap-4 sm:grid-cols-4">
         {[
-          { label: 'Комнат',  value: listing.rooms,                                icon: Home },
-          { label: 'Площадь', value: `${listing.area} м²`,                        icon: Ruler },
-          { label: 'Этаж',    value: `${listing.floor}/${listing.totalFloors}`,   icon: Building2 },
-          { label: 'Рейтинг', value: `${listing.rating} ★`,                        icon: Star },
+          { label: 'Комнат', value: listing.rooms, icon: Home },
+          { label: 'Площадь', value: `${listing.area} м²`, icon: Ruler },
+          { label: 'Этаж', value: `${listing.floor}/${listing.totalFloors}`, icon: Building2 },
+          { label: 'Рейтинг', value: `${listing.rating} ★`, icon: Star },
         ].map(({ label, value, icon: Icon }) => (
           <div key={label} className="rounded-2xl border border-stone-200/80 bg-white p-4 text-center dark:border-white/5 dark:bg-[#222222]">
             <Icon className="mx-auto mb-1.5 text-teal-500" size={18} />
@@ -306,19 +322,62 @@ export function ListingDetailClient({ listing, coordinates, locale }: Props) {
         </div>
       )}
 
-      {/* Удобства */}
+      {/* Удобства с иконками и локализацией */}
       {listing.features && listing.features.length > 0 && (
         <div className="mt-6">
           <h2 className="mb-3 text-lg font-bold text-stone-900 dark:text-white">Удобства</h2>
           <div className="flex flex-wrap gap-2">
-            {listing.features.map((f) => (
-              <span key={f} className="rounded-xl border border-stone-200 bg-white px-3.5 py-1.5 text-xs font-semibold text-stone-700 dark:border-white/10 dark:bg-[#222222] dark:text-stone-300 shadow-xs">
-                {f}
-              </span>
-            ))}
+            {listing.features.map((f) => {
+              const item = AMENITY_CONFIG[f.toUpperCase()] || AMENITY_CONFIG[f];
+              const Icon = item?.icon;
+              const label = item ? tAmenities(item.translationKey as any) : f;
+              return (
+                <span
+                  key={f}
+                  className="inline-flex items-center gap-2 rounded-xl border border-stone-200 bg-white px-3.5 py-2 text-xs font-semibold text-stone-700 shadow-xs dark:border-white/10 dark:bg-[#222222] dark:text-stone-300"
+                >
+                  {Icon ? <Icon className="h-4 w-4 text-teal-600 dark:text-teal-400" /> : null}
+                  <span>{label}</span>
+                </span>
+              );
+            })}
           </div>
         </div>
       )}
+
+      {/* Блок владельца объекта */}
+      <div className="mt-8 rounded-2xl border border-stone-200/80 bg-white p-5 dark:border-white/5 dark:bg-[#222222] flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+        <div className="flex items-center gap-3.5">
+          <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-teal-50 text-teal-700 dark:bg-teal-950/50 dark:text-teal-300 font-bold text-base border border-teal-200 dark:border-teal-800/40">
+            {listing.author?.name ? listing.author.name.charAt(0).toUpperCase() : <User size={20} />}
+          </div>
+          <div>
+            <div className="flex items-center gap-2">
+              <h3 className="text-sm font-bold text-stone-900 dark:text-white">
+                {listing.author?.name || 'Собственник'}
+              </h3>
+              {isVerified && (
+                <span className="inline-flex items-center gap-1 rounded-md bg-teal-50 px-2 py-0.5 text-[10px] font-bold text-teal-700 dark:bg-teal-950/60 dark:text-teal-300 border border-teal-200 dark:border-teal-800/40">
+                  <ShieldCheck size={12} /> Проверен
+                </span>
+              )}
+            </div>
+            <p className="text-xs text-stone-500 dark:text-stone-400 mt-0.5">
+              Арендодатель на Ijarauz
+            </p>
+          </div>
+        </div>
+        <div className="flex items-center gap-2 w-full sm:w-auto">
+          <button
+            type="button"
+            onClick={() => router.push(`/${locale}/chat`)}
+            className="flex-1 sm:flex-initial inline-flex h-10 items-center justify-center gap-2 rounded-xl bg-teal-600 px-4 text-xs font-semibold text-white shadow-sm hover:bg-teal-700 transition-colors"
+          >
+            <MessageSquare size={15} />
+            <span>Написать в чат</span>
+          </button>
+        </div>
+      </div>
 
       {/* Карта */}
       <div className="mt-8">
@@ -332,18 +391,18 @@ export function ListingDetailClient({ listing, coordinates, locale }: Props) {
           <button
             type="button"
             onClick={handleContact}
-            className="inline-flex items-center gap-2 rounded-2xl bg-teal-600 px-6 py-3 text-sm font-semibold text-white shadow-lg shadow-teal-600/25 transition-transform hover:-translate-y-0.5 hover:bg-teal-700"
+            className="inline-flex h-10 items-center gap-2 rounded-xl bg-teal-600 px-5 text-xs font-semibold text-white shadow-md shadow-teal-600/20 transition-transform hover:-translate-y-0.5 hover:bg-teal-700"
           >
-            <Phone size={16} />
+            <Phone size={15} />
             Связаться с арендодателем
           </button>
 
           <button
             type="button"
             onClick={() => setIsViewingModalOpen(true)}
-            className="inline-flex items-center gap-2 rounded-2xl border border-teal-600/40 bg-teal-50 dark:bg-teal-950/40 px-6 py-3 text-sm font-semibold text-teal-700 dark:text-teal-300 transition-transform hover:-translate-y-0.5 hover:bg-teal-100 dark:hover:bg-teal-900/60"
+            className="inline-flex h-10 items-center gap-2 rounded-xl border border-teal-600/40 bg-teal-50 dark:bg-teal-950/40 px-5 text-xs font-semibold text-teal-700 dark:text-teal-300 transition-transform hover:-translate-y-0.5 hover:bg-teal-100 dark:hover:bg-teal-900/60"
           >
-            <Calendar size={16} className="text-teal-600 dark:text-teal-400" />
+            <Calendar size={15} className="text-teal-600 dark:text-teal-400" />
             Записаться на просмотр
           </button>
         </div>
@@ -421,7 +480,7 @@ export function ListingDetailClient({ listing, coordinates, locale }: Props) {
                 <select
                   value={reportReason}
                   onChange={(e) => setReportReason(e.target.value)}
-                  className="w-full rounded-xl border border-stone-200 bg-stone-50 p-2.5 text-sm dark:border-white/10 dark:bg-white/5 dark:text-white focus:outline-none focus:ring-2 focus:ring-teal-500"
+                  className="w-full h-10 rounded-xl border border-stone-200 bg-stone-50 px-3 text-xs dark:border-white/10 dark:bg-white/5 dark:text-white focus:outline-none focus:ring-2 focus:ring-teal-500"
                 >
                   <option value="SCAM">Мошенничество / Подозрительное предложение</option>
                   <option value="ALREADY_RENTED">Объект уже сдан или неактуален</option>
@@ -441,7 +500,7 @@ export function ListingDetailClient({ listing, coordinates, locale }: Props) {
                   value={reportComment}
                   onChange={(e) => setReportComment(e.target.value)}
                   placeholder="Опишите подробнее, что не так с этим объявлением..."
-                  className="w-full rounded-xl border border-stone-200 bg-stone-50 p-2.5 text-sm dark:border-white/10 dark:bg-white/5 dark:text-white focus:outline-none focus:ring-2 focus:ring-teal-500"
+                  className="w-full rounded-xl border border-stone-200 bg-stone-50 p-2.5 text-xs dark:border-white/10 dark:bg-white/5 dark:text-white focus:outline-none focus:ring-2 focus:ring-teal-500"
                 />
               </div>
 
@@ -449,14 +508,14 @@ export function ListingDetailClient({ listing, coordinates, locale }: Props) {
                 <button
                   type="button"
                   onClick={() => setIsReportModalOpen(false)}
-                  className="rounded-xl px-4 py-2 text-xs font-semibold text-stone-500 hover:bg-stone-100 dark:hover:bg-white/5"
+                  className="h-10 rounded-xl px-4 text-xs font-semibold text-stone-500 hover:bg-stone-100 dark:hover:bg-white/5"
                 >
                   Отмена
                 </button>
                 <button
                   type="submit"
                   disabled={isSubmittingReport}
-                  className="rounded-xl bg-rose-600 px-5 py-2 text-xs font-semibold text-white hover:bg-rose-700 disabled:opacity-50"
+                  className="h-10 rounded-xl bg-rose-600 px-5 text-xs font-semibold text-white hover:bg-rose-700 disabled:opacity-50"
                 >
                   {isSubmittingReport ? 'Отправка...' : 'Отправить жалобу'}
                 </button>
@@ -492,7 +551,7 @@ export function ListingDetailClient({ listing, coordinates, locale }: Props) {
                   type="datetime-local"
                   value={preferredDate}
                   onChange={(e) => setPreferredDate(e.target.value)}
-                  className="w-full rounded-xl border border-stone-200 bg-stone-50 p-2.5 text-sm dark:border-white/10 dark:bg-white/5 dark:text-white focus:outline-none focus:ring-2 focus:ring-teal-500"
+                  className="w-full h-10 rounded-xl border border-stone-200 bg-stone-50 px-3 text-xs dark:border-white/10 dark:bg-white/5 dark:text-white focus:outline-none focus:ring-2 focus:ring-teal-500"
                 />
               </div>
 
@@ -505,7 +564,7 @@ export function ListingDetailClient({ listing, coordinates, locale }: Props) {
                   value={viewingMessage}
                   onChange={(e) => setViewingMessage(e.target.value)}
                   placeholder="Здравствуйте! Хочу посмотреть квартиру..."
-                  className="w-full rounded-xl border border-stone-200 bg-stone-50 p-2.5 text-sm dark:border-white/10 dark:bg-white/5 dark:text-white focus:outline-none focus:ring-2 focus:ring-teal-500"
+                  className="w-full rounded-xl border border-stone-200 bg-stone-50 p-2.5 text-xs dark:border-white/10 dark:bg-white/5 dark:text-white focus:outline-none focus:ring-2 focus:ring-teal-500"
                 />
               </div>
 
@@ -513,14 +572,14 @@ export function ListingDetailClient({ listing, coordinates, locale }: Props) {
                 <button
                   type="button"
                   onClick={() => setIsViewingModalOpen(false)}
-                  className="rounded-xl px-4 py-2 text-xs font-semibold text-stone-500 hover:bg-stone-100 dark:hover:bg-white/5"
+                  className="h-10 rounded-xl px-4 text-xs font-semibold text-stone-500 hover:bg-stone-100 dark:hover:bg-white/5"
                 >
                   Отмена
                 </button>
                 <button
                   type="submit"
                   disabled={isSubmittingViewing}
-                  className="rounded-xl bg-teal-600 px-5 py-2 text-xs font-semibold text-white hover:bg-teal-700 disabled:opacity-50"
+                  className="h-10 rounded-xl bg-teal-600 px-5 text-xs font-semibold text-white hover:bg-teal-700 disabled:opacity-50"
                 >
                   {isSubmittingViewing ? 'Отправка...' : 'Записаться'}
                 </button>

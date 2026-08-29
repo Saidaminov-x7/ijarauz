@@ -449,7 +449,7 @@ export default function ChatPage() {
   );
 
   return (
-    <div className="h-[calc(100vh-80px)] w-full bg-stone-100 dark:bg-[#0F0F0F] flex overflow-hidden">
+    <div className="h-[calc(100dvh-80px)] w-full bg-stone-100 dark:bg-[#0F0F0F] flex overflow-hidden">
       {/* Telegram-style 2-column Container: 100% width, 100% height */}
       <div className="flex h-full w-full max-w-full overflow-hidden">
 

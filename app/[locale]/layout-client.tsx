@@ -9,6 +9,7 @@ import { GoogleOAuthProvider } from '@react-oauth/google';
 import { ChatWidget } from '@/components/chat/ChatWidget';
 import { AnalyticsTracker } from '@/components/analytics/AnalyticsTracker';
 import { DesignTokensInjector } from '@/components/DesignTokensInjector';
+import { GlobalErrorListener } from '@/components/GlobalErrorListener';
 import './globals.css';
 import React from 'react';
 
@@ -36,6 +37,7 @@ export default function LocaleLayout({
       <ThemeProvider>
         <NextIntlClientProvider locale={validLocale} messages={messages} timeZone="Asia/Tashkent">
           <QueryProvider>
+            <GlobalErrorListener />
             <DesignTokensInjector />
             <AnalyticsTracker />
             <div className="flex min-h-screen flex-col">
