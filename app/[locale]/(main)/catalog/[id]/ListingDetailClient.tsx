@@ -81,9 +81,9 @@ export function ListingDetailClient({ listing, coordinates, locale }: Props) {
   const roundedUzs = Math.floor(rawUzs / 100000) * 100000;
   const priceInUzs = roundedUzs.toLocaleString('ru-RU');
 
-  // Калькулятор депозита и коммунальных услуг
+  // Калькулятор депозита и коммунальных услуг (адекватные фиксированные тарифы в РУз: ~$30-40/мес)
   const depositAmount = listing.price; // 1 месяц залога
-  const estimatedUtilities = Math.round(listing.price * 0.08); // ~8% от стоимости аренды
+  const estimatedUtilities = listing.price > 0 ? Math.min(45, Math.max(25, Math.round(listing.price * 0.04))) : 30;
 
   useEffect(() => {
     getSimilarListings(String(listing.id)).then(setSimilarListings);
@@ -210,9 +210,6 @@ export function ListingDetailClient({ listing, coordinates, locale }: Props) {
               ⭐ ТОП объявление
             </span>
           )}
-          <span className="rounded-full bg-stone-100 dark:bg-white/10 text-stone-700 dark:text-stone-300 px-3 py-0.5 text-xs font-semibold">
-            {listing.type === 'room' ? 'Комната' : listing.type === 'daily' ? 'Посуточно' : 'Квартира'}
-          </span>
         </div>
 
         <h1 className="text-2xl sm:text-3xl lg:text-4xl font-extrabold text-stone-900 dark:text-white tracking-tight">
@@ -523,6 +520,7 @@ export function ListingDetailClient({ listing, coordinates, locale }: Props) {
         price={listing.price}
         district={listing.district}
         city={listing.city}
+        image={listing.image || (listing.images && listing.images[0]) || ''}
         url={typeof window !== 'undefined' ? window.location.href : ''}
       />
 
