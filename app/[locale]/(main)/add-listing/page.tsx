@@ -61,6 +61,7 @@ function AddListingContent() {
   const [showModerationModal, setShowModerationModal] = useState(false);
   const [autoModerationEnabled, setAutoModerationEnabled] = useState(false);
   const [maxImagesPerListing, setMaxImagesPerListing] = useState(10);
+  const [createdDraftId, setCreatedDraftId] = useState<string | null>(null);
   const [priceEstimate, setPriceEstimate] = useState<{ min: number | null; max: number | null; average: number | null; sampleSize?: number } | null>(null);
 
   const form = useForm<ListingFormValues>({
@@ -218,13 +219,36 @@ function AddListingContent() {
     setPreviews((prev) => prev.filter((_, i) => i !== index));
   };
 
+  const handleRetryPublish = async () => {
+    if (!createdDraftId) return;
+    setIsLoading(true);
+    setServerError(null);
+    try {
+      await publishListing(createdDraftId);
+      try {
+        localStorage.removeItem('add-listing-draft');
+      } catch {}
+      setCreatedDraftId(null);
+      setShowModerationModal(true);
+    } catch (pubErr: any) {
+      console.error('Failed to retry publish listing:', pubErr);
+      const msg = pubErr.response?.data?.message || 'Не удалось отправить объявление на публикацию. Попробуйте ещё раз.';
+      setServerError(msg);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   const onSubmit = async (data: ListingFormValues) => {
     setIsLoading(true);
     setServerError(null);
+    setCreatedDraftId(null);
+
+    let createdListing: any = null;
 
     try {
       // 1. Create listing
-      const listing = await createListing({
+      createdListing = await createListing({
         title: data.title,
         description: data.description,
         price: Number(data.price),
@@ -239,32 +263,45 @@ function AddListingContent() {
       });
 
       // 2. Client-side compress and upload images
-      if (selectedFiles.length > 0 && listing?.id) {
+      if (selectedFiles.length > 0 && createdListing?.id) {
         for (const file of selectedFiles) {
           try {
             const compressed = await compressImage(file, { maxWidth: 1920, quality: 0.82 });
-            await uploadMedia(compressed, listing.id);
+            await uploadMedia(compressed, createdListing.id);
           } catch (uploadErr) {
             console.error('Failed to upload image:', uploadErr);
-            setServerError('Не удалось загрузить одно или несколько фото. Попробуйте позже.');
           }
         }
       }
-
-      // 3. Очищаем сохранённый черновик
-      try {
-        localStorage.removeItem('add-listing-draft');
-      } catch {}
-
-      // 4. После успешного создания — показываем модалку модерации
-      setShowModerationModal(true);
     } catch (error: any) {
       console.error('Failed to add listing:', error);
-      const msg = error.response?.data?.message || 'Не удалось создать объявление. Попробуьте форму.';
+      const msg = error.response?.data?.message || 'Не удалось создать объявление. Проверьте форму.';
       setServerError(msg);
-    } finally {
       setIsLoading(false);
+      return;
     }
+
+    // 3. Publish listing (переводит из DRAFT в ACTIVE / на модерацию)
+    if (createdListing?.id) {
+      try {
+        await publishListing(createdListing.id);
+        
+        // 4. Очищаем сохранённый черновик
+        try {
+          localStorage.removeItem('add-listing-draft');
+        } catch {}
+
+        // 5. После успешной публикации — показываем модалку
+        setShowModerationModal(true);
+      } catch (pubError: any) {
+        console.error('Failed to publish listing:', pubError);
+        setCreatedDraftId(createdListing.id);
+        const msg = pubError.response?.data?.message || 'Объявление создано, но не удалось завершить публикацию. Нажмите "Повторить публикацию".';
+        setServerError(msg);
+      }
+    }
+
+    setIsLoading(false);
   };
 
   return (
@@ -274,8 +311,19 @@ function AddListingContent() {
       </h1>
 
       {serverError && (
-        <div className="mb-6 rounded-xl border border-red-200 bg-red-50 p-4 text-sm text-red-600 dark:border-red-800/40 dark:bg-red-950/20 dark:text-red-400 animate-in fade-in duration-200">
-          {serverError}
+        <div className="mb-6 rounded-xl border border-red-200 bg-red-50 p-4 text-sm text-red-600 dark:border-red-800/40 dark:bg-red-950/20 dark:text-red-400 animate-in fade-in duration-200 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+          <span>{serverError}</span>
+          {createdDraftId && (
+            <Button
+              type="button"
+              onClick={handleRetryPublish}
+              disabled={isLoading}
+              size="sm"
+              className="bg-red-600 hover:bg-red-700 text-white shrink-0"
+            >
+              Повторить публикацию
+            </Button>
+          )}
         </div>
       )}
 
