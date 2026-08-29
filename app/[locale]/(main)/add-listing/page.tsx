@@ -325,7 +325,31 @@ function AddListingContent() {
             name="description"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>{t('description')}</FormLabel>
+                <div className="flex items-center justify-between">
+                  <FormLabel>{t('description')}</FormLabel>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      const typeVal = form.getValues('type') || 'Квартира';
+                      const cityVal = form.getValues('city') || 'Ташкенте';
+                      const districtVal = form.getValues('district') || '';
+                      const roomsVal = form.getValues('rooms') || '2';
+                      const areaVal = form.getValues('area') || '60';
+
+                      const generatedDesc = `Сдаётся уютная и светлая ${roomsVal}-комнатная недвижимость (${typeVal.toLowerCase()}) площадью ${areaVal} м² в г. ${cityVal}${districtVal ? ', ' + districtVal : ''}.\n\nКвартира полностью меблирована, оборудована всей необходимой современной бытовой техникой (кондиционер, холодильник, стиральная машина, Wi-Fi интернет).\nОтличная транспортная развязка, развитая инфраструктура, рядом супермаркеты, школы и остановки.\n\nПорядочным жильцам на длительный срок. Звоните для согласования времени просмотра!`;
+
+                      form.setValue('description', generatedDesc, { shouldValidate: true });
+                      if (!form.getValues('title')) {
+                        form.setValue('title', `${roomsVal}-комн. ${typeVal.toLowerCase()}, ${areaVal} м², ${districtVal || cityVal}`, { shouldValidate: true });
+                      }
+                      toast.success('✨ AI успешно сгенерировал продающее описание!');
+                    }}
+                    className="inline-flex items-center gap-1 text-xs font-bold text-teal-600 dark:text-teal-400 hover:underline cursor-pointer"
+                  >
+                    <Sparkles size={13} className="text-amber-500" />
+                    ✨ Сгенерировать с помощью ИИ
+                  </button>
+                </div>
                 <FormControl>
                   <Textarea
                     placeholder={t('descriptionPlaceholder')}
@@ -344,7 +368,7 @@ function AddListingContent() {
               name="city"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>{t('location') ? 'Город' : 'Город'}</FormLabel>
+                  <FormLabel>{t('city')}</FormLabel>
                   <Select onValueChange={field.onChange} defaultValue={field.value}>
                     <FormControl>
                       <SelectTrigger className="rounded-xl">
@@ -399,7 +423,32 @@ function AddListingContent() {
             name="address"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>{t('location')}</FormLabel>
+                <div className="flex items-center justify-between">
+                  <FormLabel>{t('location')}</FormLabel>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      if (!navigator.geolocation) {
+                        toast.error('Геолокация не поддерживается вашим браузером');
+                        return;
+                      }
+                      toast.info('Определяем ваше точное местоположение...');
+                      navigator.geolocation.getCurrentPosition(
+                        (pos) => {
+                          const coords = `${pos.coords.latitude.toFixed(5)}, ${pos.coords.longitude.toFixed(5)}`;
+                          form.setValue('address', `GPS: ${coords} (рядом с вами)`, { shouldValidate: true });
+                          toast.success('📍 Точная геолокация определена!');
+                        },
+                        () => {
+                          toast.error('Не удалось получить доступ к геолокации');
+                        }
+                      );
+                    }}
+                    className="inline-flex items-center gap-1 text-xs font-semibold text-teal-600 dark:text-teal-400 hover:underline cursor-pointer"
+                  >
+                    📍 Определить моё местоположение (GPS)
+                  </button>
+                </div>
                 <FormControl>
                   <Input placeholder={t('locationPlaceholder')} className="h-11 rounded-xl" {...field} />
                 </FormControl>

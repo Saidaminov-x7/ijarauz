@@ -13,6 +13,7 @@ import { getApartments } from '@/lib/api';
 import { Apartment } from '@/types';
 import { Dropdown } from '@/components/ui/Dropdown';
 import { SavedSearchModal } from '@/components/search/SavedSearchModal';
+import { CatalogMapView } from '@/components/ui/CatalogMapView';
 
 const CATEGORIES = [
   { id: 'all', label: 'Все' },
@@ -95,6 +96,7 @@ function CatalogContent() {
   const [recommendations, setRecommendations] = useState<Apartment[]>([]);
   const [loading, setLoading] = useState(true);
   const [isSavedSearchModalOpen, setIsSavedSearchModalOpen] = useState(false);
+  const [showCatalogMap, setShowCatalogMap] = useState(false);
 
   // Sync states when URL changes (e.g. from AI assistant or back/forward buttons)
   useEffect(() => {
@@ -483,22 +485,34 @@ function CatalogContent() {
               </div>
             )}
 
-            {/* Header with counter and sort dropdown */}
+            {/* Header with counter, map toggle, and sort dropdown */}
             <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-6">
-              {isFiltered ? (
-                <div className="flex items-center gap-2">
+              <div className="flex items-center gap-3 flex-wrap">
+                {isFiltered ? (
+                  <div className="flex items-center gap-2">
+                    <h2 className="text-lg font-bold text-stone-900 dark:text-white">
+                      Найдено: {apartments.length} {apartments.length === 1 ? 'объявление' : apartments.length < 5 ? 'объявления' : 'объявлений'}
+                    </h2>
+                    <span className="rounded-full bg-teal-50 px-2.5 py-0.5 text-xs font-semibold text-teal-700 dark:bg-teal-950/60 dark:text-teal-400">
+                      по фильтрам
+                    </span>
+                  </div>
+                ) : (
                   <h2 className="text-lg font-bold text-stone-900 dark:text-white">
-                    Найдено: {apartments.length} {apartments.length === 1 ? 'объявление' : apartments.length < 5 ? 'объявления' : 'объявлений'}
+                    Все объявления
                   </h2>
-                  <span className="rounded-full bg-teal-50 px-2.5 py-0.5 text-xs font-semibold text-teal-700 dark:bg-teal-950/60 dark:text-teal-400">
-                    по фильтрам
-                  </span>
-                </div>
-              ) : (
-                <h2 className="text-lg font-bold text-stone-900 dark:text-white">
-                  Все объявления
-                </h2>
-              )}
+                )}
+
+                {/* Кнопка Показать / Скрыть карту */}
+                <button
+                  type="button"
+                  onClick={() => setShowCatalogMap(!showCatalogMap)}
+                  className="inline-flex h-9 items-center gap-1.5 px-3 rounded-xl border border-teal-600/30 bg-teal-50 text-teal-700 dark:bg-teal-950/40 dark:text-teal-300 text-xs font-bold hover:bg-teal-100 transition-all cursor-pointer shadow-xs"
+                >
+                  <MapPin size={13} className="text-teal-600 dark:text-teal-400" />
+                  {showCatalogMap ? 'Скрыть карту' : 'Показать на карте'}
+                </button>
+              </div>
               <div className="flex items-center gap-2 flex-wrap">
                 <button
                   type="button"
@@ -530,6 +544,13 @@ function CatalogContent() {
                 </div>
               </div>
             </div>
+
+            {/* Интерактивная карта всех объявлений */}
+            {showCatalogMap && (
+              <div className="mb-6">
+                <CatalogMapView apartments={apartments} locale={locale} />
+              </div>
+            )}
 
             {/* Listings Grid with framer-motion Stagger Animation (C1) */}
             {loading ? (
