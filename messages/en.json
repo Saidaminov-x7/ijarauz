@@ -93,6 +93,23 @@
     "amenities": "Amenities",
     "contactOwner": "Contact owner"
   },
+  "amenities": {
+    "title": "Amenities",
+    "wifi": "Wi-Fi",
+    "parking": "Parking",
+    "elevator": "Elevator",
+    "air_conditioning": "Air conditioning",
+    "heating": "Heating",
+    "balcony": "Balcony",
+    "pets_allowed": "Pets allowed",
+    "security": "Security",
+    "furniture": "Furniture",
+    "kitchen": "Kitchen",
+    "washing_machine": "Washing machine",
+    "gym": "Gym",
+    "pool": "Pool",
+    "sauna": "Sauna"
+  },
   "Login": {
     "title": "Sign in to your account",
     "subtitle": "Enter your credentials to access your account",

@@ -109,6 +109,23 @@
     "amenities": "Удобства",
     "contactOwner": "Связаться с владельцем"
   },
+  "amenities": {
+    "title": "Удобства",
+    "wifi": "Wi-Fi",
+    "parking": "Парковка",
+    "elevator": "Лифт",
+    "air_conditioning": "Кондиционер",
+    "heating": "Отопление",
+    "balcony": "Балкон",
+    "pets_allowed": "Можно с животными",
+    "security": "Охрана",
+    "furniture": "Мебель",
+    "kitchen": "Кухня",
+    "washing_machine": "Стиральная машина",
+    "gym": "Спортзал",
+    "pool": "Бассейн",
+    "sauna": "Сауна"
+  },
   "Login": {
     "title": "Вход в аккаунт",
     "subtitle": "Введите свои данные для входа",

@@ -14,7 +14,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { createListing, publishListing, uploadMedia, getSiteSettings, estimateFairPrice } from '@/lib/api';
 import { compressImage } from '@/lib/image-compress';
 import { useAuthStore } from '@/store/useAuthStore';
-import { UploadCloud, Image as ImageIcon, Sparkles } from 'lucide-react';
+import { UploadCloud, Image as ImageIcon, Sparkles, Trash2, GripVertical, CheckCircle2 } from 'lucide-react';
+import { toast } from 'sonner';
 import { Modal } from '@/components/ui/Modal';
 import { regions, regionNames } from '@/lib/regions';
 import ProtectedRoute from '@/components/ProtectedRoute';
@@ -56,6 +57,7 @@ function AddListingContent() {
   const [serverError, setServerError] = useState<string | null>(null);
   const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
   const [previews, setPreviews] = useState<string[]>([]);
+  const [draggedIndex, setDraggedIndex] = useState<number | null>(null);
   const [showModerationModal, setShowModerationModal] = useState(false);
   const [autoModerationEnabled, setAutoModerationEnabled] = useState(false);
   const [maxImagesPerListing, setMaxImagesPerListing] = useState(10);
@@ -68,6 +70,51 @@ function AddListingContent() {
       address: '', rooms: '', area: '', floor: '', totalFloors: '',
     },
   });
+
+  // B1: Автосохранение черновика формы в localStorage
+  useEffect(() => {
+    const subscription = form.watch((values) => {
+      const hasData = Object.values(values).some(
+        (v) => typeof v === 'string' && v.trim().length > 0
+      );
+      if (hasData) {
+        try {
+          localStorage.setItem('add-listing-draft', JSON.stringify(values));
+        } catch {
+          // ignore localStorage error
+        }
+      }
+    });
+    return () => subscription.unsubscribe();
+  }, [form]);
+
+  // B1: Предложение восстановить сохранённый черновик при входе на страницу
+  useEffect(() => {
+    try {
+      const savedDraft = localStorage.getItem('add-listing-draft');
+      if (savedDraft) {
+        const parsed = JSON.parse(savedDraft);
+        const hasData = Object.values(parsed).some(
+          (v) => typeof v === 'string' && v.trim().length > 0
+        );
+        if (hasData) {
+          toast('Найден сохранённый черновик', {
+            description: 'Восстановить ранее заполненные данные формы?',
+            action: {
+              label: 'Восстановить',
+              onClick: () => {
+                form.reset(parsed);
+                toast.success('Черновик успешно восстановлен!');
+              },
+            },
+            duration: 8000,
+          });
+        }
+      }
+    } catch {
+      // ignore JSON parse error
+    }
+  }, [form]);
 
   // Получаем список районов для выбранного города
   const selectedCity = form.watch('city');
@@ -142,6 +189,35 @@ function AddListingContent() {
     setPreviews((prev) => [...prev, ...newPreviews]);
   };
 
+  // B2: Drag & Drop сортировка фото
+  const handleDragStart = (e: React.DragEvent, index: number) => {
+    setDraggedIndex(index);
+    e.dataTransfer.effectAllowed = 'move';
+  };
+
+  const handleDragOver = (e: React.DragEvent, index: number) => {
+    e.preventDefault();
+    if (draggedIndex === null || draggedIndex === index) return;
+    const newFiles = [...selectedFiles];
+    const newPreviews = [...previews];
+    const [draggedFile] = newFiles.splice(draggedIndex, 1);
+    const [draggedPreview] = newPreviews.splice(draggedIndex, 1);
+    newFiles.splice(index, 0, draggedFile);
+    newPreviews.splice(index, 0, draggedPreview);
+    setSelectedFiles(newFiles);
+    setPreviews(newPreviews);
+    setDraggedIndex(index);
+  };
+
+  const handleDragEnd = () => {
+    setDraggedIndex(null);
+  };
+
+  const handleRemovePhoto = (index: number) => {
+    setSelectedFiles((prev) => prev.filter((_, i) => i !== index));
+    setPreviews((prev) => prev.filter((_, i) => i !== index));
+  };
+
   const onSubmit = async (data: ListingFormValues) => {
     setIsLoading(true);
     setServerError(null);
@@ -175,11 +251,16 @@ function AddListingContent() {
         }
       }
 
-      // 3. После успешного создания — показываем модалку модерации
+      // 3. Очищаем сохранённый черновик
+      try {
+        localStorage.removeItem('add-listing-draft');
+      } catch {}
+
+      // 4. После успешного создания — показываем модалку модерации
       setShowModerationModal(true);
     } catch (error: any) {
       console.error('Failed to add listing:', error);
-      const msg = error.response?.data?.message || 'Не удалось создать объявление. Проверьте форму.';
+      const msg = error.response?.data?.message || 'Не удалось создать объявление. Попробуьте форму.';
       setServerError(msg);
     } finally {
       setIsLoading(false);
@@ -246,7 +327,11 @@ function AddListingContent() {
               <FormItem>
                 <FormLabel>{t('description')}</FormLabel>
                 <FormControl>
-                  <Textarea placeholder={t('descriptionPlaceholder')} className="rounded-xl" {...field} rows={4} />
+                  <Textarea
+                    placeholder={t('descriptionPlaceholder')}
+                    className="min-h-[120px] rounded-xl"
+                    {...field}
+                  />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -259,16 +344,21 @@ function AddListingContent() {
               name="city"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Город</FormLabel>
-                  <FormControl>
-                    <Select value={field.value} onValueChange={(value) => {
-                      field.onChange(value);
-                      form.setValue('district', '');
-                    }}>
-                      <FormControl><SelectTrigger className="rounded-xl"><SelectValue placeholder="Выберите город" /></SelectTrigger></FormControl>
-                      <SelectContent>{cityOptions.map((city) => <SelectItem key={city} value={city}>{city}</SelectItem>)}</SelectContent>
-                    </Select>
-                  </FormControl>
+                  <FormLabel>{t('location') ? 'Город' : 'Город'}</FormLabel>
+                  <Select onValueChange={field.onChange} defaultValue={field.value}>
+                    <FormControl>
+                      <SelectTrigger className="rounded-xl">
+                        <SelectValue placeholder="Выберите город" />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      {cityOptions.map((city) => (
+                        <SelectItem key={city} value={city}>
+                          {city}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
                   <FormMessage />
                 </FormItem>
               )}
@@ -280,17 +370,43 @@ function AddListingContent() {
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Район</FormLabel>
-                  <FormControl>
-                    <Select value={field.value} onValueChange={field.onChange} disabled={!selectedCity || districtOptions.length === 0}>
-                      <FormControl><SelectTrigger className="rounded-xl"><SelectValue placeholder={!selectedCity ? "Сначала выберите город" : "Выберите район"} /></SelectTrigger></FormControl>
-                      <SelectContent>{districtOptions.map((district) => <SelectItem key={district} value={district}>{district}</SelectItem>)}</SelectContent>
-                    </Select>
-                  </FormControl>
+                  <Select
+                    onValueChange={field.onChange}
+                    defaultValue={field.value}
+                    disabled={!selectedCity || districtOptions.length === 0}
+                  >
+                    <FormControl>
+                      <SelectTrigger className="rounded-xl">
+                        <SelectValue placeholder={selectedCity ? "Выберите район" : "Сначала выберите город"} />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      {districtOptions.map((district) => (
+                        <SelectItem key={district} value={district}>
+                          {district}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
                   <FormMessage />
                 </FormItem>
               )}
             />
           </div>
+
+          <FormField
+            control={form.control}
+            name="address"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>{t('location')}</FormLabel>
+                <FormControl>
+                  <Input placeholder={t('locationPlaceholder')} className="h-11 rounded-xl" {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
 
           <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
             <FormField
@@ -298,18 +414,17 @@ function AddListingContent() {
               name="price"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>{t('price')}</FormLabel>
-                  <FormControl>
-                    <Input placeholder="1000" className="h-11 rounded-xl" {...field} />
-                  </FormControl>
-                  {priceEstimate && priceEstimate.average && (
-                    <div className="mt-1.5 flex items-center gap-1.5 text-xs text-teal-700 dark:text-teal-300 bg-teal-50 dark:bg-teal-950/40 p-2 rounded-lg border border-teal-200 dark:border-teal-800/40">
-                      <Sparkles size={14} className="shrink-0 text-teal-600 dark:text-teal-400" />
-                      <span>
-                        Ориентир рынка в этом районе: <strong>${priceEstimate.min} - ${priceEstimate.max}</strong> (средняя: ${priceEstimate.average})
+                  <div className="flex items-center justify-between">
+                    <FormLabel>{t('price')}</FormLabel>
+                    {priceEstimate && priceEstimate.average && (
+                      <span className="text-[11px] font-semibold text-teal-600 dark:text-teal-400">
+                        Средняя цена: ~${priceEstimate.average}/мес
                       </span>
-                    </div>
-                  )}
+                    )}
+                  </div>
+                  <FormControl>
+                    <Input placeholder="500" className="h-11 rounded-xl" {...field} />
+                  </FormControl>
                   <FormMessage />
                 </FormItem>
               )}
@@ -374,15 +489,21 @@ function AddListingContent() {
             />
           </div>
 
-          {/* Photo Upload Section */}
+          {/* Photo Upload Section with Drag-and-Drop & Cover indicator */}
           <div className="space-y-3">
-            <FormLabel>{t('uploadImages') || 'Фотографии'}</FormLabel>
-            <div className="flex flex-col items-center justify-center rounded-2xl border-2 border-dashed border-stone-200 p-6 transition-colors hover:border-teal-500 dark:border-white/10 dark:hover:border-teal-500/50">
+            <div className="flex items-center justify-between">
+              <FormLabel>{t('uploadImages') || 'Фотографии'}</FormLabel>
+              <span className="text-xs text-stone-400">
+                Перетащите фото для смены порядка (первое фото — обложка)
+              </span>
+            </div>
+
+            <div className="flex flex-col items-center justify-center rounded-2xl border-2 border-dashed border-stone-200 p-6 transition-colors hover:border-teal-500 dark:border-white/10 dark:hover:border-teal-500/50 bg-stone-50/50 dark:bg-white/[0.02]">
               <UploadCloud className="h-10 w-10 text-stone-400 mb-2" />
               <p className="text-sm font-medium text-stone-700 dark:text-stone-300">
                 Загрузите фотографии жилья
               </p>
-              <p className="text-xs text-stone-400 mt-1">PNG, JPG, WEBP до 10MB</p>
+              <p className="text-xs text-stone-400 mt-1">PNG, JPG, WEBP до 15MB</p>
               <input
                 type="file"
                 multiple
@@ -393,10 +514,48 @@ function AddListingContent() {
             </div>
 
             {previews.length > 0 && (
-              <div className="grid grid-cols-4 gap-3 pt-2">
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-2">
                 {previews.map((preview, index) => (
-                  <div key={index} className="relative aspect-video rounded-xl overflow-hidden border border-stone-200 dark:border-white/10">
-                    <img src={preview} alt="Upload preview" className="w-full h-full object-cover" />
+                  <div
+                    key={preview + index}
+                    draggable
+                    onDragStart={(e) => handleDragStart(e, index)}
+                    onDragOver={(e) => handleDragOver(e, index)}
+                    onDragEnd={handleDragEnd}
+                    className={`relative group aspect-video rounded-xl overflow-hidden border transition-all cursor-grab active:cursor-grabbing ${
+                      draggedIndex === index
+                        ? 'opacity-40 scale-95 border-teal-500'
+                        : index === 0
+                        ? 'border-teal-500 ring-2 ring-teal-500/30'
+                        : 'border-stone-200 dark:border-white/10 hover:border-stone-300'
+                    }`}
+                  >
+                    <img src={preview} alt="Upload preview" className="w-full h-full object-cover select-none" />
+
+                    {/* Cover badge */}
+                    {index === 0 && (
+                      <span className="absolute top-2 left-2 px-2 py-0.5 rounded-md bg-teal-600 text-white text-[10px] font-bold shadow-md flex items-center gap-1">
+                        <CheckCircle2 size={11} />
+                        Обложка
+                      </span>
+                    )}
+
+                    {/* Drag indicator & remove button */}
+                    <div className="absolute top-2 right-2 flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                      <button
+                        type="button"
+                        onClick={() => handleRemovePhoto(index)}
+                        className="p-1 rounded-lg bg-black/70 text-white hover:bg-rose-600 transition-colors shadow-xs"
+                        title="Удалить фото"
+                      >
+                        <Trash2 size={13} />
+                      </button>
+                    </div>
+
+                    <div className="absolute bottom-1 right-1 p-1 rounded bg-black/40 text-white text-[10px] opacity-0 group-hover:opacity-100 transition-opacity flex items-center gap-0.5">
+                      <GripVertical size={12} />
+                      <span>{index + 1}</span>
+                    </div>
                   </div>
                 ))}
               </div>

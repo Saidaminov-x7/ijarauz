@@ -2,6 +2,7 @@
 
 import { useMemo, useState } from 'react';
 import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
+import { useTheme } from 'next-themes';
 import 'leaflet/dist/leaflet.css';
 import { getDefaultMarkerIcon } from '@/lib/leaflet-icon';
 
@@ -22,6 +23,8 @@ interface MapClusterProps {
 
 export default function MapCluster({ apartments, onMarkerClick, className = '' }: MapClusterProps) {
   const [ready] = useState(true);
+  const { resolvedTheme } = useTheme();
+  const isDark = resolvedTheme === 'dark';
   const tashkentCenter = useMemo(() => ({ lat: 41.2995, lng: 69.2401 }), []);
 
   const icon = useMemo(() => (ready ? getDefaultMarkerIcon() : null), [ready]);
@@ -36,6 +39,7 @@ export default function MapCluster({ apartments, onMarkerClick, className = '' }
 
   return (
     <MapContainer
+      key={resolvedTheme}
       center={tashkentCenter}
       zoom={12}
       scrollWheelZoom={false}
@@ -43,8 +47,16 @@ export default function MapCluster({ apartments, onMarkerClick, className = '' }
       className={`rounded-lg ${className}`}
     >
       <TileLayer
-        url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-        attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+        url={
+          isDark
+            ? 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png'
+            : 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png'
+        }
+        attribution={
+          isDark
+            ? '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>'
+            : '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+        }
       />
       {points.map((apartment) => (
         <Marker

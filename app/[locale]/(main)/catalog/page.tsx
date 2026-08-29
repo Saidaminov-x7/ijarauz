@@ -3,10 +3,12 @@
 import { useTranslations } from 'next-intl';
 import { useState, useEffect, Suspense, useCallback } from 'react';
 import { useParams, useSearchParams, useRouter, usePathname } from 'next/navigation';
-import { MapPin, Search, Sparkles, Filter, Check, RotateCcw, Bell } from 'lucide-react';
+import { MapPin, Search, Sparkles, Filter, Check, RotateCcw, Bell, X, Compass } from 'lucide-react';
+import { motion, type Variants } from 'framer-motion';
 import { toast } from 'sonner';
 import { Button } from '@/components/ui/Button';
 import { ApartmentCard } from '@/app/[locale]/(main)/catalog/components/ApartmentCard';
+import { AmenitiesFilter, QuickAmenityChips, AMENITY_CONFIG } from '@/app/[locale]/(main)/catalog/components/AmenitiesFilter';
 import { getApartments, createSavedSearch } from '@/lib/api';
 import { Apartment } from '@/types';
 import { Dropdown } from '@/components/ui/Dropdown';
@@ -37,8 +39,24 @@ const CITIES: Record<string, string[]> = {
   "Фергана": ["Центральный", "Киргули"],
 };
 
+const containerVariants: Variants = {
+  hidden: { opacity: 0 },
+  show: {
+    opacity: 1,
+    transition: {
+      staggerChildren: 0.05,
+    },
+  },
+};
+
+const itemVariants: Variants = {
+  hidden: { opacity: 0, y: 12 },
+  show: { opacity: 1, y: 0, transition: { duration: 0.25 } },
+};
+
 function CatalogContent() {
   const t = useTranslations('catalog');
+  const tAmenities = useTranslations('amenities');
   const params = useParams();
   const searchParams = useSearchParams();
   const router = useRouter();
@@ -54,6 +72,7 @@ function CatalogContent() {
   const maxPriceParam = searchParams.get('maxPrice') || '';
   const furnishedParam = searchParams.get('furnished') === 'true';
   const queryParam = searchParams.get('q') || '';
+  const amenitiesParam = searchParams.get('amenities')?.split(',').filter(Boolean) || [];
 
   const [activeType, setActiveType] = useState<string>(typeParam);
   const [activeAudience, setActiveAudience] = useState<string>(audienceParam);
@@ -62,6 +81,7 @@ function CatalogContent() {
   const [minPrice, setMinPrice] = useState<string>(minPriceParam || '');
   const [maxPrice, setMaxPrice] = useState<string>(maxPriceParam || '');
   const [furnished, setFurnished] = useState<boolean>(furnishedParam);
+  const [selectedAmenities, setSelectedAmenities] = useState<string[]>(amenitiesParam);
   const [searchQuery, setSearchQuery] = useState<string>(queryParam);
   const [sortBy, setSortBy] = useState<'createdAt' | 'price' | 'viewsCount'>(
     (searchParams.get('sortBy') as 'createdAt' | 'price' | 'viewsCount') || 'createdAt'
@@ -71,6 +91,7 @@ function CatalogContent() {
   );
 
   const [apartments, setApartments] = useState<Apartment[]>([]);
+  const [recommendations, setRecommendations] = useState<Apartment[]>([]);
   const [loading, setLoading] = useState(true);
 
   // Sync states when URL changes (e.g. from AI assistant or back/forward buttons)
@@ -82,6 +103,7 @@ function CatalogContent() {
     setMinPrice(searchParams.get('minPrice') || '');
     setMaxPrice(searchParams.get('maxPrice') || '');
     setFurnished(searchParams.get('furnished') === 'true');
+    setSelectedAmenities(searchParams.get('amenities')?.split(',').filter(Boolean) || []);
     setSearchQuery(searchParams.get('q') || '');
   }, [searchParams]);
 
@@ -111,6 +133,7 @@ function CatalogContent() {
     minPrice ||
     maxPrice ||
     furnished ||
+    selectedAmenities.length > 0 ||
     searchQuery
   );
 
@@ -124,12 +147,24 @@ function CatalogContent() {
         audience: activeAudience !== 'all' ? activeAudience : undefined,
         forStudents: activeAudience === 'students',
         furnished: furnished ? true : undefined,
+        amenities: selectedAmenities.length > 0 ? selectedAmenities : undefined,
         minPrice: minPrice ? Number(minPrice) : undefined,
         maxPrice: maxPrice ? Number(maxPrice) : undefined,
         sortBy,
         sortOrder,
       });
       setApartments(data);
+
+      // Если ничего не найдено, загружаем запасные рекомендации (без строгих ограничений)
+      if (data.length === 0) {
+        const fallback = await getApartments(locale, undefined, {
+          city: selectedCity || undefined,
+          limit: 6,
+        });
+        setRecommendations(fallback);
+      } else {
+        setRecommendations([]);
+      }
     } catch (err) {
       console.error('Failed to fetch apartments:', err);
     } finally {
@@ -139,7 +174,18 @@ function CatalogContent() {
 
   useEffect(() => {
     fetchListings();
-  }, [locale, activeType, activeAudience, selectedCity, selectedDistrict, minPrice, maxPrice, furnished, searchQuery, sortBy, sortOrder]);
+  }, [locale, activeType, activeAudience, selectedCity, selectedDistrict, minPrice, maxPrice, furnished, selectedAmenities, searchQuery, sortBy, sortOrder]);
+
+  const handleAmenitiesChange = (amenities: string[]) => {
+    setSelectedAmenities(amenities);
+    updateUrlParams({ amenities: amenities.length > 0 ? amenities.join(',') : null });
+  };
+
+  const removeSingleAmenity = (key: string) => {
+    const next = selectedAmenities.filter((a) => a !== key);
+    setSelectedAmenities(next);
+    updateUrlParams({ amenities: next.length > 0 ? next.join(',') : null });
+  };
 
   const handleTypeChange = (typeId: string) => {
     setActiveType(typeId);
@@ -182,6 +228,7 @@ function CatalogContent() {
     setMinPrice('');
     setMaxPrice('');
     setFurnished(false);
+    setSelectedAmenities([]);
     setSearchQuery('');
     router.push(pathname, { scroll: false });
   };
@@ -370,7 +417,18 @@ function CatalogContent() {
                 </div>
               </div>
 
-              {/* 5. Additional Checkboxes */}
+              {/* 5. Amenities / Удобства */}
+              <div className="mb-6">
+                <h3 className="text-xs font-bold uppercase tracking-wider text-stone-500 dark:text-stone-400 mb-3">
+                  Удобства
+                </h3>
+                <AmenitiesFilter
+                  selected={selectedAmenities}
+                  onChange={handleAmenitiesChange}
+                />
+              </div>
+
+              {/* 6. Additional Checkboxes */}
               <div className="mb-6 space-y-2 border-t border-stone-100 pt-4 dark:border-white/5">
                 <label className="flex items-center gap-2.5 text-xs font-medium text-stone-700 dark:text-stone-300 cursor-pointer select-none">
                   <input
@@ -397,6 +455,41 @@ function CatalogContent() {
 
           {/* Listings Main Section */}
           <div className="flex-1 min-w-0">
+            {/* Quick Amenity Chips */}
+            <div className="mb-4 flex items-center gap-2 overflow-x-auto pb-1 scrollbar-none">
+              <span className="text-xs font-semibold text-stone-400 shrink-0">Быстрые фильтры:</span>
+              <QuickAmenityChips
+                selected={selectedAmenities}
+                onChange={handleAmenitiesChange}
+              />
+            </div>
+
+            {/* Active removable amenity tags */}
+            {selectedAmenities.length > 0 && (
+              <div className="mb-4 flex items-center gap-1.5 flex-wrap">
+                <span className="text-xs text-stone-400">Выбрано:</span>
+                {selectedAmenities.map((key) => {
+                  const item = AMENITY_CONFIG[key];
+                  return (
+                    <span
+                      key={key}
+                      className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-teal-50 text-teal-700 dark:bg-teal-950/60 dark:text-teal-300 text-xs font-semibold border border-teal-200 dark:border-teal-800/40"
+                    >
+                      <span>{item ? tAmenities(item.translationKey as any) : key}</span>
+                      <button
+                        type="button"
+                        onClick={() => removeSingleAmenity(key)}
+                        className="hover:text-teal-900 dark:hover:text-white transition-colors"
+                        title="Удалить фильтр"
+                      >
+                        <X size={13} />
+                      </button>
+                    </span>
+                  );
+                })}
+              </div>
+            )}
+
             {/* Header with counter and sort dropdown */}
             <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-6">
               {isFiltered ? (
@@ -431,6 +524,7 @@ function CatalogContent() {
                         minPrice: minPrice ? Number(minPrice) : undefined,
                         maxPrice: maxPrice ? Number(maxPrice) : undefined,
                         type: activeType !== 'all' ? activeType.toUpperCase() : undefined,
+                        amenities: selectedAmenities.length > 0 ? selectedAmenities.join(',') : undefined,
                       });
                       toast.success(`Поиск сохранён! Мы уведомим вас о новых объектах: "${searchName}"`);
                     } catch {
@@ -465,7 +559,7 @@ function CatalogContent() {
               </div>
             </div>
 
-            {/* Listings Grid */}
+            {/* Listings Grid with framer-motion Stagger Animation (C1) */}
             {loading ? (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {[...Array(6)].map((_, i) => (
@@ -480,23 +574,54 @@ function CatalogContent() {
                 ))}
               </div>
             ) : apartments.length > 0 ? (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              <motion.div
+                variants={containerVariants}
+                initial="hidden"
+                animate="show"
+                className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
+              >
                 {apartments.map((apartment) => (
-                  <ApartmentCard
-                    key={apartment.id}
-                    apartment={apartment}
-                    locale={locale}
-                  />
+                  <motion.div key={apartment.id} variants={itemVariants}>
+                    <ApartmentCard
+                      apartment={apartment}
+                      locale={locale}
+                    />
+                  </motion.div>
                 ))}
-              </div>
+              </motion.div>
             ) : (
-              <div className="rounded-2xl border border-stone-200/80 bg-white p-12 text-center dark:border-white/10 dark:bg-[#1A1A1A]">
-                <p className="text-stone-500 dark:text-stone-400 mb-4">
-                  По заданным фильтрам ничего не найдено
-                </p>
-                <Button onClick={handleReset} variant="outline" className="rounded-xl">
-                  Сбросить фильтры
-                </Button>
+              <div className="space-y-8">
+                {/* Empty State Card */}
+                <div className="rounded-2xl border border-stone-200/80 bg-white p-10 text-center dark:border-white/10 dark:bg-[#1A1A1A]">
+                  <div className="mx-auto w-12 h-12 rounded-2xl bg-teal-50 dark:bg-teal-950/50 flex items-center justify-center text-teal-600 dark:text-teal-400 mb-3">
+                    <Compass size={24} />
+                  </div>
+                  <h3 className="text-lg font-bold text-stone-900 dark:text-white mb-1">
+                    По заданным фильтрам ничего не найдено
+                  </h3>
+                  <p className="text-xs text-stone-500 dark:text-stone-400 max-w-md mx-auto mb-5">
+                    Попробуйте смягчить условия поиска, убрать часть удобств или сбросить фильтры
+                  </p>
+                  <Button onClick={handleReset} variant="outline" className="rounded-xl">
+                    <RotateCcw size={14} className="mr-2" />
+                    Сбросить все фильтры
+                  </Button>
+                </div>
+
+                {/* Recommendations (Group A4) */}
+                {recommendations.length > 0 && (
+                  <div>
+                    <h3 className="text-sm font-bold text-stone-900 dark:text-white uppercase tracking-wider mb-4 flex items-center gap-2">
+                      <Sparkles size={16} className="text-teal-600" />
+                      Похожие варианты в этом регионе
+                    </h3>
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                      {recommendations.map((item) => (
+                        <ApartmentCard key={item.id} apartment={item} locale={locale} />
+                      ))}
+                    </div>
+                  </div>
+                )}
               </div>
             )}
           </div>

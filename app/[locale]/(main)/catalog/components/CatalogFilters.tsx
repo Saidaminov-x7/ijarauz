@@ -7,6 +7,7 @@ import { Filter, X } from 'lucide-react';
 
 import { EmptyState } from './EmptyState';
 import { ApartmentCard } from './ApartmentCard';
+import { AmenitiesFilter } from './AmenitiesFilter';
 import { Button } from '@/components/ui/Button';
 import { getApartments } from '@/lib/api';
 import { Apartment } from '@/types';
@@ -173,6 +174,24 @@ export function CatalogFilters({ locale, query }: CatalogFiltersProps) {
                 <option value="namangan">Наманган</option>
               </select>
             </div>
+          </div>
+
+          <div className="mt-4 pt-4 border-t border-stone-200 dark:border-stone-700">
+            <label className="mb-2 block text-sm font-medium text-stone-700 dark:text-stone-300">
+              Удобства
+            </label>
+            <AmenitiesFilter
+              selected={searchParams.get('amenities')?.split(',').filter(Boolean) || []}
+              onChange={(amenities) => {
+                const params = new URLSearchParams(searchParams.toString());
+                if (amenities.length > 0) {
+                  params.set('amenities', amenities.join(','));
+                } else {
+                  params.delete('amenities');
+                }
+                router.push(`/${locale}/catalog?${params.toString()}`);
+              }}
+            />
           </div>
         </div>
       )}

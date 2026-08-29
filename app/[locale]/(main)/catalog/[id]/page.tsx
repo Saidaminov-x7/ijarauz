@@ -86,9 +86,39 @@ export default async function ApartmentPage({ params }: ApartmentPageProps) {
 
   const images = apartment.images?.length ? apartment.images : [apartment.image || '/placeholder-apartment.jpg'];
   const amenities = apartment.amenities || [];
+  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://ijara.uz';
+  const jsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'Apartment',
+    name: apartment.title,
+    description: apartment.description || '',
+    address: {
+      '@type': 'PostalAddress',
+      addressLocality: apartment.city || 'Tashkent',
+      addressRegion: apartment.district || '',
+      addressCountry: 'UZ',
+    },
+    numberOfRooms: apartment.rooms || 1,
+    floorSize: {
+      '@type': 'QuantitativeValue',
+      value: apartment.area || 0,
+      unitCode: 'MTK',
+    },
+    image: images.map((img: string) => (img.startsWith('http') ? img : `${baseUrl}${img}`)),
+    offers: {
+      '@type': 'Offer',
+      price: apartment.price,
+      priceCurrency: 'USD',
+      availability: 'https://schema.org/InStock',
+    },
+  };
 
   return (
     <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-10">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
       <div className="mb-8">
         <h1 className="text-3xl font-bold text-stone-900 dark:text-white">
           {apartment.title}

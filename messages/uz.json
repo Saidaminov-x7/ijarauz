@@ -93,6 +93,23 @@
     "amenities": "Qulayliklar",
     "contactOwner": "Egasi bilan bog'lanish"
   },
+  "amenities": {
+    "title": "Qulayliklar",
+    "wifi": "Wi-Fi",
+    "parking": "Avtoturargoh",
+    "elevator": "Lift",
+    "air_conditioning": "Konditsioner",
+    "heating": "Isitish tizimi",
+    "balcony": "Balkon",
+    "pets_allowed": "Uy hayvonlariga ruxsat",
+    "security": "Xavfsizlik / Qo'riqlash",
+    "furniture": "Mebel",
+    "kitchen": "Oshxona",
+    "washing_machine": "Kir yuvish mashinasi",
+    "gym": "Sportzal",
+    "pool": "Basseyn",
+    "sauna": "Sauna"
+  },
   "Login": {
     "title": "Hisobga kirish",
     "subtitle": "Kirish uchun ma'lumotlaringizni kiriting",

@@ -16,8 +16,10 @@ import {
   Scale,
   AlertTriangle,
   TrendingDown,
+  TrendingUp,
   Calendar,
   X,
+  Share2,
 } from 'lucide-react';
 import type { Listing } from '@/lib/data';
 import { Gallery } from '@/components/ui/Gallery';
@@ -73,6 +75,28 @@ export function ListingDetailClient({ listing, coordinates, locale }: Props) {
 
   function handleContact() {
     toast.success('Заявка отправлена! Арендодатель свяжется с вами.');
+  }
+
+  async function handleShare() {
+    const shareData = {
+      title: listing.title,
+      text: `${listing.price}$ · ${listing.rooms} комн. · ${listing.district}, ${listing.city}`,
+      url: typeof window !== 'undefined' ? window.location.href : '',
+    };
+    if (typeof navigator !== 'undefined' && navigator.share) {
+      try {
+        await navigator.share(shareData);
+      } catch (err) {
+        // User closed the share sheet
+      }
+    } else if (typeof navigator !== 'undefined' && navigator.clipboard) {
+      try {
+        await navigator.clipboard.writeText(shareData.url);
+        toast.success('Ссылка на объявление скопирована!');
+      } catch {
+        toast.info(shareData.url);
+      }
+    }
   }
 
   async function handleSendReport(e: React.FormEvent) {
@@ -157,7 +181,18 @@ export function ListingDetailClient({ listing, coordinates, locale }: Props) {
           </p>
         </div>
 
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-2 sm:gap-3 flex-wrap justify-end">
+          <button
+            type="button"
+            onClick={handleShare}
+            aria-label="Поделиться"
+            className="flex h-11 px-3.5 items-center gap-1.5 rounded-xl border border-stone-200 text-stone-600 hover:text-teal-600 hover:border-teal-500 bg-white dark:border-white/10 dark:bg-[#222222] dark:text-stone-300 dark:hover:border-teal-500 transition-colors text-xs font-semibold"
+            title="Поделиться объявлением"
+          >
+            <Share2 size={16} />
+            <span className="hidden sm:inline">Поделиться</span>
+          </button>
+
           <button
             type="button"
             onClick={() => toggleCompare(listing.id)}
@@ -166,7 +201,7 @@ export function ListingDetailClient({ listing, coordinates, locale }: Props) {
               'flex h-11 w-11 items-center justify-center rounded-xl border transition-colors',
               isInCompare
                 ? 'border-teal-500 bg-teal-50 text-teal-600 dark:bg-teal-950/40 dark:text-teal-400'
-                : 'border-stone-200 text-stone-500 hover:text-teal-600 dark:border-white/10 dark:text-stone-400'
+                : 'border-stone-200 text-stone-500 hover:text-teal-600 bg-white dark:bg-[#222222] dark:border-white/10 dark:text-stone-400'
             )}
             title={isInCompare ? 'В сравнении' : 'Добавить к сравнению'}
           >
@@ -177,25 +212,71 @@ export function ListingDetailClient({ listing, coordinates, locale }: Props) {
             type="button"
             onClick={() => toggleFavorite(listing.id)}
             aria-label={isFavorite ? 'Убрать из избранного' : 'Добавить в избранное'}
-            className="flex h-11 w-11 items-center justify-center rounded-xl border border-stone-200 text-stone-500 transition-colors hover:text-rose-500 dark:border-white/10 dark:text-stone-400"
+            className="flex h-11 w-11 items-center justify-center rounded-xl border border-stone-200 bg-white text-stone-500 transition-colors hover:text-rose-500 dark:border-white/10 dark:bg-[#222222] dark:text-stone-400"
           >
             <Heart size={18} className={cn(isFavorite && 'fill-rose-500 text-rose-500')} />
           </button>
 
-          <div className="text-right">
+          <div className="text-right pl-2">
             <span className="text-2xl sm:text-3xl font-black text-stone-900 dark:text-white">${listing.price}</span>
             <span className="text-xs text-stone-400 dark:text-stone-500 block">{listing.type === 'daily' ? 'за сутки' : 'в месяц'}</span>
           </div>
         </div>
       </div>
 
-      {/* История изменения цены (если есть записи) */}
+      {/* История изменения цены (A2) */}
       {priceHistory.length > 0 && (
-        <div className="mt-4 flex items-center gap-2 rounded-xl bg-amber-50 dark:bg-amber-950/30 p-3 text-xs text-amber-800 dark:text-amber-300 border border-amber-200 dark:border-amber-800/40">
-          <TrendingDown size={16} className="shrink-0 text-amber-600" />
-          <span>
-            История цены: последнее изменение зафиксировано {new Date(priceHistory[priceHistory.length - 1].changedAt).toLocaleDateString()}
-          </span>
+        <div className="mt-5 rounded-2xl border border-stone-200/80 bg-white p-4.5 dark:border-white/10 dark:bg-[#222222]">
+          <div className="flex items-center justify-between gap-2 mb-3">
+            <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-stone-600 dark:text-stone-300">
+              <TrendingDown size={16} className="text-teal-600 dark:text-teal-400" />
+              <span>Динамика и история цены</span>
+            </div>
+            <span className="text-[11px] font-medium text-stone-400">
+              Зафиксировано изменений: {priceHistory.length}
+            </span>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2.5">
+            {priceHistory.map((item, idx) => {
+              const oldPrice = Number(item.oldPrice) || listing.price;
+              const newPrice = Number(item.newPrice) || listing.price;
+              const isDrop = newPrice < oldPrice;
+              const diff = Math.abs(newPrice - oldPrice);
+              const percent = oldPrice > 0 ? Math.round((diff / oldPrice) * 100) : 0;
+
+              return (
+                <div
+                  key={item.id || idx}
+                  className="flex items-center justify-between p-2.5 rounded-xl border border-stone-100 bg-stone-50/80 dark:border-white/5 dark:bg-white/5 text-xs"
+                >
+                  <div>
+                    <div className="font-bold text-stone-900 dark:text-white flex items-center gap-1.5">
+                      <span>${newPrice}</span>
+                      {diff > 0 && (
+                        <span
+                          className={cn(
+                            'text-[10px] font-bold px-1.5 py-0.5 rounded-md',
+                            isDrop
+                              ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-950/50 dark:text-emerald-300'
+                              : 'bg-rose-100 text-rose-700 dark:bg-rose-950/50 dark:text-rose-300'
+                          )}
+                        >
+                          {isDrop ? `-${percent}%` : `+${percent}%`}
+                        </span>
+                      )}
+                    </div>
+                    <div className="text-[11px] text-stone-400 mt-0.5">
+                      было: ${oldPrice}
+                    </div>
+                  </div>
+                  <div className="text-[11px] text-stone-500 dark:text-stone-400 font-medium">
+                    {new Date(item.changedAt || Date.now()).toLocaleDateString('ru-RU')}
+                  </div>
+                </div>
+              );
+            })}
+          </div>
         </div>
       )}
 

@@ -24,6 +24,7 @@ export interface Filters {
   audience?: Audience | string;
   forStudents?: boolean;
   furnished?: boolean;
+  amenities?: string[] | string;
   page?: number;
   limit?: number;
   sortBy?: 'createdAt' | 'price' | 'viewsCount' | 'area';
@@ -207,6 +208,9 @@ export const getApartments = async (
     if (filters.maxPrice) {
       params.maxPrice = filters.maxPrice;
     }
+    if (filters.amenities && (Array.isArray(filters.amenities) ? filters.amenities.length > 0 : Boolean(filters.amenities))) {
+      params.amenities = Array.isArray(filters.amenities) ? filters.amenities.join(',') : filters.amenities;
+    }
     if (filters.type && filters.type !== 'all') {
       const typeMap: Record<string, string> = {
         apartment: 'APARTMENT',
@@ -276,6 +280,16 @@ function filterApartmentsClient(list: Apartment[], query?: string, filters: Filt
     if (filters.minPrice && apt.price < filters.minPrice) return false;
     if (filters.maxPrice && apt.price > filters.maxPrice) return false;
     if (filters.rooms && apt.rooms !== Number(filters.rooms)) return false;
+    if (filters.amenities) {
+      const neededAmenities = Array.isArray(filters.amenities)
+        ? filters.amenities
+        : filters.amenities.split(',').filter(Boolean);
+      if (neededAmenities.length > 0) {
+        const aptAmenities = (apt.amenities || []).map((a) => a.toUpperCase());
+        const hasMatch = neededAmenities.some((na) => aptAmenities.includes(na.toUpperCase()));
+        if (!hasMatch) return false;
+      }
+    }
     return true;
   });
 }
