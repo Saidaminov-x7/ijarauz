@@ -4,7 +4,7 @@ import { useTranslations } from 'next-intl';
 import { useState, useEffect, Suspense, useCallback } from 'react';
 import { useParams, useSearchParams, useRouter, usePathname } from 'next/navigation';
 import { MapPin, Search, Sparkles, Filter, Check, RotateCcw, Bell, X, Compass, ChevronDown, SlidersHorizontal } from 'lucide-react';
-import { motion, AnimatePresence, type Variants, LayoutGroup } from 'framer-motion';
+import { motion, AnimatePresence, type Variants, LayoutGroup, useReducedMotion } from 'framer-motion';
 import { toast } from 'sonner';
 import { Button } from '@/components/ui/Button';
 import { ApartmentCard } from '@/app/[locale]/(main)/catalog/components/ApartmentCard';
@@ -31,22 +31,24 @@ const AUDIENCES = [
   { id: 'girls', label: 'Девушкам' },
 ];
 
-const containerVariants: Variants = {
-  hidden: { opacity: 0 },
-  show: {
-    opacity: 1,
-    transition: {
-      staggerChildren: 0.03,
-    },
-  },
-};
-
-const itemVariants: Variants = {
-  hidden: { opacity: 0, y: 12 },
-  show: { opacity: 1, y: 0, transition: { duration: 0.25 } },
-};
-
 function CatalogContent() {
+  const prefersReducedMotion = useReducedMotion();
+
+  const containerVariants: Variants = {
+    hidden: {},
+    show: {
+      transition: {
+        staggerChildren: prefersReducedMotion ? 0 : 0.04,
+        delayChildren: 0.05,
+      },
+    },
+  };
+
+  const itemVariants: Variants = {
+    hidden: { opacity: 0, y: prefersReducedMotion ? 0 : 8 },
+    show: { opacity: 1, y: 0, transition: { duration: 0.25 } },
+  };
+
   const t = useTranslations('catalog');
   const tAmenities = useTranslations('amenities');
   const params = useParams();

@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { Send, Star, Share2, Copy, Check, MessageSquare, Share } from 'lucide-react';
+import { motion, AnimatePresence, useReducedMotion } from 'framer-motion';
 import { toast } from 'sonner';
 
 /**
@@ -27,6 +28,7 @@ export function ShareModal({
   url: string;
 }) {
   const [copied, setCopied] = useState(false);
+  const prefersReducedMotion = useReducedMotion();
 
   // Блокировка скролла фона при открытой модалке
   useEffect(() => {
@@ -39,8 +41,6 @@ export function ShareModal({
       document.body.style.overflow = '';
     };
   }, [isOpen]);
-
-  if (!isOpen) return null;
 
   const messageText = `🏠 ${title}\n💰 Цена: $${price}/мес\n📍 Район: ${district ? `${district}, ` : ''}${city}\n🔗 Смотреть на Ijarauz: ${url}`;
 
@@ -78,14 +78,24 @@ export function ShareModal({
   };
 
   return (
-    <div
-      onClick={onClose}
-      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs animate-in fade-in duration-200"
-    >
-      <div
-        onClick={(e) => e.stopPropagation()}
-        className="card max-w-md w-full p-6 space-y-4 bg-white dark:bg-[#1E1E1E] border border-stone-200 dark:border-white/10 rounded-2xl shadow-2xl overflow-hidden"
-      >
+    <AnimatePresence>
+      {isOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+          <motion.div
+            className="fixed inset-0 bg-black/60 backdrop-blur-sm"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.15 }}
+            onClick={onClose}
+          />
+          <motion.div
+            className="card max-w-md w-full p-6 space-y-4 bg-white dark:bg-[#1E1E1E] border border-stone-200 dark:border-white/10 rounded-2xl shadow-2xl overflow-hidden z-10"
+            initial={{ opacity: 0, scale: prefersReducedMotion ? 1 : 0.96 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: prefersReducedMotion ? 1 : 0.96 }}
+            transition={{ duration: 0.15 }}
+          >
         <div className="flex items-center justify-between">
           <h3 className="text-lg font-bold text-stone-900 dark:text-white flex items-center gap-2">
             <Share2 size={18} className="text-teal-500" />
@@ -170,8 +180,10 @@ export function ShareModal({
             {copied ? 'Скопировано' : 'Копировать'}
           </button>
         </div>
-      </div>
-    </div>
+          </motion.div>
+        </div>
+      )}
+    </AnimatePresence>
   );
 }
 

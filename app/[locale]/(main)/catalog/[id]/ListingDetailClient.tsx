@@ -41,6 +41,7 @@ import { ListingCard } from '@/components/ListingCard';
 import { AMENITY_CONFIG } from '@/app/[locale]/(main)/catalog/components/AmenitiesFilter';
 import { cn } from '@/lib/utils';
 import { Apartment } from '@/types';
+import { Modal } from '@/components/ui/Modal';
 import { ShareModal, LandlordReviewsSection } from '@/components/listing/InteractiveListingModules';
 
 interface Props {
@@ -525,132 +526,122 @@ export function ListingDetailClient({ listing, coordinates, locale }: Props) {
       />
 
       {/* Модальное окно записи на просмотр */}
-      {isViewingModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs animate-in fade-in duration-200">
-          <div className="card max-w-md w-full p-6 space-y-4 bg-white dark:bg-stone-900 border border-stone-200 dark:border-white/10 rounded-2xl shadow-2xl">
-            <div className="flex items-center justify-between">
-              <h3 className="text-lg font-bold text-stone-900 dark:text-white flex items-center gap-2">
-                <Calendar size={18} className="text-teal-500" />
-                Запись на просмотр квартиры
-              </h3>
-              <button onClick={() => setIsViewingModalOpen(false)} className="text-stone-400 hover:text-stone-600 dark:hover:text-white cursor-pointer">
-                ✕
-              </button>
-            </div>
-
-            <form onSubmit={handleSendViewingRequest} className="space-y-3">
-              <div>
-                <label className="block text-xs font-medium text-stone-700 dark:text-stone-300 mb-1">
-                  Желаемая дата и время:
-                </label>
-                <input
-                  type="datetime-local"
-                  required
-                  value={preferredDate}
-                  onChange={(e) => setPreferredDate(e.target.value)}
-                  className="w-full h-10 px-3.5 rounded-xl border border-stone-200 dark:border-white/10 bg-stone-50 dark:bg-white/5 text-xs text-stone-900 dark:text-white outline-none focus:border-teal-500"
-                />
-              </div>
-
-              <div>
-                <label className="block text-xs font-medium text-stone-700 dark:text-stone-300 mb-1">
-                  Комментарий владельцу (необязательно):
-                </label>
-                <textarea
-                  rows={3}
-                  value={viewingMessage}
-                  onChange={(e) => setViewingMessage(e.target.value)}
-                  placeholder="Здравствуйте! Хотели бы прийти вдвоем посмотреть квартиру..."
-                  className="w-full p-3 rounded-xl border border-stone-200 dark:border-white/10 bg-stone-50 dark:bg-white/5 text-xs text-stone-900 dark:text-white outline-none focus:border-teal-500 resize-none"
-                />
-              </div>
-
-              <div className="pt-2 flex justify-end gap-2">
-                <button
-                  type="button"
-                  onClick={() => setIsViewingModalOpen(false)}
-                  className="px-4 py-2 rounded-xl text-xs font-medium text-stone-600 hover:bg-stone-100 dark:text-stone-400 dark:hover:bg-white/5 cursor-pointer"
-                >
-                  Отмена
-                </button>
-                <button
-                  type="submit"
-                  disabled={isSubmittingViewing || !preferredDate}
-                  className="btn btn-primary text-xs py-2 px-5 cursor-pointer disabled:opacity-50"
-                >
-                  {isSubmittingViewing ? 'Отправка...' : 'Отправить заявку'}
-                </button>
-              </div>
-            </form>
+      <Modal
+        isOpen={isViewingModalOpen}
+        onClose={() => setIsViewingModalOpen(false)}
+        title={
+          <div className="flex items-center gap-2">
+            <Calendar size={18} className="text-teal-500" />
+            <span>Запись на просмотр квартиры</span>
           </div>
-        </div>
-      )}
+        }
+      >
+        <form onSubmit={handleSendViewingRequest} className="space-y-3 pt-1">
+          <div>
+            <label className="block text-xs font-medium text-stone-700 dark:text-stone-300 mb-1">
+              Желаемая дата и время:
+            </label>
+            <input
+              type="datetime-local"
+              required
+              value={preferredDate}
+              onChange={(e) => setPreferredDate(e.target.value)}
+              className="w-full h-10 px-3.5 rounded-xl border border-stone-200 dark:border-white/10 bg-stone-50 dark:bg-white/5 text-xs text-stone-900 dark:text-white outline-none focus:border-teal-500"
+            />
+          </div>
+
+          <div>
+            <label className="block text-xs font-medium text-stone-700 dark:text-stone-300 mb-1">
+              Комментарий владельцу (необязательно):
+            </label>
+            <textarea
+              rows={3}
+              value={viewingMessage}
+              onChange={(e) => setViewingMessage(e.target.value)}
+              placeholder="Здравствуйте! Хотели бы прийти вдвоем посмотреть квартиру..."
+              className="w-full p-3 rounded-xl border border-stone-200 dark:border-white/10 bg-stone-50 dark:bg-white/5 text-xs text-stone-900 dark:text-white outline-none focus:border-teal-500 resize-none"
+            />
+          </div>
+
+          <div className="pt-2 flex justify-end gap-2">
+            <button
+              type="button"
+              onClick={() => setIsViewingModalOpen(false)}
+              className="px-4 py-2 rounded-xl text-xs font-medium text-stone-600 hover:bg-stone-100 dark:text-stone-400 dark:hover:bg-white/5 cursor-pointer"
+            >
+              Отмена
+            </button>
+            <button
+              type="submit"
+              disabled={isSubmittingViewing || !preferredDate}
+              className="btn btn-primary text-xs py-2 px-5 cursor-pointer disabled:opacity-50"
+            >
+              {isSubmittingViewing ? 'Отправка...' : 'Отправить заявку'}
+            </button>
+          </div>
+        </form>
+      </Modal>
 
       {/* Модальное окно жалобы */}
-      {isReportModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs animate-in fade-in duration-200">
-          <div className="card max-w-md w-full p-6 space-y-4 bg-white dark:bg-stone-900 border border-stone-200 dark:border-white/10 rounded-2xl shadow-2xl">
-            <div className="flex items-center justify-between">
-              <h3 className="text-lg font-bold text-stone-900 dark:text-white flex items-center gap-2 text-rose-600">
-                <AlertTriangle size={18} />
-                Пожаловаться на объявление
-              </h3>
-              <button onClick={() => setIsReportModalOpen(false)} className="text-stone-400 hover:text-stone-600 dark:hover:text-white cursor-pointer">
-                ✕
-              </button>
-            </div>
-
-            <form onSubmit={handleSendReport} className="space-y-3">
-              <div>
-                <label className="block text-xs font-medium text-stone-700 dark:text-stone-300 mb-1">
-                  Причина жалобы:
-                </label>
-                <select
-                  value={reportReason}
-                  onChange={(e) => setReportReason(e.target.value)}
-                  className="w-full h-10 px-3 rounded-xl border border-stone-200 dark:border-white/10 bg-stone-50 dark:bg-white/5 text-xs text-stone-900 dark:text-white outline-none focus:border-rose-500"
-                >
-                  <option value="REALTOR">Скрытый риелтор / требование комиссии</option>
-                  <option value="SCAM">Мошенничество / требование предоплаты на карту</option>
-                  <option value="WRONG_PRICE">Неверная цена или параметры</option>
-                  <option value="ALREADY_RENTED">Квартира уже сдана</option>
-                  <option value="FAKE_PHOTOS">Чужие фотографии / фейк</option>
-                </select>
-              </div>
-
-              <div>
-                <label className="block text-xs font-medium text-stone-700 dark:text-stone-300 mb-1">
-                  Подробности (необязательно):
-                </label>
-                <textarea
-                  rows={3}
-                  value={reportComment}
-                  onChange={(e) => setReportComment(e.target.value)}
-                  placeholder="Опишите, что именно произошло при контакте..."
-                  className="w-full p-3 rounded-xl border border-stone-200 dark:border-white/10 bg-stone-50 dark:bg-white/5 text-xs text-stone-900 dark:text-white outline-none focus:border-rose-500 resize-none"
-                />
-              </div>
-
-              <div className="pt-2 flex justify-end gap-2">
-                <button
-                  type="button"
-                  onClick={() => setIsReportModalOpen(false)}
-                  className="px-4 py-2 rounded-xl text-xs font-medium text-stone-600 hover:bg-stone-100 dark:text-stone-400 dark:hover:bg-white/5 cursor-pointer"
-                >
-                  Отмена
-                </button>
-                <button
-                  type="submit"
-                  disabled={isSubmittingReport}
-                  className="btn bg-rose-600 hover:bg-rose-500 text-white text-xs py-2 px-5 cursor-pointer disabled:opacity-50"
-                >
-                  {isSubmittingReport ? 'Отправка...' : 'Отправить модераторам'}
-                </button>
-              </div>
-            </form>
+      <Modal
+        isOpen={isReportModalOpen}
+        onClose={() => setIsReportModalOpen(false)}
+        title={
+          <div className="flex items-center gap-2 text-rose-600">
+            <AlertTriangle size={18} />
+            <span>Пожаловаться на объявление</span>
           </div>
-        </div>
-      )}
+        }
+      >
+        <form onSubmit={handleSendReport} className="space-y-3 pt-1">
+          <div>
+            <label className="block text-xs font-medium text-stone-700 dark:text-stone-300 mb-1">
+              Причина жалобы:
+            </label>
+            <select
+              value={reportReason}
+              onChange={(e) => setReportReason(e.target.value)}
+              className="w-full h-10 px-3 rounded-xl border border-stone-200 dark:border-white/10 bg-stone-50 dark:bg-white/5 text-xs text-stone-900 dark:text-white outline-none focus:border-rose-500"
+            >
+              <option value="REALTOR">Скрытый риелтор / требование комиссии</option>
+              <option value="SCAM">Мошенничество / требование предоплаты на карту</option>
+              <option value="WRONG_PRICE">Неверная цена или параметры</option>
+              <option value="ALREADY_RENTED">Квартира уже сдана</option>
+              <option value="FAKE_PHOTOS">Чужие фотографии / фейк</option>
+            </select>
+          </div>
+
+          <div>
+            <label className="block text-xs font-medium text-stone-700 dark:text-stone-300 mb-1">
+              Подробности (необязательно):
+            </label>
+            <textarea
+              rows={3}
+              value={reportComment}
+              onChange={(e) => setReportComment(e.target.value)}
+              placeholder="Опишите, что именно произошло при контакте..."
+              className="w-full p-3 rounded-xl border border-stone-200 dark:border-white/10 bg-stone-50 dark:bg-white/5 text-xs text-stone-900 dark:text-white outline-none focus:border-rose-500 resize-none"
+            />
+          </div>
+
+          <div className="pt-2 flex justify-end gap-2">
+            <button
+              type="button"
+              onClick={() => setIsReportModalOpen(false)}
+              className="px-4 py-2 rounded-xl text-xs font-medium text-stone-600 hover:bg-stone-100 dark:text-stone-400 dark:hover:bg-white/5 cursor-pointer"
+            >
+              Отмена
+            </button>
+            <button
+              type="submit"
+              disabled={isSubmittingReport}
+              className="btn bg-rose-600 hover:bg-rose-500 text-white text-xs py-2 px-5 cursor-pointer disabled:opacity-50"
+            >
+              {isSubmittingReport ? 'Отправка...' : 'Отправить модераторам'}
+            </button>
+          </div>
+        </form>
+      </Modal>
     </div>
   );
 }

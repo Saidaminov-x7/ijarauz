@@ -26,7 +26,7 @@ export function Gallery({ images, alt }: { images: string[]; alt: string }) {
                 priority={i === 0}
                 loading={i === 0 ? undefined : 'lazy'}
                 sizes="(max-width: 768px) 100vw, 800px"
-                className="object-cover"
+                className="object-cover transition-opacity duration-200"
               />
             </div>
           ))}
@@ -39,7 +39,7 @@ export function Gallery({ images, alt }: { images: string[]; alt: string }) {
             type="button"
             onClick={scrollPrev}
             aria-label="Предыдущее фото"
-            className="absolute left-3 top-1/2 flex h-9 w-9 -translate-y-1/2 items-center justify-center rounded-full bg-white/90 text-stone-700 shadow transition hover:bg-white"
+            className="absolute left-3 top-1/2 flex h-9 w-9 -translate-y-1/2 items-center justify-center rounded-full bg-white/90 text-stone-700 shadow transition-all duration-200 hover:bg-white hover:scale-105 active:scale-95 cursor-pointer"
           >
             <ChevronLeft size={18} />
           </button>
@@ -47,7 +47,7 @@ export function Gallery({ images, alt }: { images: string[]; alt: string }) {
             type="button"
             onClick={scrollNext}
             aria-label="Следующее фото"
-            className="absolute right-3 top-1/2 flex h-9 w-9 -translate-y-1/2 items-center justify-center rounded-full bg-white/90 text-stone-700 shadow transition hover:bg-white"
+            className="absolute right-3 top-1/2 flex h-9 w-9 -translate-y-1/2 items-center justify-center rounded-full bg-white/90 text-stone-700 shadow transition-all duration-200 hover:bg-white hover:scale-105 active:scale-95 cursor-pointer"
           >
             <ChevronRight size={18} />
           </button>

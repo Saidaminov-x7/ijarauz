@@ -90,7 +90,7 @@ export function ListingCard({ item, locale }: { item: Listing; locale: string })
     <Link
       href={`/${locale}/catalog/${item.id}`}
       className={cn(
-        'group flex flex-col overflow-hidden rounded-2xl border transition-all duration-300 hover:-translate-y-1 hover:shadow-xl dark:bg-[#222222] dark:hover:shadow-black/40',
+        'group flex flex-col overflow-hidden rounded-2xl border transition-[transform,box-shadow] duration-200 hover:-translate-y-1 hover:shadow-xl dark:bg-[#222222] dark:hover:shadow-black/40',
         item.promotionTier === 'URGENT'
           ? 'border-rose-500/50 shadow-md shadow-rose-500/10 bg-rose-50/20 dark:bg-rose-950/10'
           : item.promotionTier === 'TOP'
@@ -182,7 +182,7 @@ export function ListingCard({ item, locale }: { item: Listing; locale: string })
             )}
             title={isInCompare ? 'В сравнении' : 'Добавить к сравнению'}
           >
-            <Scale size={14} />
+            <Scale size={14} className={cn('transition-transform duration-200', isInCompare && 'scale-110')} />
           </button>
 
           <button
@@ -195,7 +195,13 @@ export function ListingCard({ item, locale }: { item: Listing; locale: string })
             }}
             className="flex h-8 w-8 items-center justify-center rounded-full bg-white/95 text-stone-500 shadow-sm transition-colors hover:text-rose-500 cursor-pointer"
           >
-            <Heart size={15} className={cn(isFavorite && 'fill-rose-500 text-rose-500')} />
+            <Heart
+              size={15}
+              className={cn(
+                'transition-transform duration-200',
+                isFavorite && 'fill-rose-500 text-rose-500 scale-110'
+              )}
+            />
           </button>
         </div>
 

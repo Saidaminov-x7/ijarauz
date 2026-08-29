@@ -85,7 +85,7 @@ export function ApartmentCard({ apartment, locale, activeAmenities = [] }: Apart
   const badge = getCategoryBadge();
 
   return (
-    <div className="group relative overflow-hidden rounded-2xl border border-stone-200/80 bg-white transition-all duration-300 hover:-translate-y-1 hover:shadow-xl hover:shadow-stone-900/8 dark:border-white/5 dark:bg-[#1E1E1E] dark:hover:shadow-black/40">
+    <div className="group relative overflow-hidden rounded-2xl border border-stone-200/80 bg-white transition-[transform,box-shadow] duration-200 hover:-translate-y-1 hover:shadow-xl hover:shadow-stone-900/8 dark:border-white/5 dark:bg-[#1E1E1E] dark:hover:shadow-black/40">
       <Link href={`/${locale}/catalog/${apartment.id}`} className="block">
         <div className="relative aspect-4/3 overflow-hidden bg-stone-100 dark:bg-stone-800">
           <img
@@ -126,7 +126,7 @@ export function ApartmentCard({ apartment, locale, activeAmenities = [] }: Apart
               )}
               title={isInCompare ? 'В сравнении' : 'Добавить к сравнению'}
             >
-              <Scale size={14} />
+              <Scale size={14} className={cn('transition-transform duration-200', isInCompare && 'scale-110')} />
             </button>
 
             <button
@@ -136,7 +136,13 @@ export function ApartmentCard({ apartment, locale, activeAmenities = [] }: Apart
               className="flex h-8 w-8 items-center justify-center rounded-full bg-black/40 text-white backdrop-blur-md transition-transform hover:scale-110 hover:bg-black/60 active:scale-95 cursor-pointer shadow-sm"
               title="В избранное"
             >
-              <Heart size={15} className={cn(isFavorite && 'fill-rose-500 text-rose-500')} />
+              <Heart
+                size={15}
+                className={cn(
+                  'transition-transform duration-200',
+                  isFavorite && 'fill-rose-500 text-rose-500 scale-110'
+                )}
+              />
             </button>
           </div>
         </div>

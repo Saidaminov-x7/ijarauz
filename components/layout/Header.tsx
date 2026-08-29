@@ -13,6 +13,8 @@ import { useFavoritesStore } from '@/store/useFavoritesStore';
 import { useCompareStore } from '@/store/useCompareStore';
 import { useAuthStore } from '@/store/useAuthStore';
 import { getSearchSuggestions } from '@/lib/data';
+import { cn } from '@/lib/utils';
+import { motion, useReducedMotion } from 'framer-motion';
 
 const LOCALES = [
   { code: 'ru', short: 'RU' },
@@ -129,6 +131,7 @@ export function Header({ locale: localeProp }: { locale?: string }) {
   const [suggestions, setSuggestions] = useState<ReturnType<typeof getSearchSuggestions>>([]);
   const [mobileSuggestions, setMobileSuggestions] = useState<ReturnType<typeof getSearchSuggestions>>([]);
   const [scrolled, setScrolled] = useState(false);
+  const prefersReducedMotion = useReducedMotion();
 
   const favCount = useFavoritesStore((s) => s.ids.length);
   const compareCount = useCompareStore((s) => s.ids.length);
@@ -222,12 +225,12 @@ export function Header({ locale: localeProp }: { locale?: string }) {
   return (
     <>
       <header
-        className={
-          'sticky top-0 z-40 w-full border-b transition-all duration-300 h-20 flex items-center ' +
-          (scrolled
-            ? 'border-stone-200/80 bg-white/95 backdrop-blur-md shadow-sm dark:border-white/10 dark:bg-[#1A1A1A]/95'
-            : 'border-transparent bg-white/90 dark:bg-[#1A1A1A]/90')
-        }
+        className={cn(
+          'sticky top-0 z-40 w-full border-b transition-all duration-300 flex items-center',
+          scrolled
+            ? 'h-14 border-stone-200/80 bg-white/95 backdrop-blur-md shadow-md dark:border-white/10 dark:bg-[#1A1A1A]/95'
+            : 'h-20 border-transparent bg-white/90 shadow-none dark:bg-[#1A1A1A]/90'
+        )}
       >
         <div className="mx-auto flex w-full max-w-[1440px] items-center justify-between gap-4 px-4 sm:px-6 lg:px-8">
           
@@ -359,18 +362,30 @@ export function Header({ locale: localeProp }: { locale?: string }) {
             <Link href={to('/favorites')} aria-label={t('favorites')} className={`${BTN_CLASS} relative`}>
               <Heart size={17} />
               {favCount > 0 && (
-                <span className="absolute -right-1 -top-1 flex h-4.5 min-w-4.5 items-center justify-center rounded-full bg-teal-600 px-1 text-[10px] font-bold text-white shadow">
+                <motion.span
+                  key={favCount}
+                  initial={{ scale: prefersReducedMotion ? 1 : 1.3 }}
+                  animate={{ scale: 1 }}
+                  transition={{ duration: 0.2 }}
+                  className="absolute -right-1 -top-1 flex h-4.5 min-w-4.5 items-center justify-center rounded-full bg-teal-600 px-1 text-[10px] font-bold text-white shadow"
+                >
                   {favCount}
-                </span>
+                </motion.span>
               )}
             </Link>
 
             <Link href={to('/compare')} aria-label="Сравнение" title="Сравнение объектов" className={`${BTN_CLASS} relative`}>
               <Scale size={17} />
               {compareCount > 0 && (
-                <span className="absolute -right-1 -top-1 flex h-4.5 min-w-4.5 items-center justify-center rounded-full bg-teal-600 px-1 text-[10px] font-bold text-white shadow">
+                <motion.span
+                  key={compareCount}
+                  initial={{ scale: prefersReducedMotion ? 1 : 1.3 }}
+                  animate={{ scale: 1 }}
+                  transition={{ duration: 0.2 }}
+                  className="absolute -right-1 -top-1 flex h-4.5 min-w-4.5 items-center justify-center rounded-full bg-teal-600 px-1 text-[10px] font-bold text-white shadow"
+                >
                   {compareCount}
-                </span>
+                </motion.span>
               )}
             </Link>
 
@@ -468,9 +483,15 @@ export function Header({ locale: localeProp }: { locale?: string }) {
             >
               <Heart size={17} />
               {favCount > 0 && (
-                <span className="absolute -right-1 -top-1 flex h-4.5 min-w-4.5 items-center justify-center rounded-full bg-teal-600 text-[10px] font-bold text-white">
+                <motion.span
+                  key={favCount}
+                  initial={{ scale: prefersReducedMotion ? 1 : 1.3 }}
+                  animate={{ scale: 1 }}
+                  transition={{ duration: 0.2 }}
+                  className="absolute -right-1 -top-1 flex h-4.5 min-w-4.5 items-center justify-center rounded-full bg-teal-600 text-[10px] font-bold text-white"
+                >
                   {favCount}
-                </span>
+                </motion.span>
               )}
             </Link>
 
