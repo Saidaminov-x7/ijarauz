@@ -181,35 +181,35 @@ export function ListingCard({ item, locale }: { item: Listing; locale: string })
           </div>
         )}
 
-        {/* Бейджи */}
-        <div className="absolute left-3 top-3 flex flex-wrap gap-1.5 pointer-events-none z-10">
-          <span className="rounded-full bg-white/95 px-2.5 py-0.5 text-xs font-semibold text-stone-800 shadow-sm">
+        {/* Бейджи (Пилюли со стеклянным и аккуратным эффектом) */}
+        <div className="absolute left-3 top-3 right-20 flex flex-wrap items-center gap-1.5 pointer-events-none z-20">
+          <span className="inline-flex items-center rounded-full bg-slate-950/65 backdrop-blur-md px-2.5 py-1 text-[11px] font-semibold text-white tracking-wide border border-white/20 shadow-md">
             {typeLabel[item.type] || item.type}
           </span>
           {isVerified && (
-            <span className="inline-flex items-center gap-1 rounded-full bg-teal-500/95 px-2.5 py-0.5 text-xs font-semibold text-white shadow-sm">
-              <ShieldCheck size={12} /> Проверено
+            <span className="inline-flex items-center gap-1 rounded-full bg-emerald-500/90 backdrop-blur-md px-2.5 py-1 text-[11px] font-semibold text-white shadow-md border border-emerald-400/40">
+              <ShieldCheck size={12} className="text-emerald-100" /> Проверено
             </span>
           )}
           {item.forStudents && (
-            <span className="inline-flex items-center gap-1 rounded-full bg-indigo-600 px-2.5 py-0.5 text-xs font-semibold text-white shadow-sm">
-              <Users size={12} /> Соседи / Roommate
+            <span className="inline-flex items-center gap-1 rounded-full bg-indigo-600/90 backdrop-blur-md px-2.5 py-1 text-[11px] font-semibold text-white shadow-md border border-indigo-400/40">
+              <Users size={12} /> Соседи
             </span>
           )}
           {item.isPromoted && item.promotionTier === 'URGENT' && (
-            <span className="rounded-full bg-rose-600 px-2.5 py-0.5 text-xs font-bold text-white shadow-sm animate-pulse">
+            <span className="inline-flex items-center gap-1 rounded-full bg-gradient-to-r from-rose-600 to-red-500 backdrop-blur-md px-2.5 py-1 text-[11px] font-bold text-white shadow-md border border-rose-400/50 animate-pulse">
               🔥 Срочно
             </span>
           )}
           {item.isPromoted && item.promotionTier === 'TOP' && (
-            <span className="rounded-full bg-amber-500 px-2.5 py-0.5 text-xs font-bold text-white shadow-sm">
+            <span className="inline-flex items-center gap-1 rounded-full bg-gradient-to-r from-amber-500 to-yellow-500 backdrop-blur-md px-2.5 py-1 text-[11px] font-bold text-white shadow-md border border-amber-300/50">
               ⭐ ТОП
             </span>
           )}
         </div>
 
         {/* Кнопки действий (Избранное и Сравнение) */}
-        <div className="absolute right-3 top-3 flex items-center gap-1.5 z-20">
+        <div className="absolute right-3 top-3 flex items-center gap-1.5 z-30">
           <button
             type="button"
             aria-label={isInCompare ? 'Убрать из сравнения' : 'Сравнить'}
@@ -219,10 +219,10 @@ export function ListingCard({ item, locale }: { item: Listing; locale: string })
               toggleCompare(item.id);
             }}
             className={cn(
-              'flex h-8 w-8 items-center justify-center rounded-full shadow-sm transition-colors cursor-pointer',
+              'flex h-8 w-8 items-center justify-center rounded-full backdrop-blur-md shadow-md transition-all duration-200 hover:scale-105 active:scale-95 cursor-pointer border',
               isInCompare
-                ? 'bg-primary-600 text-white'
-                : 'bg-white/95 text-stone-500 hover:text-primary-600'
+                ? 'bg-teal-600 border-teal-500 text-white'
+                : 'bg-black/50 border-white/20 text-white hover:bg-black/70 hover:text-teal-400'
             )}
             title={isInCompare ? 'В сравнении' : 'Добавить к сравнению'}
           >
@@ -237,10 +237,11 @@ export function ListingCard({ item, locale }: { item: Listing; locale: string })
               e.stopPropagation();
               toggleFavorite(item.id);
             }}
-            className="flex h-8 w-8 items-center justify-center rounded-full bg-white/95 text-stone-500 shadow-sm transition-colors hover:text-rose-500 cursor-pointer"
+            className="flex h-8 w-8 items-center justify-center rounded-full bg-black/50 border border-white/20 text-white backdrop-blur-md shadow-md transition-all duration-200 hover:scale-105 hover:bg-black/70 hover:text-rose-400 active:scale-95 cursor-pointer"
+            title="В избранное"
           >
             <Heart
-              size={15}
+              size={14}
               className={cn(
                 'transition-transform duration-200',
                 isFavorite && 'fill-rose-500 text-rose-500 scale-110'
@@ -250,8 +251,8 @@ export function ListingCard({ item, locale }: { item: Listing; locale: string })
         </div>
 
         {item.type === 'daily' && (
-          <div className="absolute bottom-3 right-3 pointer-events-none z-10">
-            <span className="rounded-full bg-amber-500 px-2.5 py-0.5 text-xs font-bold text-white shadow">
+          <div className="absolute bottom-3 right-3 pointer-events-none z-20">
+            <span className="inline-flex items-center rounded-full bg-black/60 backdrop-blur-md px-2.5 py-1 text-[11px] font-bold text-amber-300 border border-amber-500/30 shadow-md">
               от ${item.price}/ночь
             </span>
           </div>

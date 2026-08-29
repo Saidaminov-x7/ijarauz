@@ -153,30 +153,40 @@ export function ApartmentCard({ apartment, locale, activeAmenities = [] }: Apart
             </div>
           )}
 
-          {/* Badges on image */}
-          <div className="absolute left-3 bottom-3 flex items-center gap-1.5 z-20 pointer-events-none">
-            <span className={cn('rounded-lg px-2.5 py-1 text-xs font-semibold backdrop-blur-md shadow-sm', badge.bg)}>
+          {/* Badges on image (Стеклянные стильные пилюли) */}
+          <div className="absolute left-3 top-3 right-20 flex flex-wrap items-center gap-1.5 z-20 pointer-events-none">
+            <span className="inline-flex items-center rounded-full bg-slate-950/65 backdrop-blur-md px-2.5 py-1 text-[11px] font-semibold text-white tracking-wide border border-white/20 shadow-md">
               {badge.text}
             </span>
             {apartment.verified && (
-              <span className="flex items-center gap-1 rounded-lg bg-teal-500/90 px-2 py-1 text-[11px] font-semibold text-white backdrop-blur-md shadow-sm">
-                <CheckCircle size={12} />
+              <span className="inline-flex items-center gap-1 rounded-full bg-emerald-500/90 backdrop-blur-md px-2.5 py-1 text-[11px] font-semibold text-white shadow-md border border-emerald-400/40">
+                <CheckCircle size={12} className="text-emerald-100" />
                 Проверено
+              </span>
+            )}
+            {apartment.promotionTier === 'URGENT' && (
+              <span className="inline-flex items-center gap-1 rounded-full bg-gradient-to-r from-rose-600 to-red-500 backdrop-blur-md px-2.5 py-1 text-[11px] font-bold text-white shadow-md border border-rose-400/50 animate-pulse">
+                🔥 Срочно
+              </span>
+            )}
+            {apartment.promotionTier === 'TOP' && (
+              <span className="inline-flex items-center gap-1 rounded-full bg-gradient-to-r from-amber-500 to-yellow-500 backdrop-blur-md px-2.5 py-1 text-[11px] font-bold text-white shadow-md border border-amber-300/50">
+                ⭐ ТОП
               </span>
             )}
           </div>
 
           {/* Action buttons (Compare & Favorite) */}
-          <div className="absolute right-3 top-3 flex items-center gap-1.5 z-20">
+          <div className="absolute right-3 top-3 flex items-center gap-1.5 z-30">
             <button
               type="button"
               onClick={handleCompareClick}
               aria-label="Сравнить объект"
               className={cn(
-                'flex h-8 w-8 items-center justify-center rounded-full backdrop-blur-md transition-transform hover:scale-110 active:scale-95 cursor-pointer shadow-sm',
+                'flex h-8 w-8 items-center justify-center rounded-full backdrop-blur-md transition-all duration-200 hover:scale-105 active:scale-95 cursor-pointer shadow-md border',
                 isInCompare
-                  ? 'bg-teal-600 text-white'
-                  : 'bg-black/40 text-white hover:bg-black/60'
+                  ? 'bg-teal-600 border-teal-500 text-white'
+                  : 'bg-black/50 border-white/20 text-white hover:bg-black/70 hover:text-teal-400'
               )}
               title={isInCompare ? 'В сравнении' : 'Добавить к сравнению'}
             >
@@ -187,11 +197,11 @@ export function ApartmentCard({ apartment, locale, activeAmenities = [] }: Apart
               type="button"
               onClick={handleFavoriteClick}
               aria-label={isFavorite ? 'Убрать из избранного' : 'Добавить в избранное'}
-              className="flex h-8 w-8 items-center justify-center rounded-full bg-black/40 text-white backdrop-blur-md transition-transform hover:scale-110 hover:bg-black/60 active:scale-95 cursor-pointer shadow-sm"
+              className="flex h-8 w-8 items-center justify-center rounded-full bg-black/50 border border-white/20 text-white backdrop-blur-md shadow-md transition-all duration-200 hover:scale-105 hover:bg-black/70 hover:text-rose-400 active:scale-95 cursor-pointer"
               title="В избранное"
             >
               <Heart
-                size={15}
+                size={14}
                 className={cn(
                   'transition-transform duration-200',
                   isFavorite && 'fill-rose-500 text-rose-500 scale-110'
