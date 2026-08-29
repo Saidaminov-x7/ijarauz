@@ -7,8 +7,8 @@ import { Header } from '@/components/layout/Header';
 import { Footer } from '@/components/layout/Footer';
 import { ScrollToTop } from '@/components/ui/ScrollToTop';
 
-const NO_CHROME = ['/login', '/register', '/forgot-password', '/reset-password'];
-const NO_FOOTER = ['/chat'];
+const NO_CHROME: string[] = [];
+const NO_FOOTER = ['/chat', '/login', '/register', '/forgot-password', '/reset-password'];
 
 function Chrome({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
