@@ -70,15 +70,16 @@ export default function RegisterPage() {
     setIsLoading(true);
     setServerError(null);
     try {
+      const cleanEmail = data.email.trim().toLowerCase();
       await register({
-        name: data.name,
-        email: data.email,
+        name: data.name.trim(),
+        email: cleanEmail,
         phone: data.phone.trim(),
         password: data.password,
         role: 'USER',
       });
 
-      const loginRes = await login(data.email, data.password);
+      const loginRes = await login(cleanEmail, data.password);
       const token = loginRes.accessToken || loginRes.token;
       let user = loginRes.user;
 

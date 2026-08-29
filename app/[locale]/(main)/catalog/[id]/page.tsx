@@ -139,8 +139,16 @@ export default async function ApartmentPage({ params }: ApartmentPageProps) {
     isPromoted: !!apartment.isPromoted,
     promotionTier: apartment.promotionTier,
     author: {
-      name: (apartment as any).author?.name || 'Собственник',
-      phone: (apartment as any).author?.phone || '+998 90 123 45 67',
+      id: apartment.owner?.id || (apartment as any).author?.id,
+      name: apartment.owner?.name || (apartment as any).author?.name || 'Владелец жилья',
+      phone: apartment.owner?.phone || (apartment as any).author?.phone || '+998 90 123 45 67',
+      avatar: apartment.owner?.avatar || (apartment as any).author?.avatar,
+    },
+    owner: {
+      id: apartment.owner?.id || (apartment as any).author?.id,
+      name: apartment.owner?.name || (apartment as any).author?.name || 'Владелец жилья',
+      phone: apartment.owner?.phone || (apartment as any).author?.phone || '+998 90 123 45 67',
+      avatar: apartment.owner?.avatar || (apartment as any).author?.avatar,
     },
   };
 

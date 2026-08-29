@@ -392,12 +392,20 @@ export function ListingDetailClient({ listing, coordinates, locale }: Props) {
             {/* Карточка владельца */}
             <div className="p-4 rounded-xl border border-stone-100 dark:border-white/5 bg-stone-50/80 dark:bg-white/5 space-y-3">
               <div className="flex items-center gap-3">
-                <div className="h-11 w-11 rounded-xl bg-gradient-to-br from-teal-500 to-emerald-600 text-white flex items-center justify-center font-bold text-base shadow-sm">
-                  {(listing.author?.name || 'С')[0]}
-                </div>
+                {listing.author?.avatar || (listing as any).owner?.avatar ? (
+                  <img
+                    src={listing.author?.avatar || (listing as any).owner?.avatar}
+                    alt={listing.author?.name || (listing as any).owner?.name || 'Владелец'}
+                    className="h-11 w-11 rounded-xl object-cover border border-white/20 shadow-sm"
+                  />
+                ) : (
+                  <div className="h-11 w-11 rounded-xl bg-gradient-to-br from-teal-500 to-emerald-600 text-white flex items-center justify-center font-bold text-base shadow-sm">
+                    {((listing.author?.name || (listing as any).owner?.name || 'В')[0]).toUpperCase()}
+                  </div>
+                )}
                 <div className="min-w-0 flex-1">
                   <h4 className="text-sm font-bold text-stone-900 dark:text-white truncate">
-                    {listing.author?.name || 'Собственник жилья'}
+                    {listing.author?.name || (listing as any).owner?.name || 'Владелец жилья'}
                   </h4>
                   <p className="text-[11px] text-teal-600 dark:text-teal-400 font-semibold flex items-center gap-1">
                     <BadgeCheck size={13} /> Номер подтверждён
