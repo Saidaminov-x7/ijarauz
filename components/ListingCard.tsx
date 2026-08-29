@@ -98,29 +98,63 @@ export function ListingCard({ item, locale }: { item: Listing; locale: string })
           : 'border-stone-200/80 bg-white dark:border-white/5 hover:shadow-stone-900/8'
       )}
     >
-      {/* Интерактивная фото-обложка (Hover & Drag) */}
+      {/* Интерактивная фото-обложка (Hover Image Sequence / Scrubbing) */}
       <div
         ref={containerRef}
         onMouseMove={handleMouseMove}
         onMouseLeave={handleMouseLeave}
-        className={`relative aspect-4/3 overflow-hidden bg-linear-to-br ${gradient} select-none cursor-pointer`}
+        className={`relative aspect-4/3 overflow-hidden bg-linear-to-br ${gradient} select-none cursor-pointer group/image`}
       >
         {allImages.length > 0 ? (
-          <img
-            src={allImages[activeImgIndex] || allImages[0]}
-            alt={item.title}
-            className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
-            loading="lazy"
-          />
+          <>
+            <img
+              src={allImages[activeImgIndex] || allImages[0]}
+              alt={item.title}
+              className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+              loading="lazy"
+            />
+
+            {/* Невидимые hover-зоны для моментального переключения без лагов */}
+            {allImages.length > 1 && (
+              <div className="absolute inset-0 flex z-10">
+                {allImages.map((_, idx) => (
+                  <div
+                    key={idx}
+                    className="flex-1 h-full"
+                    onMouseEnter={() => setActiveImgIndex(idx)}
+                  />
+                ))}
+              </div>
+            )}
+          </>
         ) : (
           <div className="absolute inset-0 flex items-center justify-center text-white/25 transition-transform duration-500 group-hover:scale-110">
             {typeIcon(item.type)}
           </div>
         )}
 
-        <div className="absolute inset-0 bg-linear-to-t from-black/40 via-transparent to-black/20 pointer-events-none" />
+        <div className="absolute inset-0 bg-linear-to-t from-black/50 via-transparent to-black/25 pointer-events-none" />
 
-        {/* Скользящие индикаторы фото (Sliding Window Dots) */}
+        {/* Скользящие сегменты прогресса фото (Hover Image Sequence Bar) */}
+        {allImages.length > 1 && (
+          <div className="absolute top-2.5 inset-x-3 flex items-center gap-1 pointer-events-none z-20 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+            {allImages.map((_, idx) => (
+              <div
+                key={idx}
+                className="h-1 flex-1 rounded-full bg-white/30 backdrop-blur-xs overflow-hidden"
+              >
+                <div
+                  className={cn(
+                    'h-full w-full bg-white transition-all duration-150',
+                    idx === activeImgIndex ? 'opacity-100 scale-100' : 'opacity-0 scale-0'
+                  )}
+                />
+              </div>
+            ))}
+          </div>
+        )}
+
+        {/* Нижние индикаторы фото (Sliding Window Dots) */}
         {allImages.length > 1 && (
           <div className="absolute bottom-2.5 left-1/2 -translate-x-1/2 flex items-center gap-1.5 px-2 py-1 rounded-full bg-black/40 backdrop-blur-xs pointer-events-none z-10 transition-opacity duration-200">
             {visibleIndices.map((idx) => (
