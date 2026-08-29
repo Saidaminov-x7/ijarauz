@@ -43,9 +43,19 @@ export function ListingCard({ item, locale }: { item: Listing; locale: string })
 
   const isVerified = item.isVerified ?? item.verified;
 
-  // Все доступные изображения
+  // Все доступные изображения (поддерживает и массив строк, и массив объектов media, и fallback)
   const allImages = React.useMemo(() => {
-    const list = item.images && item.images.length > 0 ? item.images : item.image ? [item.image] : [];
+    const list: string[] = [];
+    if (Array.isArray(item.images) && item.images.length > 0) {
+      item.images.forEach((img: any) => {
+        if (typeof img === 'string' && img.trim()) list.push(img);
+        else if (img?.url && typeof img.url === 'string') list.push(img.url);
+        else if (img?.secure_url && typeof img.secure_url === 'string') list.push(img.secure_url);
+      });
+    }
+    if (list.length === 0 && item.image && typeof item.image === 'string') {
+      list.push(item.image);
+    }
     return list;
   }, [item.images, item.image]);
 
