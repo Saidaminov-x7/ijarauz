@@ -8,10 +8,11 @@ import { AppChrome } from '@/components/AppChrome';
 import { GoogleOAuthProvider } from '@react-oauth/google';
 import { ChatWidget } from '@/components/chat/ChatWidget';
 import { AnalyticsTracker } from '@/components/analytics/AnalyticsTracker';
+import { YandexMetrika } from '@/components/analytics/YandexMetrika';
 import { DesignTokensInjector } from '@/components/DesignTokensInjector';
 import { GlobalErrorListener } from '@/components/GlobalErrorListener';
 import './globals.css';
-import React from 'react';
+import React, { Suspense } from 'react';
 
 const DEFAULT_LOCALE = 'ru';
 
@@ -40,6 +41,9 @@ export default function LocaleLayout({
             <GlobalErrorListener />
             <DesignTokensInjector />
             <AnalyticsTracker />
+            <Suspense fallback={null}>
+              <YandexMetrika counterId="112059980" />
+            </Suspense>
             <div className="flex min-h-screen flex-col">
               <AppChrome>{children}</AppChrome>
             </div>

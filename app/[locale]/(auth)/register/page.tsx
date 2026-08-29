@@ -39,6 +39,9 @@ const registerSchema = z.object({
     .regex(/[0-9]/, 'Пароль должен содержать цифры')
     .refine((p) => !isWeakPassword(p), 'Пароль слишком простой. Используйте буквы, цифры и символы.'),
   confirmPassword: z.string().min(1, 'Подтвердите пароль'),
+  agreeTerms: z.boolean().refine((val) => val === true, {
+    message: 'Необходимо принять Условия использования, Политику конфиденциальности и согласиться на сбор аналитики',
+  }),
 }).refine((d) => d.password === d.confirmPassword, {
   message: 'Пароли не совпадают',
   path: ['confirmPassword'],
@@ -59,7 +62,7 @@ export default function RegisterPage() {
 
   const form = useForm<RegisterFormValues>({
     resolver: zodResolver(registerSchema),
-    defaultValues: { name: '', email: '', phone: '+998', password: '', confirmPassword: '' },
+    defaultValues: { name: '', email: '', phone: '+998', password: '', confirmPassword: '', agreeTerms: false },
     mode: 'onTouched',
   });
 
@@ -239,9 +242,49 @@ export default function RegisterPage() {
             )}
           />
 
+          <FormField
+            control={form.control}
+            name="agreeTerms"
+            render={({ field }) => (
+              <FormItem className="pt-1">
+                <div className="flex items-start gap-2.5">
+                  <input
+                    type="checkbox"
+                    id="agreeTerms"
+                    checked={field.value}
+                    onChange={field.onChange}
+                    className="mt-1 h-4 w-4 rounded border-white/20 bg-white/5 text-teal-600 focus:ring-teal-500/30 cursor-pointer flex-shrink-0"
+                  />
+                  <label htmlFor="agreeTerms" className="text-xs text-stone-400 leading-relaxed cursor-pointer select-none">
+                    Я принимаю{' '}
+                    <a
+                      href={`/${locale}/terms`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-teal-400 hover:text-teal-300 underline underline-offset-2"
+                    >
+                      Условия использования
+                    </a>
+                    ,{' '}
+                    <a
+                      href={`/${locale}/privacy`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-teal-400 hover:text-teal-300 underline underline-offset-2"
+                    >
+                      Политику конфиденциальности
+                    </a>{' '}
+                    и согласен на сбор технической аналитики сервисом <strong>Яндекс.Метрика</strong> (данные используются исключительно для улучшения работы платформы Ijarauz и не передаются 3-м лицам).
+                  </label>
+                </div>
+                <FormMessage className="text-xs text-red-400 mt-1" />
+              </FormItem>
+            )}
+          />
+
           <button
             type="submit"
-            disabled={isLoading}
+            disabled={isLoading || !form.watch('agreeTerms')}
             className="flex h-11 w-full items-center justify-center rounded-xl bg-teal-600 font-semibold text-white shadow-lg shadow-teal-900/30 transition-all hover:bg-teal-500 active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed mt-2"
           >
             {isLoading ? (
