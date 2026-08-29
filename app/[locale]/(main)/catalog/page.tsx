@@ -3,8 +3,8 @@
 import { useTranslations } from 'next-intl';
 import { useState, useEffect, Suspense, useCallback } from 'react';
 import { useParams, useSearchParams, useRouter, usePathname } from 'next/navigation';
-import { MapPin, Search, Sparkles, Filter, Check, RotateCcw, Bell, X, Compass, ChevronDown } from 'lucide-react';
-import { motion, AnimatePresence, type Variants } from 'framer-motion';
+import { MapPin, Search, Sparkles, Filter, Check, RotateCcw, Bell, X, Compass, ChevronDown, SlidersHorizontal } from 'lucide-react';
+import { motion, AnimatePresence, type Variants, LayoutGroup } from 'framer-motion';
 import { toast } from 'sonner';
 import { Button } from '@/components/ui/Button';
 import { ApartmentCard } from '@/app/[locale]/(main)/catalog/components/ApartmentCard';
@@ -36,7 +36,7 @@ const containerVariants: Variants = {
   show: {
     opacity: 1,
     transition: {
-      staggerChildren: 0.04,
+      staggerChildren: 0.03,
     },
   },
 };
@@ -88,7 +88,7 @@ function CatalogContent() {
   const [isSavedSearchModalOpen, setIsSavedSearchModalOpen] = useState(false);
   const [showCatalogMap, setShowCatalogMap] = useState(false);
 
-  // Скрытие и раскрытие фильтров
+  // Скрытие и раскрытие фильтров (по умолчанию открыто)
   const [isFiltersOpen, setIsFiltersOpen] = useState(true);
 
   // Sync states when URL changes
@@ -212,7 +212,6 @@ function CatalogContent() {
     router.push(pathname, { scroll: false });
   };
 
-  // Опции для кастомных выпадающих списков городов и районов
   const cityOptions = regionNames.map((c) => ({ value: c, label: c }));
   const districtOptions = (selectedCity && regions[selectedCity])
     ? regions[selectedCity].map((d) => ({ value: d, label: d }))
@@ -220,7 +219,7 @@ function CatalogContent() {
 
   return (
     <div className="min-h-screen bg-stone-50 text-stone-900 dark:bg-[#121212] dark:text-stone-100 transition-colors duration-200">
-      {/* Top Banner / Breadcrumb area */}
+      {/* Top Banner */}
       <header className="border-b border-stone-200/80 bg-white/80 backdrop-blur-md dark:border-white/5 dark:bg-[#181818]/80 sticky top-0 z-30">
         <div className="container mx-auto px-4 py-4">
           <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
@@ -229,7 +228,7 @@ function CatalogContent() {
                 Каталог аренды недвижимости
               </h1>
               <p className="text-xs text-stone-500 dark:text-stone-400">
-                Найдите идеальное жильё для комфортной жизни в Узбекистане
+                Найдите подходящее жильё для аренды в Узбекистане
               </p>
             </div>
 
@@ -249,50 +248,153 @@ function CatalogContent() {
       </header>
 
       <main className="container mx-auto px-4 py-8">
-        <div className="flex flex-col lg:flex-row gap-8 items-start">
-          {/* Filters Sidebar with Toggle */}
-          <div className="w-full lg:w-80 shrink-0">
-            <div className="sticky top-24 rounded-2xl border border-stone-200/80 bg-white p-5 shadow-sm dark:border-white/10 dark:bg-[#1A1A1A]">
-              {/* Кнопка скрытия/раскрытия меню фильтров */}
-              <div
+        <LayoutGroup>
+          {/* Верхняя контрольная панель каталога */}
+          <motion.div layout className="mb-6 flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+            {/* Левая группа: [Кнопка Фильтры] + [Все объявления] + [Показать карту] */}
+            <div className="flex items-center gap-3 flex-wrap">
+              {/* Кнопка "Фильтры" высотой в стандартную кнопку h-10 */}
+              <button
+                type="button"
                 onClick={() => setIsFiltersOpen(!isFiltersOpen)}
-                className="flex items-center justify-between cursor-pointer select-none py-1"
+                className={`inline-flex h-10 items-center gap-2 px-4 rounded-xl border text-xs font-bold transition-all cursor-pointer shadow-xs ${
+                  isFiltersOpen
+                    ? 'bg-teal-600 border-teal-600 text-white shadow-teal-900/20'
+                    : 'bg-white border-stone-200 text-stone-800 hover:border-teal-500 dark:bg-[#1E1E1E] dark:border-white/10 dark:text-white'
+                }`}
               >
+                <SlidersHorizontal size={14} className={isFiltersOpen ? 'text-white' : 'text-teal-600 dark:text-teal-400'} />
+                <span>Фильтры</span>
+                <ChevronDown
+                  size={14}
+                  className={`transition-transform duration-300 ${isFiltersOpen ? 'rotate-180 text-white' : 'text-stone-400'}`}
+                />
+              </button>
+
+              {/* Заголовок Все объявления / Найдено X */}
+              {isFiltered ? (
                 <div className="flex items-center gap-2">
-                  <Filter size={18} className="text-teal-600 dark:text-teal-400" />
-                  <h2 className="text-lg font-bold text-stone-900 dark:text-white">Фильтры</h2>
+                  <h2 className="text-base sm:text-lg font-bold text-stone-900 dark:text-white">
+                    Найдено: {apartments.length}
+                  </h2>
+                  <span className="rounded-full bg-teal-50 px-2 py-0.5 text-[11px] font-semibold text-teal-700 dark:bg-teal-950/60 dark:text-teal-400">
+                    по фильтрам
+                  </span>
                 </div>
-                <div className="flex items-center gap-2">
-                  {isFiltered && (
-                    <button
-                      type="button"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        handleReset();
-                      }}
-                      className="flex items-center gap-1 text-xs font-semibold text-teal-600 hover:text-teal-700 dark:text-teal-400 transition-colors mr-1"
-                    >
-                      <RotateCcw size={12} />
-                      Сбросить
-                    </button>
-                  )}
-                  <ChevronDown
-                    size={18}
-                    className={`text-stone-400 transition-transform duration-300 ${isFiltersOpen ? 'rotate-180' : ''}`}
-                  />
-                </div>
+              ) : (
+                <h2 className="text-base sm:text-lg font-bold text-stone-900 dark:text-white">
+                  Все объявления ({apartments.length})
+                </h2>
+              )}
+
+              {/* Кнопка "Показать на карте" / "Скрыть карту" */}
+              <button
+                type="button"
+                onClick={() => setShowCatalogMap(!showCatalogMap)}
+                className="inline-flex h-10 items-center gap-1.5 px-3.5 rounded-xl border border-teal-600/30 bg-teal-50 text-teal-700 dark:bg-teal-950/40 dark:text-teal-300 text-xs font-bold hover:bg-teal-100 dark:hover:bg-teal-900/50 transition-all cursor-pointer shadow-xs"
+              >
+                <MapPin size={14} className="text-teal-600 dark:text-teal-400" />
+                {showCatalogMap ? 'Скрыть карту' : 'Показать на карте'}
+              </button>
+            </div>
+
+            {/* Правая группа: [Сортировка] + [Сохранить поиск] */}
+            <div className="flex items-center gap-2.5 flex-wrap self-end md:self-auto">
+              <div className="w-48">
+                <Dropdown
+                  value={`${sortBy}:${sortOrder}`}
+                  onChange={(value) => {
+                    const [nextSortBy, nextSortOrder] = value.split(':') as ['createdAt' | 'price' | 'viewsCount', 'asc' | 'desc'];
+                    setSortBy(nextSortBy);
+                    setSortOrder(nextSortOrder);
+                  }}
+                  options={[
+                    { value: 'createdAt:desc', label: 'Сначала новые' },
+                    { value: 'createdAt:asc', label: 'Сначала старые' },
+                    { value: 'viewsCount:desc', label: 'По популярности' },
+                    { value: 'price:asc', label: 'По цене (дешевле)' },
+                    { value: 'price:desc', label: 'По цене (дороже)' },
+                  ]}
+                  placeholder="Сортировка"
+                />
               </div>
 
-              {/* Плавно скрываемое тело фильтров */}
-              <AnimatePresence initial={false}>
-                {isFiltersOpen && (
-                  <motion.div
-                    initial={{ height: 0, opacity: 0 }}
-                    animate={{ height: 'auto', opacity: 1 }}
-                    exit={{ height: 0, opacity: 0 }}
-                    transition={{ duration: 0.25, ease: 'easeInOut' }}
-                    className="overflow-hidden pt-4 space-y-6"
+              <button
+                type="button"
+                onClick={() => setIsSavedSearchModalOpen(true)}
+                className="inline-flex h-10 items-center gap-1.5 rounded-xl border border-stone-200 bg-white px-3.5 text-xs font-semibold text-stone-700 shadow-xs hover:border-teal-500 hover:text-teal-600 dark:border-white/10 dark:bg-[#1E1E1E] dark:text-stone-300 transition-colors cursor-pointer"
+                title="Сохранить этот поиск и получать уведомления"
+              >
+                <Bell size={14} className="text-amber-500" />
+                <span>Сохранить</span>
+              </button>
+            </div>
+          </motion.div>
+
+          {/* Интерактивная карта каталога */}
+          {showCatalogMap && (
+            <motion.div layout className="mb-6">
+              <CatalogMapView apartments={apartments} locale={locale} />
+            </motion.div>
+          )}
+
+          {/* Активные теги удобств */}
+          {selectedAmenities.length > 0 && (
+            <motion.div layout className="mb-5 flex items-center gap-1.5 flex-wrap">
+              <span className="text-xs text-stone-400 font-medium">Выбранные фильтры:</span>
+              {selectedAmenities.map((key) => {
+                const item = AMENITY_CONFIG[key];
+                return (
+                  <span
+                    key={key}
+                    className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-teal-50 text-teal-700 dark:bg-teal-950/60 dark:text-teal-300 text-xs font-semibold border border-teal-200 dark:border-teal-800/40"
                   >
+                    <span>{item ? tAmenities(item.translationKey as any) : key}</span>
+                    <button
+                      type="button"
+                      onClick={() => removeSingleAmenity(key)}
+                      className="hover:text-teal-900 dark:hover:text-white transition-colors cursor-pointer"
+                      title="Удалить"
+                    >
+                      <X size={13} />
+                    </button>
+                  </span>
+                );
+              })}
+            </motion.div>
+          )}
+
+          {/* Главный блок: Боковой фильтр (если открыт) + Сетка карточек (адаптивная: 3 или 4 в ряд) */}
+          <div className="flex flex-col lg:flex-row gap-8 items-start">
+            {/* Сворачиваемый плавно сайдбар фильтров */}
+            <AnimatePresence initial={false}>
+              {isFiltersOpen && (
+                <motion.aside
+                  key="catalog-sidebar"
+                  initial={{ width: 0, opacity: 0, scale: 0.95 }}
+                  animate={{ width: 320, opacity: 1, scale: 1 }}
+                  exit={{ width: 0, opacity: 0, scale: 0.95 }}
+                  transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
+                  className="w-full lg:w-80 shrink-0 overflow-hidden"
+                >
+                  <div className="w-full sm:w-80 rounded-2xl border border-stone-200/80 bg-white p-5 shadow-sm dark:border-white/10 dark:bg-[#1A1A1A] space-y-6">
+                    <div className="flex items-center justify-between pb-3 border-b border-stone-100 dark:border-white/5">
+                      <div className="flex items-center gap-2">
+                        <Filter size={16} className="text-teal-600 dark:text-teal-400" />
+                        <span className="text-sm font-bold text-stone-900 dark:text-white">Параметры поиска</span>
+                      </div>
+                      {isFiltered && (
+                        <button
+                          type="button"
+                          onClick={handleReset}
+                          className="flex items-center gap-1 text-xs font-semibold text-teal-600 hover:text-teal-700 dark:text-teal-400 transition-colors cursor-pointer"
+                        >
+                          <RotateCcw size={12} />
+                          Сбросить
+                        </button>
+                      )}
+                    </div>
+
                     {/* 1. Category / Property Type */}
                     <div>
                       <h3 className="text-xs font-bold uppercase tracking-wider text-stone-500 dark:text-stone-400 mb-2.5">
@@ -346,7 +448,7 @@ function CatalogContent() {
                       </div>
                     </div>
 
-                    {/* 3. Location: Кастомные умные дропдауны как при смене языка */}
+                    {/* 3. Location: Умные выпадающие списки */}
                     <div className="space-y-3">
                       <h3 className="text-xs font-bold uppercase tracking-wider text-stone-500 dark:text-stone-400">
                         Местоположение
@@ -415,7 +517,7 @@ function CatalogContent() {
                       </div>
                     </div>
 
-                    {/* 5. Удобства: интерактивные кнопки с иконками */}
+                    {/* 5. Удобства: интерактивные кнопки */}
                     <div>
                       <h3 className="text-xs font-bold uppercase tracking-wider text-stone-500 dark:text-stone-400 mb-2.5">
                         Удобства
@@ -432,178 +534,98 @@ function CatalogContent() {
                     >
                       Показать результаты
                     </Button>
-                  </motion.div>
-                )}
-              </AnimatePresence>
-            </div>
-          </div>
-
-          {/* Listings Main Section */}
-          <div className="flex-1 min-w-0">
-            {/* Active removable amenity tags */}
-            {selectedAmenities.length > 0 && (
-              <div className="mb-4 flex items-center gap-1.5 flex-wrap">
-                <span className="text-xs text-stone-400">Выбрано:</span>
-                {selectedAmenities.map((key) => {
-                  const item = AMENITY_CONFIG[key];
-                  return (
-                    <span
-                      key={key}
-                      className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-teal-50 text-teal-700 dark:bg-teal-950/60 dark:text-teal-300 text-xs font-semibold border border-teal-200 dark:border-teal-800/40"
-                    >
-                      <span>{item ? tAmenities(item.translationKey as any) : key}</span>
-                      <button
-                        type="button"
-                        onClick={() => removeSingleAmenity(key)}
-                        className="hover:text-teal-900 dark:hover:text-white transition-colors cursor-pointer"
-                        title="Удалить фильтр"
-                      >
-                        <X size={13} />
-                      </button>
-                    </span>
-                  );
-                })}
-              </div>
-            )}
-
-            {/* Header: Сортировка СЛЕВА, заголовок и счетчик СПРАВА */}
-            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-6">
-              {/* Сортировка и кнопка сохранения поиска слева */}
-              <div className="flex items-center gap-2 flex-wrap">
-                <div className="w-48">
-                  <Dropdown
-                    value={`${sortBy}:${sortOrder}`}
-                    onChange={(value) => {
-                      const [nextSortBy, nextSortOrder] = value.split(':') as ['createdAt' | 'price' | 'viewsCount', 'asc' | 'desc'];
-                      setSortBy(nextSortBy);
-                      setSortOrder(nextSortOrder);
-                    }}
-                    options={[
-                      { value: 'createdAt:desc', label: 'Сначала новые' },
-                      { value: 'createdAt:asc', label: 'Сначала старые' },
-                      { value: 'viewsCount:desc', label: 'По популярности' },
-                      { value: 'price:asc', label: 'По цене (дешевле)' },
-                      { value: 'price:desc', label: 'По цене (дороже)' },
-                    ]}
-                    placeholder="Сортировка"
-                  />
-                </div>
-
-                <button
-                  type="button"
-                  onClick={() => setIsSavedSearchModalOpen(true)}
-                  className="inline-flex h-10 items-center gap-1.5 rounded-xl border border-stone-200 bg-white px-3.5 text-xs font-semibold text-stone-700 shadow-xs hover:border-teal-500 hover:text-teal-600 dark:border-white/10 dark:bg-[#1E1E1E] dark:text-stone-300 transition-colors cursor-pointer"
-                  title="Сохранить этот фильтр и получать уведомления"
-                >
-                  <Bell size={13} className="text-amber-500" />
-                  Сохранить
-                </button>
-              </div>
-
-              {/* Заголовок Все объявления / Найдено X справа + кнопка карты */}
-              <div className="flex items-center gap-3 flex-wrap">
-                {/* Кнопка Показать / Скрыть карту */}
-                <button
-                  type="button"
-                  onClick={() => setShowCatalogMap(!showCatalogMap)}
-                  className="inline-flex h-9 items-center gap-1.5 px-3 rounded-xl border border-teal-600/30 bg-teal-50 text-teal-700 dark:bg-teal-950/40 dark:text-teal-300 text-xs font-bold hover:bg-teal-100 transition-all cursor-pointer shadow-xs"
-                >
-                  <MapPin size={13} className="text-teal-600 dark:text-teal-400" />
-                  {showCatalogMap ? 'Скрыть карту' : 'Показать на карте'}
-                </button>
-
-                {isFiltered ? (
-                  <div className="flex items-center gap-2">
-                    <h2 className="text-lg font-bold text-stone-900 dark:text-white">
-                      Найдено: {apartments.length}
-                    </h2>
-                    <span className="rounded-full bg-teal-50 px-2.5 py-0.5 text-xs font-semibold text-teal-700 dark:bg-teal-950/60 dark:text-teal-400">
-                      по фильтрам
-                    </span>
                   </div>
-                ) : (
-                  <h2 className="text-lg font-bold text-stone-900 dark:text-white">
-                    Все объявления ({apartments.length})
-                  </h2>
-                )}
-              </div>
-            </div>
+                </motion.aside>
+              )}
+            </AnimatePresence>
 
-            {/* Интерактивная карта всех объявлений */}
-            {showCatalogMap && (
-              <div className="mb-6">
-                <CatalogMapView apartments={apartments} locale={locale} />
-              </div>
-            )}
-
-            {/* Сетка в 4 ряда (grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4) */}
-            {loading ? (
-              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-5">
-                {[...Array(8)].map((_, i) => (
-                  <div key={i} className="animate-pulse rounded-2xl border border-stone-200 dark:border-white/5 bg-white dark:bg-[#1E1E1E] overflow-hidden">
-                    <div className="aspect-4/3 bg-stone-200 dark:bg-stone-800" />
-                    <div className="p-4 space-y-3">
-                      <div className="h-4 bg-stone-200 dark:bg-stone-800 rounded w-3/4" />
-                      <div className="h-3 bg-stone-100 dark:bg-stone-850 rounded w-1/2" />
-                      <div className="h-4 bg-stone-200 dark:bg-stone-800 rounded w-1/3 pt-2" />
+            {/* Сетка объявлений: если фильтр ОТКРЫТ -> 3 колонки на десктопе, если фильтр ЗАКРЫТ -> 4 колонки! */}
+            <motion.div layout className="flex-1 min-w-0">
+              {loading ? (
+                <div
+                  className={`grid gap-5 transition-all duration-300 ${
+                    isFiltersOpen
+                      ? 'grid-cols-1 sm:grid-cols-2 xl:grid-cols-3'
+                      : 'grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4'
+                  }`}
+                >
+                  {[...Array(8)].map((_, i) => (
+                    <div key={i} className="animate-pulse rounded-2xl border border-stone-200 dark:border-white/5 bg-white dark:bg-[#1E1E1E] overflow-hidden">
+                      <div className="aspect-4/3 bg-stone-200 dark:bg-stone-800" />
+                      <div className="p-4 space-y-3">
+                        <div className="h-4 bg-stone-200 dark:bg-stone-800 rounded w-3/4" />
+                        <div className="h-3 bg-stone-100 dark:bg-stone-850 rounded w-1/2" />
+                        <div className="h-4 bg-stone-200 dark:bg-stone-800 rounded w-1/3 pt-2" />
+                      </div>
                     </div>
-                  </div>
-                ))}
-              </div>
-            ) : apartments.length > 0 ? (
-              <motion.div
-                variants={containerVariants}
-                initial="hidden"
-                animate="show"
-                className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-5"
-              >
-                {apartments.map((apartment) => (
-                  <motion.div key={apartment.id} variants={itemVariants}>
-                    <ApartmentCard
-                      apartment={apartment}
-                      locale={locale}
-                      activeAmenities={selectedAmenities}
-                    />
-                  </motion.div>
-                ))}
-              </motion.div>
-            ) : (
-              <div className="space-y-8">
-                {/* Empty State Card */}
-                <div className="rounded-2xl border border-stone-200/80 bg-white p-10 text-center dark:border-white/10 dark:bg-[#1A1A1A]">
-                  <div className="mx-auto w-12 h-12 rounded-2xl bg-teal-50 dark:bg-teal-950/50 flex items-center justify-center text-teal-600 dark:text-teal-400 mb-3">
-                    <Compass size={24} />
-                  </div>
-                  <h3 className="text-lg font-bold text-stone-900 dark:text-white mb-1">
-                    По заданным фильтрам ничего не найдено
-                  </h3>
-                  <p className="text-xs text-stone-500 dark:text-stone-400 max-w-md mx-auto mb-5">
-                    Попробуйте смягчить условия поиска, убрать часть удобств или сбросить фильтры
-                  </p>
-                  <Button onClick={handleReset} variant="outline" className="rounded-xl">
-                    <RotateCcw size={14} className="mr-2" />
-                    Сбросить все фильтры
-                  </Button>
+                  ))}
                 </div>
-
-                {/* Recommendations */}
-                {recommendations.length > 0 && (
-                  <div>
-                    <h3 className="text-sm font-bold text-stone-900 dark:text-white uppercase tracking-wider mb-4 flex items-center gap-2">
-                      <Sparkles size={16} className="text-teal-600" />
-                      Похожие варианты в этом регионе
+              ) : apartments.length > 0 ? (
+                <motion.div
+                  layout
+                  variants={containerVariants}
+                  initial="hidden"
+                  animate="show"
+                  className={`grid gap-5 transition-all duration-300 ${
+                    isFiltersOpen
+                      ? 'grid-cols-1 sm:grid-cols-2 xl:grid-cols-3'
+                      : 'grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4'
+                  }`}
+                >
+                  {apartments.map((apartment) => (
+                    <motion.div layout key={apartment.id} variants={itemVariants}>
+                      <ApartmentCard
+                        apartment={apartment}
+                        locale={locale}
+                        activeAmenities={selectedAmenities}
+                      />
+                    </motion.div>
+                  ))}
+                </motion.div>
+              ) : (
+                <div className="space-y-8">
+                  {/* Empty State Card */}
+                  <div className="rounded-2xl border border-stone-200/80 bg-white p-10 text-center dark:border-white/10 dark:bg-[#1A1A1A]">
+                    <div className="mx-auto w-12 h-12 rounded-2xl bg-teal-50 dark:bg-teal-950/50 flex items-center justify-center text-teal-600 dark:text-teal-400 mb-3">
+                      <Compass size={24} />
+                    </div>
+                    <h3 className="text-lg font-bold text-stone-900 dark:text-white mb-1">
+                      По заданным фильтрам ничего не найдено
                     </h3>
-                    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-5">
-                      {recommendations.map((item) => (
-                        <ApartmentCard key={item.id} apartment={item} locale={locale} />
-                      ))}
-                    </div>
+                    <p className="text-xs text-stone-500 dark:text-stone-400 max-w-md mx-auto mb-5">
+                      Попробуйте смягчить условия поиска, убрать часть удобств или сбросить фильтры
+                    </p>
+                    <Button onClick={handleReset} variant="outline" className="rounded-xl">
+                      <RotateCcw size={14} className="mr-2" />
+                      Сбросить все фильтры
+                    </Button>
                   </div>
-                )}
-              </div>
-            )}
+
+                  {/* Recommendations */}
+                  {recommendations.length > 0 && (
+                    <div>
+                      <h3 className="text-sm font-bold text-stone-900 dark:text-white uppercase tracking-wider mb-4 flex items-center gap-2">
+                        <Sparkles size={16} className="text-teal-600" />
+                        Похожие варианты в этом регионе
+                      </h3>
+                      <div
+                        className={`grid gap-5 transition-all duration-300 ${
+                          isFiltersOpen
+                            ? 'grid-cols-1 sm:grid-cols-2 xl:grid-cols-3'
+                            : 'grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4'
+                        }`}
+                      >
+                        {recommendations.map((item) => (
+                          <ApartmentCard key={item.id} apartment={item} locale={locale} />
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                </div>
+              )}
+            </motion.div>
           </div>
-        </div>
+        </LayoutGroup>
       </main>
 
       {/* Модальное окно автопоиска */}
