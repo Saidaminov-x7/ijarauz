@@ -23,7 +23,7 @@ function AuthLayoutInner({ children, params }: AuthLayoutProps) {
   const { locale } = use(params);
 
   return (
-    <div className="relative flex min-h-screen flex-col items-center justify-center overflow-hidden">
+    <div className="relative flex min-h-[calc(100vh-80px)] flex-col items-center justify-center overflow-hidden py-4 sm:py-6">
       {/* Animated gradient background */}
       <div className="absolute inset-0 bg-gradient-to-br from-stone-950 via-stone-900 to-teal-950 dark:from-stone-950 dark:via-[#111] dark:to-teal-950" />
       
@@ -39,7 +39,7 @@ function AuthLayoutInner({ children, params }: AuthLayoutProps) {
           <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-teal-400/50 to-transparent" />
 
           {/* Card inner container */}
-          <div className="p-8">
+          <div className="p-6 sm:p-8">
             {children}
           </div>
 
@@ -49,7 +49,7 @@ function AuthLayoutInner({ children, params }: AuthLayoutProps) {
       </div>
 
       {/* Bottom branding */}
-      <p className="relative z-10 mt-6 text-xs text-stone-600">
+      <p className="relative z-10 mt-4 text-xs text-stone-500">
         © 2025 ijara.uz — аренда жилья в Узбекистане
       </p>
     </div>

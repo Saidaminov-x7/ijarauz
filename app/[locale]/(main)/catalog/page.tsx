@@ -88,8 +88,26 @@ function CatalogContent() {
   const [isSavedSearchModalOpen, setIsSavedSearchModalOpen] = useState(false);
   const [showCatalogMap, setShowCatalogMap] = useState(false);
 
-  // Скрытие и раскрытие фильтров (по умолчанию открыто)
+  // Скрытие и раскрытие фильтров (сохраняем состояние в localStorage)
   const [isFiltersOpen, setIsFiltersOpen] = useState(true);
+
+  useEffect(() => {
+    try {
+      const saved = localStorage.getItem('ijarauz_catalog_filters_open');
+      if (saved !== null) {
+        setIsFiltersOpen(saved === 'true');
+      }
+    } catch (e) {
+      // localStorage may be disabled
+    }
+  }, []);
+
+  const toggleFilters = (val: boolean) => {
+    setIsFiltersOpen(val);
+    try {
+      localStorage.setItem('ijarauz_catalog_filters_open', String(val));
+    } catch (e) {}
+  };
 
   // Sync states when URL changes
   useEffect(() => {
@@ -326,7 +344,7 @@ function CatalogContent() {
               {/* Кнопка "Фильтры" справа рядом с уведомлениями */}
               <button
                 type="button"
-                onClick={() => setIsFiltersOpen(!isFiltersOpen)}
+                onClick={() => toggleFilters(!isFiltersOpen)}
                 className={`inline-flex h-10 items-center gap-2 px-3.5 sm:px-4 rounded-xl border text-xs font-bold transition-all cursor-pointer shadow-xs ${
                   isFiltersOpen
                     ? 'bg-teal-600 border-teal-600 text-white shadow-teal-900/20'

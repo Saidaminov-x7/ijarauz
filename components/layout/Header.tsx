@@ -202,13 +202,21 @@ export function Header({ locale: localeProp }: { locale?: string }) {
   if (isAuthPage) {
     return (
       <header className="sticky top-0 z-40 w-full border-b border-stone-200/80 bg-white/95 dark:border-white/10 dark:bg-[#1A1A1A]/95 h-20 flex items-center">
-        <div className="mx-auto flex w-full max-w-[1440px] items-center justify-end px-4 sm:px-6 lg:px-8">
+        <div className="mx-auto flex w-full max-w-[1440px] items-center justify-between px-4 sm:px-6 lg:px-8">
           <Link
             href={to('/')}
             className="flex items-center gap-2 rounded-xl border border-stone-200 bg-white px-4 py-2 text-xs font-semibold text-stone-700 hover:bg-stone-50 dark:border-white/10 dark:bg-stone-900 dark:text-stone-300 dark:hover:bg-stone-800 shadow-xs"
           >
             <ArrowLeft size={15} />
             <span>Вернуться домой</span>
+          </Link>
+
+          <Link
+            href={to('/')}
+            className="flex items-center gap-1.5 text-sm text-stone-400 hover:opacity-80 transition-opacity"
+          >
+            <div className="h-2 w-2 rounded-full bg-teal-400 shadow-[0_0_6px_2px_rgba(52,211,153,0.4)]" />
+            <span className="text-teal-400 font-semibold tracking-tight">ijara.uz</span>
           </Link>
         </div>
       </header>
