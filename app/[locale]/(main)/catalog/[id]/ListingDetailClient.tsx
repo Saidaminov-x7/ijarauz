@@ -33,6 +33,7 @@ import { ListingCard } from '@/components/ListingCard';
 import { AMENITY_CONFIG } from '@/app/[locale]/(main)/catalog/components/AmenitiesFilter';
 import { cn } from '@/lib/utils';
 import { Apartment } from '@/types';
+import { Panorama360Viewer, ShareModal, LandlordReviewsSection } from '@/components/listing/InteractiveListingModules';
 
 const gradients = [
   'from-teal-500 to-emerald-700',
@@ -57,6 +58,9 @@ export function ListingDetailClient({ listing, coordinates, locale }: Props) {
   const toggleFavorite = useFavoritesStore((s) => s.toggle);
   const isInCompare = useCompareStore((s) => s.isInCompare(listing.id));
   const toggleCompare = useCompareStore((s) => s.toggle);
+
+  const [activeMediaTab, setActiveMediaTab] = useState<'photos' | '360'>('photos');
+  const [isShareModalOpen, setIsShareModalOpen] = useState(false);
 
   const [similarListings, setSimilarListings] = useState<Apartment[]>([]);
   const [priceHistory, setPriceHistory] = useState<any[]>([]);
@@ -91,26 +95,8 @@ export function ListingDetailClient({ listing, coordinates, locale }: Props) {
     toast.success('Заявка отправлена! Арендодатель свяжется с вами.');
   }
 
-  async function handleShare() {
-    const shareData = {
-      title: listing.title,
-      text: `${listing.price}$ · ${listing.rooms} комн. · ${listing.district}, ${listing.city}`,
-      url: typeof window !== 'undefined' ? window.location.href : '',
-    };
-    if (typeof navigator !== 'undefined' && navigator.share) {
-      try {
-        await navigator.share(shareData);
-      } catch (err) {
-        // User closed the share sheet
-      }
-    } else if (typeof navigator !== 'undefined' && navigator.clipboard) {
-      try {
-        await navigator.clipboard.writeText(shareData.url);
-        toast.success('Ссылка на объявление скопирована!');
-      } catch {
-        toast.info(shareData.url);
-      }
-    }
+  function handleShare() {
+    setIsShareModalOpen(true);
   }
 
   async function handleSendReport(e: React.FormEvent) {
@@ -160,14 +146,128 @@ export function ListingDetailClient({ listing, coordinates, locale }: Props) {
         <span>Назад в каталог</span>
       </button>
 
-      {/* Галерея или градиент-плейсхолдер */}
-      {hasImages ? (
-        <Gallery images={listing.images!} alt={listing.title} />
-      ) : (
-        <div className={cn('flex aspect-video items-center justify-center rounded-2xl bg-linear-to-br text-white/30', gradient)}>
-          <Home size={64} strokeWidth={1.2} />
+      {/* Галерея фотографий и 3D Панорама (360°) */}
+      <div className="space-y-4">
+        <div className="flex items-center gap-2 border-b border-stone-200 dark:border-white/10 pb-2">
+          <button
+            type="button"
+            onClick={() => setActiveMediaTab('photos')}
+            className={cn(
+              'px-3 py-1.5 rounded-xl text-xs font-semibold transition-all cursor-pointer',
+              activeMediaTab === 'photos'
+                ? 'bg-teal-600 text-white shadow-sm'
+                : 'bg-stone-100 dark:bg-white/5 text-stone-600 dark:text-stone-400 hover:text-stone-900 dark:hover:text-white'
+            )}
+          >
+            📷 Фотографии ({hasImages ? listing.images!.length : 1})
+          </button>
+          <button
+            type="button"
+            onClick={() => setActiveMediaTab('360')}
+            className={cn(
+              'px-3 py-1.5 rounded-xl text-xs font-semibold transition-all cursor-pointer flex items-center gap-1.5',
+              activeMediaTab === '360'
+                ? 'bg-teal-600 text-white shadow-sm'
+                : 'bg-stone-100 dark:bg-white/5 text-stone-600 dark:text-stone-400 hover:text-stone-900 dark:hover:text-white'
+            )}
+          >
+            🔄 3D Панорама (360°)
+          </button>
         </div>
-      )}
+
+        {activeMediaTab === 'photos' ? (
+          hasImages ? (
+            <Gallery images={listing.images!} alt={listing.title} />
+          ) : (
+            <div className={`relative aspect-16/9 w-full rounded-2xl bg-linear-to-br ${gradient} flex items-center justify-center text-white/40 shadow-inner`}>
+              <Home size={64} />
+            </div>
+          )
+        ) : (
+          <Panorama360Viewer imageUrl={listing.images?.[0] || 'https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?w=1600'} />
+        )}
+      </div>
+
+      {/* Описание, удобства и характеристики */}
+      <div className="mt-8 grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <div className="lg:col-span-2 space-y-6">
+          <div className="card p-6 rounded-2xl bg-white dark:bg-stone-900 border border-stone-200 dark:border-white/10 space-y-4">
+            <h2 className="text-lg font-bold text-stone-900 dark:text-white">Описание объекта</h2>
+            <p className="text-sm text-stone-600 dark:text-stone-300 leading-relaxed whitespace-pre-line">
+              {listing.description || 'Просторная, светлая и уютная квартира со всеми удобствами в отличном районе города. Полный комплект современной мебели, бытовой техники и скоростной интернет.'}
+            </p>
+          </div>
+
+          {/* Удобства */}
+          {listing.features && listing.features.length > 0 && (
+            <div className="card p-6 rounded-2xl bg-white dark:bg-stone-900 border border-stone-200 dark:border-white/10 space-y-4">
+              <h2 className="text-lg font-bold text-stone-900 dark:text-white">Удобства и оснащение</h2>
+              <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+                {listing.features.map((feat) => {
+                  const Icon = (AMENITY_CONFIG as any)[feat]?.icon || ShieldCheck;
+                  return (
+                    <div key={feat} className="flex items-center gap-2 p-2.5 rounded-xl bg-stone-50 dark:bg-white/5 border border-stone-100 dark:border-white/5 text-xs font-medium text-stone-700 dark:text-stone-300">
+                      <Icon size={16} className="text-teal-500" />
+                      <span>{tAmenities(feat) || feat}</span>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          )}
+
+          {/* Отзывы об арендодателе */}
+          <LandlordReviewsSection landlordName={listing.author?.name || 'Владелец'} rating={4.9} />
+        </div>
+
+        {/* Правая колонка: Владелец и действия */}
+        <div className="space-y-6">
+          <div className="card p-6 rounded-2xl bg-white dark:bg-stone-900 border border-stone-200 dark:border-white/10 space-y-4">
+            <div className="flex items-center gap-3 pb-4 border-b border-stone-100 dark:border-white/5">
+              <div className="w-12 h-12 rounded-full bg-teal-500/20 text-teal-600 dark:text-teal-400 flex items-center justify-center font-bold text-lg">
+                {(listing.author?.name || 'В')[0]}
+              </div>
+              <div>
+                <h4 className="text-sm font-bold text-stone-900 dark:text-white">
+                  {listing.author?.name || 'Собственник жилья'}
+                </h4>
+                <span className="text-xs text-teal-600 dark:text-teal-400 font-medium">
+                  ✓ Проверенный арендодатель
+                </span>
+              </div>
+            </div>
+
+            <button
+              type="button"
+              onClick={handleContact}
+              className="w-full h-11 flex items-center justify-center gap-2 rounded-xl bg-teal-600 hover:bg-teal-500 text-white font-semibold text-xs shadow-md shadow-teal-600/20 transition-all cursor-pointer"
+            >
+              <Phone size={15} />
+              Показать номер телефона
+            </button>
+
+            <button
+              type="button"
+              onClick={() => setIsViewingModalOpen(true)}
+              className="w-full h-11 flex items-center justify-center gap-2 rounded-xl border border-teal-600/30 bg-teal-50/50 dark:bg-teal-950/20 hover:bg-teal-100 dark:hover:bg-teal-900/40 text-teal-700 dark:text-teal-300 font-semibold text-xs transition-all cursor-pointer"
+            >
+              <Calendar size={15} />
+              Записаться на просмотр
+            </button>
+          </div>
+        </div>
+      </div>
+
+      {/* Модальное окно шаринга */}
+      <ShareModal
+        isOpen={isShareModalOpen}
+        onClose={() => setIsShareModalOpen(false)}
+        title={listing.title}
+        price={listing.price}
+        district={listing.district}
+        city={listing.city}
+        url={typeof window !== 'undefined' ? window.location.href : ''}
+      />
 
       <div className="mt-6 flex flex-wrap items-start justify-between gap-4">
         <div className="flex-1 min-w-[280px]">

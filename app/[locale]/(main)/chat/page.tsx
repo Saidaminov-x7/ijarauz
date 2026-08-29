@@ -11,6 +11,7 @@ import {
 import { useAuthStore } from '@/store/useAuthStore';
 import { Apartment } from '@/types';
 import { getApartments } from '@/lib/api';
+import { VoiceAndMediaChat } from '@/components/chat/VoiceAndMediaChat';
 
 interface Message {
   id: string;
@@ -731,35 +732,14 @@ export default function ChatPage() {
                 )}
               </div>
 
-              {/* Message Bottom Input Bar */}
-              <form
-                onSubmit={(e) => {
-                  e.preventDefault();
-                  handleSendMessage();
-                }}
-                className="border-t border-stone-200 bg-white p-3 sm:p-4 dark:border-white/10 dark:bg-[#1A1A1A] shrink-0"
-              >
-                <div className="flex items-center gap-2 sm:gap-3">
-                  <input
-                    type="text"
-                    value={inputText}
-                    onChange={(e) => setInputText(e.target.value)}
-                    placeholder={
-                      selectedContact.isAi
-                        ? 'Например: "Ищу 2-комнатную квартиру в Юнусабаде до $400"...'
-                        : 'Напишите сообщение...'
-                    }
-                    className="h-11 sm:h-12 flex-1 rounded-2xl border border-stone-200 bg-stone-50 px-4 py-3 text-sm text-stone-900 placeholder-stone-400 outline-none focus:border-teal-500 focus:ring-2 focus:ring-teal-500/20 dark:border-white/10 dark:bg-white/5 dark:text-white"
-                  />
-                  <button
-                    type="submit"
-                    disabled={!inputText.trim()}
-                    className="flex h-11 w-11 sm:h-12 sm:w-12 items-center justify-center rounded-2xl bg-teal-600 text-white transition-all hover:bg-teal-500 active:scale-95 disabled:opacity-40 shadow-sm shrink-0"
-                  >
-                    <Send size={18} />
-                  </button>
-                </div>
-              </form>
+              {/* Message Bottom Input Bar with Voice & Media */}
+              <div className="border-t border-stone-200 dark:border-white/10 bg-white dark:bg-[#1A1A1A]">
+                <VoiceAndMediaChat
+                  onSendMessage={({ text }) => {
+                    handleSendMessage(text || '🎤 Голосовое сообщение');
+                  }}
+                />
+              </div>
             </>
           ) : (
             <div className="flex-1 flex flex-col items-center justify-center p-8 text-center text-stone-400">

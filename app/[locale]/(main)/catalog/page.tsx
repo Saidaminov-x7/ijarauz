@@ -9,9 +9,10 @@ import { toast } from 'sonner';
 import { Button } from '@/components/ui/Button';
 import { ApartmentCard } from '@/app/[locale]/(main)/catalog/components/ApartmentCard';
 import { AmenitiesFilter, AMENITY_CONFIG } from '@/app/[locale]/(main)/catalog/components/AmenitiesFilter';
-import { getApartments, createSavedSearch } from '@/lib/api';
+import { getApartments } from '@/lib/api';
 import { Apartment } from '@/types';
 import { Dropdown } from '@/components/ui/Dropdown';
+import { SavedSearchModal } from '@/components/search/SavedSearchModal';
 
 const CATEGORIES = [
   { id: 'all', label: 'Все' },
@@ -93,6 +94,7 @@ function CatalogContent() {
   const [apartments, setApartments] = useState<Apartment[]>([]);
   const [recommendations, setRecommendations] = useState<Apartment[]>([]);
   const [loading, setLoading] = useState(true);
+  const [isSavedSearchModalOpen, setIsSavedSearchModalOpen] = useState(false);
 
   // Sync states when URL changes (e.g. from AI assistant or back/forward buttons)
   useEffect(() => {
@@ -500,32 +502,11 @@ function CatalogContent() {
               <div className="flex items-center gap-2 flex-wrap">
                 <button
                   type="button"
-                  onClick={async () => {
-                    const searchName = selectedDistrict
-                      ? `${selectedCity || 'Ташкент'}, ${selectedDistrict}`
-                      : selectedCity
-                      ? `Недвижимость в ${selectedCity}`
-                      : searchQuery
-                      ? `Поиск: ${searchQuery}`
-                      : 'Все новые объявления';
-                    try {
-                      await createSavedSearch(searchName, {
-                        city: selectedCity || undefined,
-                        district: selectedDistrict || undefined,
-                        minPrice: minPrice ? Number(minPrice) : undefined,
-                        maxPrice: maxPrice ? Number(maxPrice) : undefined,
-                        type: activeType !== 'all' ? activeType.toUpperCase() : undefined,
-                        amenities: selectedAmenities.length > 0 ? selectedAmenities.join(',') : undefined,
-                      });
-                      toast.success(`Поиск сохранён! Мы уведомим вас о новых объектах: "${searchName}"`);
-                    } catch {
-                      toast.info('Поиск сохранён локально');
-                    }
-                  }}
-                  className="inline-flex h-10 items-center gap-1.5 rounded-xl border border-stone-200 bg-white px-3.5 text-xs font-semibold text-stone-700 shadow-xs hover:border-teal-500 hover:text-teal-600 dark:border-white/10 dark:bg-[#222222] dark:text-stone-300 transition-colors"
+                  onClick={() => setIsSavedSearchModalOpen(true)}
+                  className="inline-flex h-10 items-center gap-1.5 rounded-xl border border-stone-200 bg-white px-3.5 text-xs font-semibold text-stone-700 shadow-xs hover:border-teal-500 hover:text-teal-600 dark:border-white/10 dark:bg-[#222222] dark:text-stone-300 transition-colors cursor-pointer"
                   title="Сохранить этот фильтр и получать уведомления"
                 >
-                  <Bell size={13} className="text-teal-600" />
+                  <Bell size={13} className="text-amber-500" />
                   Сохранить поиск
                 </button>
 
@@ -618,6 +599,12 @@ function CatalogContent() {
           </div>
         </div>
       </main>
+
+      {/* Модальное окно автопоиска */}
+      <SavedSearchModal
+        isOpen={isSavedSearchModalOpen}
+        onClose={() => setIsSavedSearchModalOpen(false)}
+      />
     </div>
   );
 }

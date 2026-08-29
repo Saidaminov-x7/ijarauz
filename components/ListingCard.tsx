@@ -1,8 +1,10 @@
 'use client';
 
+import React, { useState, useRef } from 'react';
 import type { Listing } from '@/lib/data';
 import Link from 'next/link';
-import { Heart, ShieldCheck, Scale } from 'lucide-react';
+import Image from 'next/image';
+import { Heart, ShieldCheck, Scale, Users } from 'lucide-react';
 import { useFavoritesStore } from '@/store/useFavoritesStore';
 import { useCompareStore } from '@/store/useCompareStore';
 import { cn } from '@/lib/utils';
@@ -41,6 +43,49 @@ export function ListingCard({ item, locale }: { item: Listing; locale: string })
 
   const isVerified = item.isVerified ?? item.verified;
 
+  // Все доступные изображения
+  const allImages = React.useMemo(() => {
+    const list = item.images && item.images.length > 0 ? item.images : item.image ? [item.image] : [];
+    return list;
+  }, [item.images, item.image]);
+
+  const [activeImgIndex, setActiveImgIndex] = useState(0);
+  const containerRef = useRef<HTMLDivElement>(null);
+
+  // Обработчик движения мыши (0%..100% ширины)
+  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+    if (!containerRef.current || allImages.length <= 1) return;
+    const rect = containerRef.current.getBoundingClientRect();
+    const x = Math.max(0, Math.min(e.clientX - rect.left, rect.width));
+    const percentage = x / rect.width;
+    const newIndex = Math.min(
+      Math.floor(percentage * allImages.length),
+      allImages.length - 1
+    );
+    if (newIndex !== activeImgIndex) {
+      setActiveImgIndex(newIndex);
+    }
+  };
+
+  const handleMouseLeave = () => {
+    setActiveImgIndex(0);
+  };
+
+  // Sliding window для точек-индикаторов (максимум 6 видимых)
+  const MAX_VISIBLE_DOTS = 6;
+  const totalDots = allImages.length;
+  let startDot = 0;
+  if (totalDots > MAX_VISIBLE_DOTS) {
+    startDot = Math.min(
+      Math.max(0, activeImgIndex - Math.floor(MAX_VISIBLE_DOTS / 2)),
+      totalDots - MAX_VISIBLE_DOTS
+    );
+  }
+  const visibleIndices = Array.from(
+    { length: Math.min(totalDots, MAX_VISIBLE_DOTS) },
+    (_, i) => startDot + i
+  );
+
   return (
     <Link
       href={`/${locale}/catalog/${item.id}`}
@@ -53,20 +98,58 @@ export function ListingCard({ item, locale }: { item: Listing; locale: string })
           : 'border-stone-200/80 bg-white dark:border-white/5 hover:shadow-stone-900/8'
       )}
     >
-      {/* Плейсхолдер-обложка */}
-      <div className={`relative aspect-4/3 overflow-hidden bg-linear-to-br ${gradient}`}>
-        <div className="absolute inset-0 flex items-center justify-center text-white/25 transition-transform duration-500 group-hover:scale-110">
-          {typeIcon(item.type)}
-        </div>
-        <div className="absolute inset-0 bg-linear-to-t from-black/25 to-transparent" />
+      {/* Интерактивная фото-обложка (Hover & Drag) */}
+      <div
+        ref={containerRef}
+        onMouseMove={handleMouseMove}
+        onMouseLeave={handleMouseLeave}
+        className={`relative aspect-4/3 overflow-hidden bg-linear-to-br ${gradient} select-none cursor-pointer`}
+      >
+        {allImages.length > 0 ? (
+          <img
+            src={allImages[activeImgIndex] || allImages[0]}
+            alt={item.title}
+            className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
+            loading="lazy"
+          />
+        ) : (
+          <div className="absolute inset-0 flex items-center justify-center text-white/25 transition-transform duration-500 group-hover:scale-110">
+            {typeIcon(item.type)}
+          </div>
+        )}
 
-        <div className="absolute left-3 top-3 flex flex-wrap gap-1.5">
+        <div className="absolute inset-0 bg-linear-to-t from-black/40 via-transparent to-black/20 pointer-events-none" />
+
+        {/* Скользящие индикаторы фото (Sliding Window Dots) */}
+        {allImages.length > 1 && (
+          <div className="absolute bottom-2.5 left-1/2 -translate-x-1/2 flex items-center gap-1.5 px-2 py-1 rounded-full bg-black/40 backdrop-blur-xs pointer-events-none z-10 transition-opacity duration-200">
+            {visibleIndices.map((idx) => (
+              <div
+                key={idx}
+                className={cn(
+                  'h-1 rounded-full transition-all duration-200',
+                  idx === activeImgIndex
+                    ? 'w-4 bg-white shadow-xs'
+                    : 'w-1.5 bg-white/40'
+                )}
+              />
+            ))}
+          </div>
+        )}
+
+        {/* Бейджи */}
+        <div className="absolute left-3 top-3 flex flex-wrap gap-1.5 pointer-events-none z-10">
           <span className="rounded-full bg-white/95 px-2.5 py-0.5 text-xs font-semibold text-stone-800 shadow-sm">
             {typeLabel[item.type] || item.type}
           </span>
           {isVerified && (
             <span className="inline-flex items-center gap-1 rounded-full bg-teal-500/95 px-2.5 py-0.5 text-xs font-semibold text-white shadow-sm">
               <ShieldCheck size={12} /> Проверено
+            </span>
+          )}
+          {item.forStudents && (
+            <span className="inline-flex items-center gap-1 rounded-full bg-indigo-600 px-2.5 py-0.5 text-xs font-semibold text-white shadow-sm">
+              <Users size={12} /> Соседи / Roommate
             </span>
           )}
           {item.isPromoted && item.promotionTier === 'URGENT' && (
@@ -82,7 +165,7 @@ export function ListingCard({ item, locale }: { item: Listing; locale: string })
         </div>
 
         {/* Кнопки действий (Избранное и Сравнение) */}
-        <div className="absolute right-3 top-3 flex items-center gap-1.5">
+        <div className="absolute right-3 top-3 flex items-center gap-1.5 z-20">
           <button
             type="button"
             aria-label={isInCompare ? 'Убрать из сравнения' : 'Сравнить'}
@@ -92,7 +175,7 @@ export function ListingCard({ item, locale }: { item: Listing; locale: string })
               toggleCompare(item.id);
             }}
             className={cn(
-              'flex h-8 w-8 items-center justify-center rounded-full shadow-sm transition-colors',
+              'flex h-8 w-8 items-center justify-center rounded-full shadow-sm transition-colors cursor-pointer',
               isInCompare
                 ? 'bg-primary-600 text-white'
                 : 'bg-white/95 text-stone-500 hover:text-primary-600'
@@ -110,14 +193,14 @@ export function ListingCard({ item, locale }: { item: Listing; locale: string })
               e.stopPropagation();
               toggleFavorite(item.id);
             }}
-            className="flex h-8 w-8 items-center justify-center rounded-full bg-white/95 text-stone-500 shadow-sm transition-colors hover:text-rose-500"
+            className="flex h-8 w-8 items-center justify-center rounded-full bg-white/95 text-stone-500 shadow-sm transition-colors hover:text-rose-500 cursor-pointer"
           >
             <Heart size={15} className={cn(isFavorite && 'fill-rose-500 text-rose-500')} />
           </button>
         </div>
 
         {item.type === 'daily' && (
-          <div className="absolute bottom-3 right-3">
+          <div className="absolute bottom-3 right-3 pointer-events-none z-10">
             <span className="rounded-full bg-amber-500 px-2.5 py-0.5 text-xs font-bold text-white shadow">
               от ${item.price}/ночь
             </span>
@@ -157,7 +240,7 @@ export function ListingCard({ item, locale }: { item: Listing; locale: string })
           </div>
           <div className="flex items-center gap-1 text-xs text-stone-500 dark:text-stone-400">
             <svg className="text-amber-400" width="11" height="11" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
-            {item.rating} ({item.reviews})
+            {item.rating} ({item.reviews ?? 0})
           </div>
         </div>
       </div>
