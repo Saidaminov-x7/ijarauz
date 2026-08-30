@@ -285,8 +285,14 @@ export function LandlordReviewsSection({
         </div>
         <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-900/40 text-amber-600 dark:text-amber-400 font-bold text-sm">
           <Star size={16} className="fill-amber-400 text-amber-400" />
-          <span>{averageRating.toFixed(1)} / 5.0</span>
-          <span className="text-stone-400 font-normal text-xs">({totalReviewsCount})</span>
+          {totalReviewsCount > 0 ? (
+            <>
+              <span>{averageRating.toFixed(1)} / 5.0</span>
+              <span className="text-stone-400 font-normal text-xs">({totalReviewsCount})</span>
+            </>
+          ) : (
+            <span>Пока нет отзывов (0)</span>
+          )}
         </div>
       </div>
 

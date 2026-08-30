@@ -253,7 +253,7 @@ export function ListingDetailClient({ listing, coordinates, locale }: Props) {
               { label: 'Комнат', value: `${listing.rooms} комн.`, icon: Home },
               { label: 'Общая площадь', value: `${listing.area} м²`, icon: Ruler },
               { label: 'Этаж', value: `${listing.floor}/${listing.totalFloors} эт.`, icon: Building2 },
-              { label: 'Рейтинг жилья', value: `${currentRating.toFixed(1)} ★ (${currentReviewsCount})`, icon: Star },
+              { label: 'Рейтинг жилья', value: currentReviewsCount > 0 ? `${currentRating.toFixed(1)} ★ (${currentReviewsCount})` : 'Нет оценок (0)', icon: Star },
             ].map(({ label, value, icon: Icon }) => (
               <div
                 key={label}

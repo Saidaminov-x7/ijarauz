@@ -18,16 +18,44 @@ async function getServerTheme() {
   }
 }
 
+async function getServerSettings() {
+  try {
+    const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'https://backend-production-d0a5.up.railway.app/api';
+    const res = await fetch(`${apiUrl}/site-settings/public`, {
+      next: { revalidate: 30 },
+    });
+    if (!res.ok) throw new Error('settings fetch failed');
+    return await res.json();
+  } catch {
+    return {
+      mobilePinchZoomEnabled: true,
+    };
+  }
+}
+
 export default async function RootLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  const theme = await getServerTheme();
+  const [theme, settings] = await Promise.all([
+    getServerTheme(),
+    getServerSettings(),
+  ]);
+
+  const pinchZoomEnabled = settings?.mobilePinchZoomEnabled !== false;
 
   return (
     <html suppressHydrationWarning>
       <head>
+        <meta
+          name="viewport"
+          content={
+            pinchZoomEnabled
+              ? 'width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes'
+              : 'width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no'
+          }
+        />
         <link rel="icon" href="/logotip.png" />
         <style
           id="server-theme-tokens"

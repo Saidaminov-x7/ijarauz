@@ -147,8 +147,8 @@ function formatListingToApartment(item: any): Apartment {
     isVerified: item.isVerified ?? item.verified ?? false,
     isPromoted: item.isPromoted ?? false,
     promotionTier: item.promotionTier ?? null,
-    rating: item.rating || 4.8,
-    reviews: item.reviews || 12,
+    rating: item.rating !== undefined ? Number(item.rating) : 0,
+    reviews: item.reviewsCount !== undefined ? Number(item.reviewsCount) : (item.reviews !== undefined ? Number(item.reviews) : 0),
     owner: item.owner ? {
       id: item.owner.id,
       name: item.owner.name,

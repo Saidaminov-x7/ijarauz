@@ -244,15 +244,17 @@ export function ApartmentCard({ apartment, locale, activeAmenities = [] }: Apart
               </span>
             </span>
 
-            {apartment.rating && (
-              <div className="flex items-center gap-1 text-xs font-semibold text-amber-500">
-                <Star size={13} className="fill-amber-500 text-amber-500" />
-                <span>{apartment.rating}</span>
-                {apartment.reviews && (
+            <div className="flex items-center gap-1 text-xs font-semibold text-amber-500">
+              <Star size={13} className="fill-amber-500 text-amber-500" />
+              {apartment.reviews && apartment.reviews > 0 ? (
+                <>
+                  <span>{apartment.rating}</span>
                   <span className="text-stone-400 font-normal">({apartment.reviews})</span>
-                )}
-              </div>
-            )}
+                </>
+              ) : (
+                <span className="text-stone-400 font-normal text-[11px]">Новое</span>
+              )}
+            </div>
           </div>
 
           {/* Плашка похожей квартиры по критериям (если не хватает какого-то удобства из фильтра) */}
