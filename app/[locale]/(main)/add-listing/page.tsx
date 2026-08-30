@@ -18,6 +18,22 @@ import { toast } from 'sonner';
 import { Modal } from '@/components/ui/Modal';
 import { regions, regionNames } from '@/lib/regions';
 import ProtectedRoute from '@/components/ProtectedRoute';
+import {
+  DndContext,
+  closestCenter,
+  PointerSensor,
+  TouchSensor,
+  useSensor,
+  useSensors,
+  DragEndEvent,
+} from '@dnd-kit/core';
+import {
+  SortableContext,
+  useSortable,
+  arrayMove,
+  rectSortingStrategy,
+} from '@dnd-kit/sortable';
+import { CSS } from '@dnd-kit/utilities';
 
 const cityOptions = Object.keys(regions);
 
@@ -45,6 +61,87 @@ export default function AddListingPage() {
   );
 }
 
+function SortablePhoto({
+  id,
+  preview,
+  index,
+  onRemove,
+  onMakeCover,
+}: {
+  id: number;
+  preview: string;
+  index: number;
+  onRemove: () => void;
+  onMakeCover: () => void;
+}) {
+  const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id });
+  const style = { transform: CSS.Transform.toString(transform), transition };
+
+  return (
+    <div
+      ref={setNodeRef}
+      style={style}
+      {...attributes}
+      className={`relative group aspect-video rounded-xl overflow-hidden border transition-all select-none ${
+        isDragging
+          ? 'opacity-40 scale-95 border-primary-500 z-30'
+          : index === 0
+          ? 'border-primary-500 ring-2 ring-primary-500/30'
+          : 'border-stone-200 dark:border-white/10 hover:border-stone-300'
+      }`}
+    >
+      <img src={preview} alt="Upload preview" className="w-full h-full object-cover select-none pointer-events-none" />
+
+      {/* Cover badge */}
+      {index === 0 && (
+        <span className="absolute top-2 left-2 px-2 py-0.5 rounded-md bg-primary-600 text-white text-[10px] font-bold shadow-md flex items-center gap-1 z-10 pointer-events-none">
+          <CheckCircle2 size={11} />
+          Обложка
+        </span>
+      )}
+
+      {/* Кнопка "Сделать обложкой" для всех кроме первого фото */}
+      {index !== 0 && (
+        <button
+          type="button"
+          onClick={(e) => {
+            e.stopPropagation();
+            onMakeCover();
+          }}
+          className="absolute bottom-1.5 left-1.5 px-2 py-1 rounded-md bg-black/70 text-white text-[10px] font-semibold hover:bg-primary-600 active:bg-primary-600 transition-colors z-10 cursor-pointer shadow-xs"
+        >
+          Сделать обложкой
+        </button>
+      )}
+
+      {/* Кнопка удаления — ВСЕГДА видна с легкой прозрачностью (opacity-80), ярче при hover/focus */}
+      <div className="absolute top-2 right-2 flex items-center gap-1 opacity-80 group-hover:opacity-100 transition-opacity z-10">
+        <button
+          type="button"
+          onClick={(e) => {
+            e.stopPropagation();
+            onRemove();
+          }}
+          className="p-1.5 rounded-lg bg-black/70 text-white hover:bg-rose-600 active:bg-rose-600 transition-colors shadow-xs cursor-pointer"
+          title="Удалить фото"
+        >
+          <Trash2 size={13} />
+        </button>
+      </div>
+
+      {/* Drag-хендл — отдельная зона для перетаскивания (touch-none) */}
+      <div
+        {...listeners}
+        className="absolute bottom-1.5 right-1.5 p-1.5 rounded-md bg-black/50 text-white cursor-grab active:cursor-grabbing touch-none flex items-center gap-0.5 text-[10px] opacity-70 group-hover:opacity-100 transition-opacity z-10"
+        title="Перетащите для изменения порядка"
+      >
+        <GripVertical size={13} />
+        <span>{index + 1}</span>
+      </div>
+    </div>
+  );
+}
+
 function AddListingContent() {
   const t = useTranslations('AddListing');
   const router = useRouter();
@@ -55,11 +152,35 @@ function AddListingContent() {
   const [serverError, setServerError] = useState<string | null>(null);
   const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
   const [previews, setPreviews] = useState<string[]>([]);
-  const [draggedIndex, setDraggedIndex] = useState<number | null>(null);
   const [showModerationModal, setShowModerationModal] = useState(false);
   const [autoModerationEnabled, setAutoModerationEnabled] = useState(false);
   const [maxImagesPerListing, setMaxImagesPerListing] = useState(10);
   const [priceEstimate, setPriceEstimate] = useState<{ min: number | null; max: number | null; average: number | null; sampleSize?: number } | null>(null);
+
+  const sensors = useSensors(
+    useSensor(PointerSensor, { activationConstraint: { distance: 5 } }),
+    useSensor(TouchSensor, { activationConstraint: { delay: 150, tolerance: 5 } }),
+  );
+
+  const handleDragEnd = (event: DragEndEvent) => {
+    const { active, over } = event;
+    if (!over || active.id === over.id) return;
+    const oldIndex = Number(active.id);
+    const newIndex = Number(over.id);
+    setSelectedFiles((prev) => arrayMove(prev, oldIndex, newIndex));
+    setPreviews((prev) => arrayMove(prev, oldIndex, newIndex));
+  };
+
+  const handleMakeCover = (index: number) => {
+    if (index === 0) return;
+    setSelectedFiles((prev) => arrayMove(prev, index, 0));
+    setPreviews((prev) => arrayMove(prev, index, 0));
+  };
+
+  const handleRemovePhoto = (index: number) => {
+    setSelectedFiles((prev) => prev.filter((_, i) => i !== index));
+    setPreviews((prev) => prev.filter((_, i) => i !== index));
+  };
 
   const form = useForm<ListingFormValues>({
     resolver: zodResolver(listingSchema),
@@ -178,35 +299,6 @@ function AddListingContent() {
     setSelectedFiles((prev) => [...prev, ...files]);
     const newPreviews = files.map((file) => URL.createObjectURL(file));
     setPreviews((prev) => [...prev, ...newPreviews]);
-  };
-
-  // B2: Drag & Drop сортировка фото
-  const handleDragStart = (e: React.DragEvent, index: number) => {
-    setDraggedIndex(index);
-    e.dataTransfer.effectAllowed = 'move';
-  };
-
-  const handleDragOver = (e: React.DragEvent, index: number) => {
-    e.preventDefault();
-    if (draggedIndex === null || draggedIndex === index) return;
-    const newFiles = [...selectedFiles];
-    const newPreviews = [...previews];
-    const [draggedFile] = newFiles.splice(draggedIndex, 1);
-    const [draggedPreview] = newPreviews.splice(draggedIndex, 1);
-    newFiles.splice(index, 0, draggedFile);
-    newPreviews.splice(index, 0, draggedPreview);
-    setSelectedFiles(newFiles);
-    setPreviews(newPreviews);
-    setDraggedIndex(index);
-  };
-
-  const handleDragEnd = () => {
-    setDraggedIndex(null);
-  };
-
-  const handleRemovePhoto = (index: number) => {
-    setSelectedFiles((prev) => prev.filter((_, i) => i !== index));
-    setPreviews((prev) => prev.filter((_, i) => i !== index));
   };
 
   const onSubmit = async (data: ListingFormValues) => {
@@ -554,51 +646,22 @@ function AddListingContent() {
             </div>
 
             {previews.length > 0 && (
-              <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-2">
-                {previews.map((preview, index) => (
-                  <div
-                    key={preview + index}
-                    draggable
-                    onDragStart={(e) => handleDragStart(e, index)}
-                    onDragOver={(e) => handleDragOver(e, index)}
-                    onDragEnd={handleDragEnd}
-                    className={`relative group aspect-video rounded-xl overflow-hidden border transition-all cursor-grab active:cursor-grabbing ${
-                      draggedIndex === index
-                        ? 'opacity-40 scale-95 border-primary-500'
-                        : index === 0
-                        ? 'border-primary-500 ring-2 ring-primary-500/30'
-                        : 'border-stone-200 dark:border-white/10 hover:border-stone-300'
-                    }`}
-                  >
-                    <img src={preview} alt="Upload preview" className="w-full h-full object-cover select-none" />
-
-                    {/* Cover badge */}
-                    {index === 0 && (
-                      <span className="absolute top-2 left-2 px-2 py-0.5 rounded-md bg-primary-600 text-white text-[10px] font-bold shadow-md flex items-center gap-1">
-                        <CheckCircle2 size={11} />
-                        Обложка
-                      </span>
-                    )}
-
-                    {/* Drag indicator & remove button */}
-                    <div className="absolute top-2 right-2 flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                      <button
-                        type="button"
-                        onClick={() => handleRemovePhoto(index)}
-                        className="p-1 rounded-lg bg-black/70 text-white hover:bg-rose-600 transition-colors shadow-xs"
-                        title="Удалить фото"
-                      >
-                        <Trash2 size={13} />
-                      </button>
-                    </div>
-
-                    <div className="absolute bottom-1 right-1 p-1 rounded bg-black/40 text-white text-[10px] opacity-0 group-hover:opacity-100 transition-opacity flex items-center gap-0.5">
-                      <GripVertical size={12} />
-                      <span>{index + 1}</span>
-                    </div>
+              <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
+                <SortableContext items={previews.map((_, i) => i)} strategy={rectSortingStrategy}>
+                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-2">
+                    {previews.map((preview, index) => (
+                      <SortablePhoto
+                        key={preview + index}
+                        id={index}
+                        preview={preview}
+                        index={index}
+                        onRemove={() => handleRemovePhoto(index)}
+                        onMakeCover={() => handleMakeCover(index)}
+                      />
+                    ))}
                   </div>
-                ))}
-              </div>
+                </SortableContext>
+              </DndContext>
             )}
           </div>
 

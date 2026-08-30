@@ -22,7 +22,7 @@ export function ApartmentCard({ apartment, locale, activeAmenities = [] }: Apart
   const t = useTranslations('catalog');
   const tAmenities = useTranslations('amenities');
   const numericId = Number(apartment.id) || 0;
-  
+
   const isFavorite = useFavoritesStore((s) => s.isFavorite(numericId));
   const toggleLocalFavorite = useFavoritesStore((s) => s.toggle);
   const isInCompare = useCompareStore((s) => s.isInCompare(numericId));
@@ -32,7 +32,7 @@ export function ApartmentCard({ apartment, locale, activeAmenities = [] }: Apart
   const handleFavoriteClick = async (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
-    
+
     toggleLocalFavorite(numericId);
 
     if (isAuthenticated) {

@@ -20,11 +20,13 @@ const DEFAULT_LOCALE = 'ru';
 export default function LocaleLayout({
   children,
   params,
-  messages
+  messages,
+  initialSiteSettings,
 }: {
   children: React.ReactNode;
   params: { locale: string };
   messages: Record<string, string>;
+  initialSiteSettings?: any;
 }) {
   const { locale } = params;
 
@@ -38,7 +40,7 @@ export default function LocaleLayout({
     <GoogleOAuthProvider clientId="114863832086-ubhij3d5vekmksft6g4gme9k3ncd6etb.apps.googleusercontent.com">
       <ThemeProvider>
         <NextIntlClientProvider locale={validLocale} messages={messages} timeZone="Asia/Tashkent">
-          <QueryProvider>
+          <QueryProvider initialSiteSettings={initialSiteSettings}>
             <AuthInitializer />
             <GlobalErrorListener />
             <DesignTokensInjector />

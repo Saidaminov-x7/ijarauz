@@ -1,12 +1,47 @@
-export default function RootLayout({
+async function getServerTheme() {
+  try {
+    const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'https://backend-production-d0a5.up.railway.app/api';
+    const res = await fetch(`${apiUrl}/site-settings/public/theme`, {
+      next: { revalidate: 60 },
+    });
+    if (!res.ok) throw new Error('theme fetch failed');
+    return await res.json();
+  } catch {
+    return {
+      primaryColor: '#14b8a6',
+      secondaryColor: '#0f766e',
+      backgroundColor: '#f9fafb',
+      textColor: '#111827',
+      borderRadius: '0.75rem',
+      fontFamily: 'Inter, sans-serif',
+    };
+  }
+}
+
+export default async function RootLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
+  const theme = await getServerTheme();
+
   return (
     <html suppressHydrationWarning>
       <head>
         <link rel="icon" href="/logotip.png" />
+        <style
+          id="server-theme-tokens"
+          dangerouslySetInnerHTML={{
+            __html: `:root {
+              --color-primary: ${theme.primaryColor || '#14b8a6'};
+              --color-secondary: ${theme.secondaryColor || '#0f766e'};
+              --color-bg: ${theme.backgroundColor || '#f9fafb'};
+              --color-text: ${theme.textColor || '#111827'};
+              --border-radius: ${theme.borderRadius || '0.75rem'};
+              --font-family: ${theme.fontFamily || 'Inter, sans-serif'};
+            }`,
+          }}
+        />
         {/* Yandex.Metrika counter */}
         <script
           type="text/javascript"

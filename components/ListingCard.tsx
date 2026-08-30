@@ -20,19 +20,19 @@ const gradients = [
 
 function typeIcon(type: Listing['type']) {
   if (type === 'room') {
-    return <svg width="46" height="46" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><rect x="2" y="3" width="20" height="18" rx="1"/><path d="M2 9h20"/><path d="M12 9v12"/></svg>;
+    return <svg width="46" height="46" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><rect x="2" y="3" width="20" height="18" rx="1" /><path d="M2 9h20" /><path d="M12 9v12" /></svg>;
   }
   if (type === 'daily') {
-    return <svg width="46" height="46" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="11" width="18" height="10" rx="1"/><path d="M3 11V8a2 2 0 012-2h4a2 2 0 012 2v3"/><path d="M13 11V6a2 2 0 012-2h4a2 2 0 012 2v5"/></svg>;
+    return <svg width="46" height="46" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="11" width="18" height="10" rx="1" /><path d="M3 11V8a2 2 0 012-2h4a2 2 0 012 2v3" /><path d="M13 11V6a2 2 0 012-2h4a2 2 0 012 2v5" /></svg>;
   }
-  return <svg width="46" height="46" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M3 9.5L12 3l9 6.5V20a1 1 0 01-1 1H4a1 1 0 01-1-1V9.5z"/><path d="M9 21V12h6v9"/></svg>;
+  return <svg width="46" height="46" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M3 9.5L12 3l9 6.5V20a1 1 0 01-1 1H4a1 1 0 01-1-1V9.5z" /><path d="M9 21V12h6v9" /></svg>;
 }
 
 export function ListingCard({ item, locale }: { item: Listing; locale: string }) {
   const typeLabel: Record<Listing['type'], string> = {
     apartment: 'Квартира',
-    room:      'Комната',
-    daily:     'Посуточно',
+    room: 'Комната',
+    daily: 'Посуточно',
   };
 
   const gradient = gradients[item.id % gradients.length];
@@ -104,8 +104,8 @@ export function ListingCard({ item, locale }: { item: Listing; locale: string })
         item.promotionTier === 'URGENT'
           ? 'border-rose-500/50 shadow-md shadow-rose-500/10 bg-rose-50/20 dark:bg-rose-950/10'
           : item.promotionTier === 'TOP'
-          ? 'border-amber-500/50 shadow-md shadow-amber-500/10 bg-amber-50/20 dark:bg-amber-950/10'
-          : 'border-stone-200/80 bg-white dark:border-white/5 hover:shadow-stone-900/8'
+            ? 'border-amber-500/50 shadow-md shadow-amber-500/10 bg-amber-50/20 dark:bg-amber-950/10'
+            : 'border-stone-200/80 bg-white dark:border-white/5 hover:shadow-stone-900/8'
       )}
     >
       {/* Интерактивная фото-обложка (Hover Image Sequence / Scrubbing) */}
@@ -249,17 +249,17 @@ export function ListingCard({ item, locale }: { item: Listing; locale: string })
         </h3>
 
         <p className="mt-1 flex items-center gap-1 text-xs text-stone-400 dark:text-stone-500">
-          <svg width="10" height="10" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg>
+          <svg width="10" height="10" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z" /></svg>
           {item.district}, {item.city}
         </p>
 
         <div className="mt-3 flex items-center gap-3 text-xs text-stone-500 dark:text-stone-400">
           <span className="flex items-center gap-1">
-            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M3 9.5L12 3l9 6.5V20a1 1 0 01-1 1H4a1 1 0 01-1-1V9.5z"/><path d="M9 21V12h6v9"/></svg>
+            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M3 9.5L12 3l9 6.5V20a1 1 0 01-1 1H4a1 1 0 01-1-1V9.5z" /><path d="M9 21V12h6v9" /></svg>
             {item.rooms} комн.
           </span>
           <span className="flex items-center gap-1">
-            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="3" y="3" width="18" height="18" rx="1"/></svg>
+            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="3" y="3" width="18" height="18" rx="1" /></svg>
             {item.area} м²
           </span>
           <span>{item.floor}/{item.totalFloors} эт.</span>
@@ -273,7 +273,7 @@ export function ListingCard({ item, locale }: { item: Listing; locale: string })
             </span>
           </div>
           <div className="flex items-center gap-1 text-xs text-stone-500 dark:text-stone-400">
-            <svg className="text-amber-400" width="11" height="11" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+            <svg className="text-amber-400" width="11" height="11" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" /></svg>
             {item.rating} ({item.reviews ?? 0})
           </div>
         </div>
