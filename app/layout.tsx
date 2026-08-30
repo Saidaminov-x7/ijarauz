@@ -1,6 +1,16 @@
+import type { Viewport } from 'next';
+
+export const viewport: Viewport = {
+  width: 'device-width',
+  initialScale: 1,
+  maximumScale: 5,
+  userScalable: true,
+};
+
 async function getServerTheme() {
   try {
-    const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'https://backend-production-d0a5.up.railway.app/api';
+    const apiUrl = process.env.NEXT_PUBLIC_API_URL;
+    if (!apiUrl) throw new Error('no apiUrl');
     const res = await fetch(`${apiUrl}/site-settings/public/theme`, {
       next: { revalidate: 60 },
     });
@@ -20,7 +30,8 @@ async function getServerTheme() {
 
 async function getServerSettings() {
   try {
-    const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'https://backend-production-d0a5.up.railway.app/api';
+    const apiUrl = process.env.NEXT_PUBLIC_API_URL;
+    if (!apiUrl) throw new Error('no apiUrl');
     const res = await fetch(`${apiUrl}/site-settings/public`, {
       next: { revalidate: 30 },
     });
@@ -38,24 +49,14 @@ export default async function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const [theme, settings] = await Promise.all([
+  const [theme] = await Promise.all([
     getServerTheme(),
     getServerSettings(),
   ]);
 
-  const pinchZoomEnabled = settings?.mobilePinchZoomEnabled !== false;
-
   return (
     <html suppressHydrationWarning>
       <head>
-        <meta
-          name="viewport"
-          content={
-            pinchZoomEnabled
-              ? 'width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes'
-              : 'width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no'
-          }
-        />
         <link rel="icon" href="/logotip.png" />
         <style
           id="server-theme-tokens"

@@ -583,4 +583,13 @@ export const sendChatMessage = async (payload: {
   return response.data;
 };
 
+export const deleteChatMessage = async (messageId: string): Promise<boolean> => {
+  try {
+    await api.delete(`/chat/messages/${messageId}`);
+    return true;
+  } catch {
+    return false;
+  }
+};
+
 

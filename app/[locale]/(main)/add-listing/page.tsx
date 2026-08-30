@@ -52,6 +52,7 @@ const listingSchema = z.object({
     .regex(/^\d+$/, 'Цена должна содержать только цифры')
     .refine((val) => Number(val) > 0, 'Цена должна быть больше 0')
     .refine((val) => Number(val) <= 1000000000, 'Слишком большая сумма'),
+  currency: z.enum(['USD', 'UZS']).default('USD'),
   type: z.enum(['APARTMENT', 'HOUSE', 'ROOM', 'COMMERCIAL', 'LAND']),
   city: z.string().min(2, 'Укажите город'),
   district: z.string().min(2, 'Укажите район'),
@@ -218,7 +219,7 @@ function AddListingContent() {
   const form = useForm<ListingFormValues>({
     resolver: zodResolver(listingSchema),
     defaultValues: {
-      title: '', description: '', price: '', type: 'APARTMENT', city: '', district: '',
+      title: '', description: '', price: '', currency: 'USD', type: 'APARTMENT', city: '', district: '',
       address: '', rooms: '', area: '', floor: '', totalFloors: '',
     },
   });
@@ -587,9 +588,26 @@ function AddListingContent() {
                       </span>
                     )}
                   </div>
-                  <FormControl>
-                    <Input placeholder="500" className="h-11 rounded-xl" {...field} />
-                  </FormControl>
+                  <div className="flex items-center gap-2">
+                    <FormControl>
+                      <Input placeholder="500" className="h-11 rounded-xl flex-1" {...field} />
+                    </FormControl>
+                    <FormField
+                      control={form.control}
+                      name="currency"
+                      render={({ field: currField }) => (
+                        <select
+                          value={currField.value || 'USD'}
+                          onChange={currField.onChange}
+                          aria-label="Валюта"
+                          className="h-11 px-3 rounded-xl border border-stone-200 bg-stone-50 dark:border-white/10 dark:bg-stone-900 text-stone-800 dark:text-white font-semibold text-sm outline-none focus:border-primary-500 cursor-pointer"
+                        >
+                          <option value="USD">USD ($)</option>
+                          <option value="UZS">UZS (сум)</option>
+                        </select>
+                      )}
+                    />
+                  </div>
                   <FormMessage />
                 </FormItem>
               )}

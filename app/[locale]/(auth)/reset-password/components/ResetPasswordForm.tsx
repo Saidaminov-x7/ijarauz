@@ -79,7 +79,7 @@ export function ResetPasswordForm({ locale, token }: ResetPasswordFormProps) {
           onClick={() => router.push(`/${locale}/login`)}
           className="flex h-11 w-full items-center justify-center rounded-xl bg-primary-600 font-semibold text-white transition-all hover:bg-primary-500 shadow-lg shadow-primary-900/30 active:scale-[0.98]"
         >
-          Войти с новым паролем
+          {t('loginWithNewPassword')}
         </button>
       </div>
     );

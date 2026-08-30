@@ -289,6 +289,7 @@
     "loading": "Saqlanmoqda...",
     "successTitle": "Parol yangilandi",
     "successMessage": "Parolingiz muvaffaqiyatli yangilandi",
+    "loginWithNewPassword": "Yangi parol bilan kirish",
     "invalidLinkTitle": "Yaroqsiz havola",
     "invalidLinkMessage": "Parolni tiklash tokeni mavjud emas yoki havola buzilgan. Iltimos, qaytadan so'rov yuboring.",
     "requestReset": "Parolni tiklashni so'rash"

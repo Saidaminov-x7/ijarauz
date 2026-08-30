@@ -274,6 +274,7 @@
     "loading": "Saving...",
     "successTitle": "Password changed",
     "successMessage": "Your password has been successfully changed",
+    "loginWithNewPassword": "Sign in with new password",
     "invalidLinkTitle": "Invalid or expired link",
     "invalidLinkMessage": "The password reset token is missing or invalid. Please request a new link.",
     "requestReset": "Request password reset"

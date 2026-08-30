@@ -6,11 +6,11 @@ import {
   MessageSquare, Sparkles, Send, Bot, User as UserIcon,
   ChevronRight, ArrowLeft, ShieldCheck, MapPin, Building,
   DollarSign, SlidersHorizontal, CheckCircle2, Search, Pin,
-  Phone, MoreVertical, Check, CheckCheck
+  Phone, MoreVertical, Check, CheckCheck, Reply, Trash2, X
 } from 'lucide-react';
 import { useAuthStore } from '@/store/useAuthStore';
 import { Apartment } from '@/types';
-import { getApartments, getApartmentById, getChatConversations, getChatMessages, sendChatMessage, type ChatConversationItem } from '@/lib/api';
+import { getApartments, getApartmentById, getChatConversations, getChatMessages, sendChatMessage, deleteChatMessage, type ChatConversationItem } from '@/lib/api';
 import { VoiceAndMediaChat } from '@/components/chat/VoiceAndMediaChat';
 import { toast } from 'sonner';
 
@@ -23,6 +23,11 @@ interface Message {
   appliedFilters?: Record<string, string>;
   quickReplies?: string[];
   listing?: any;
+  replyTo?: {
+    id: string;
+    text: string;
+    senderName: string;
+  } | null;
 }
 
 interface ChatContact {
@@ -151,9 +156,22 @@ function ChatContent() {
   const [selectedContactId, setSelectedContactId] = useState<string>(peerIdParam || 'ai-assistant');
   const [activeListingId, setActiveListingId] = useState<string | null>(listingIdParam || null);
   const [attachedListing, setAttachedListing] = useState<Apartment | null>(null);
-  const [searchContact, setSearchContact] = useState<string>('');
   const [inputText, setInputText] = useState('');
   const [isTyping, setIsTyping] = useState(false);
+  const [replyingTo, setReplyingTo] = useState<{ id: string; text: string; senderName: string } | null>(null);
+
+  const handleDeleteMessage = async (msgId: string) => {
+    try {
+      await deleteChatMessage(msgId);
+      setConversations((prev) => ({
+        ...prev,
+        [selectedContactId]: (prev[selectedContactId] || []).filter((m) => m.id !== msgId),
+      }));
+      toast.success('Сообщение удалено');
+    } catch {
+      toast.error('Не удалось удалить сообщение');
+    }
+  };
 
   // Messages per contact ID
   const [conversations, setConversations] = useState<Record<string, Message[]>>({
@@ -283,7 +301,10 @@ function ChatContent() {
       sender: 'user',
       text,
       timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+      replyTo: replyingTo ? { ...replyingTo } : null,
     };
+
+    setReplyingTo(null);
 
     setConversations((prev) => ({
       ...prev,
@@ -818,75 +839,119 @@ function ChatContent() {
                 {currentMessages.map((msg) => {
                   const isUser = msg.sender === 'user';
                   return (
-                    <div key={msg.id} className={`flex flex-col ${isUser ? 'items-end' : 'items-start'}`}>
-                      <div
-                        className={`max-w-[88%] sm:max-w-[70%] rounded-2xl p-4 text-sm leading-relaxed ${isUser
-                            ? 'bg-primary-600 text-white rounded-br-xs shadow-sm'
-                            : 'bg-white text-stone-800 dark:bg-[#1E1E1E] dark:text-stone-200 rounded-bl-xs border border-stone-200/80 dark:border-white/5 shadow-xs'
-                          }`}
-                      >
-                        {/* Attached Listing Card inside message */}
-                        {msg.listing && (
-                          <div
-                            onClick={() => router.push(`/${locale}/catalog/${msg.listing.id}`)}
-                            className="mb-3 flex items-center gap-2.5 p-2 rounded-xl bg-black/10 dark:bg-white/10 cursor-pointer hover:opacity-90 transition-opacity"
+                    <div key={msg.id} className={`group relative flex flex-col ${isUser ? 'items-end' : 'items-start'}`}>
+                      {/* Quote Reply preview if present */}
+                      {msg.replyTo && (
+                        <div className={`mb-1 text-xs px-3 py-1.5 rounded-xl border flex items-center gap-2 max-w-[80%] ${
+                          isUser
+                            ? 'bg-primary-500/20 border-primary-500/30 text-primary-200'
+                            : 'bg-stone-200/50 dark:bg-white/5 border-stone-300 dark:border-white/10 text-stone-600 dark:text-stone-400'
+                        }`}>
+                          <Reply size={12} className="shrink-0 rotate-180" />
+                          <span className="font-bold shrink-0">{msg.replyTo.senderName}:</span>
+                          <span className="truncate">{msg.replyTo.text}</span>
+                        </div>
+                      )}
+
+                      <div className="relative flex items-center gap-1">
+                        {/* Action buttons on hover */}
+                        <div className={`opacity-0 group-hover:opacity-100 transition-opacity flex items-center gap-1 text-stone-400 ${
+                          isUser ? 'order-first' : 'order-last'
+                        }`}>
+                          <button
+                            type="button"
+                            onClick={() => setReplyingTo({
+                              id: msg.id,
+                              text: msg.text,
+                              senderName: isUser ? 'Вы' : selectedContact.name,
+                            })}
+                            title="Ответить"
+                            className="p-1.5 rounded-lg hover:bg-stone-200 dark:hover:bg-white/10 hover:text-stone-900 dark:hover:text-white cursor-pointer"
                           >
-                            {msg.listing.image && (
-                              <img
-                                src={msg.listing.image}
-                                alt={msg.listing.title}
-                                className="h-10 w-10 rounded-lg object-cover"
-                              />
-                            )}
-                            <div className="min-w-0 flex-1">
-                              <p className="text-xs font-bold truncate">{msg.listing.title}</p>
-                              <p className="text-[11px] opacity-80">${msg.listing.price} • {msg.listing.city}</p>
-                            </div>
-                            <ChevronRight size={14} className="opacity-60" />
-                          </div>
-                        )}
+                            <Reply size={14} />
+                          </button>
+                          {isUser && (
+                            <button
+                              type="button"
+                              onClick={() => handleDeleteMessage(msg.id)}
+                              title="Удалить сообщение"
+                              className="p-1.5 rounded-lg hover:bg-rose-100 dark:hover:bg-rose-950/40 hover:text-rose-600 cursor-pointer"
+                            >
+                              <Trash2 size={14} />
+                            </button>
+                          )}
+                        </div>
 
-                        <p className="whitespace-pre-wrap">{msg.text}</p>
-
-                        {/* Matched Listings Cards */}
-                        {msg.matchedListings && msg.matchedListings.length > 0 && (
-                          <div className="mt-4 space-y-2.5 pt-3 border-t border-stone-200/60 dark:border-white/10">
-                            {msg.matchedListings.map((apt) => (
-                              <div
-                                key={apt.id}
-                                onClick={() => router.push(`/${locale}/catalog/${apt.id}`)}
-                                className="flex items-center gap-3 rounded-2xl bg-stone-50 p-3 text-left cursor-pointer transition-all hover:scale-[1.01] hover:bg-stone-100 dark:bg-[#252525] dark:hover:bg-[#2C2C2C] border border-stone-200/50 dark:border-white/5"
-                              >
+                        <div
+                          className={`max-w-[88%] sm:max-w-[70%] rounded-2xl p-4 text-sm leading-relaxed ${isUser
+                              ? 'bg-primary-600 text-white rounded-br-xs shadow-sm'
+                              : 'bg-white text-stone-800 dark:bg-[#1E1E1E] dark:text-stone-200 rounded-bl-xs border border-stone-200/80 dark:border-white/5 shadow-xs'
+                            }`}
+                        >
+                          {/* Attached Listing Card inside message */}
+                          {msg.listing && (
+                            <div
+                              onClick={() => router.push(`/${locale}/catalog/${msg.listing.id}`)}
+                              className="mb-3 flex items-center gap-2.5 p-2 rounded-xl bg-black/10 dark:bg-white/10 cursor-pointer hover:opacity-90 transition-opacity"
+                            >
+                              {msg.listing.image && (
                                 <img
-                                  src={apt.image}
-                                  alt={apt.title}
-                                  className="h-14 w-14 rounded-xl object-cover"
+                                  src={msg.listing.image}
+                                  alt={msg.listing.title}
+                                  className="h-10 w-10 rounded-lg object-cover"
                                 />
-                                <div className="min-w-0 flex-1">
-                                  <p className="font-semibold text-stone-900 dark:text-white truncate">
-                                    {apt.title}
-                                  </p>
-                                  <p className="text-xs text-primary-600 dark:text-primary-400 font-bold mt-0.5">
-                                    ${apt.price} / {apt.type === 'daily' ? 'сутки' : 'мес'} • {apt.location}
-                                  </p>
-                                </div>
-                                <ChevronRight size={16} className="text-stone-400 shrink-0" />
+                              )}
+                              <div className="min-w-0 flex-1">
+                                <p className="text-xs font-bold truncate">{msg.listing.title}</p>
+                                <p className="text-[11px] opacity-80">${msg.listing.price} • {msg.listing.city}</p>
                               </div>
-                            ))}
+                              <ChevronRight size={14} className="opacity-60" />
+                            </div>
+                          )}
 
-                            {msg.appliedFilters && (
-                              <button
-                                type="button"
-                                onClick={() => applyFiltersToCatalog(msg.appliedFilters!)}
-                                className="w-full flex items-center justify-center gap-2 rounded-2xl bg-primary-600 py-2.5 text-xs font-bold text-white hover:bg-primary-500 transition-colors shadow-sm mt-2"
-                              >
-                                <SlidersHorizontal size={14} />
-                                Открыть в каталоге с этими фильтрами
-                              </button>
-                            )}
-                          </div>
-                        )}
+                          <p className="whitespace-pre-wrap">{msg.text}</p>
+
+                          {/* Matched Listings Cards */}
+                          {msg.matchedListings && msg.matchedListings.length > 0 && (
+                            <div className="mt-4 space-y-2.5 pt-3 border-t border-stone-200/60 dark:border-white/10">
+                              {msg.matchedListings.map((apt) => (
+                                <div
+                                  key={apt.id}
+                                  onClick={() => router.push(`/${locale}/catalog/${apt.id}`)}
+                                  className="flex items-center gap-3 rounded-2xl bg-stone-50 p-3 text-left cursor-pointer transition-all hover:scale-[1.01] hover:bg-stone-100 dark:bg-[#252525] dark:hover:bg-[#2C2C2C] border border-stone-200/50 dark:border-white/5"
+                                >
+                                  <img
+                                    src={apt.image}
+                                    alt={apt.title}
+                                    className="h-14 w-14 rounded-xl object-cover"
+                                  />
+                                  <div className="min-w-0 flex-1">
+                                    <p className="font-semibold text-stone-900 dark:text-white truncate">
+                                      {apt.title}
+                                    </p>
+                                    <p className="text-xs text-primary-600 dark:text-primary-400 font-bold mt-0.5">
+                                      ${apt.price} / {apt.type === 'daily' ? 'сутки' : 'мес'} • {apt.location}
+                                    </p>
+                                  </div>
+                                  <ChevronRight size={16} className="text-stone-400 shrink-0" />
+                                </div>
+                              ))}
+
+                              {msg.appliedFilters && (
+                                <button
+                                  type="button"
+                                  onClick={() => applyFiltersToCatalog(msg.appliedFilters!)}
+                                  className="w-full flex items-center justify-center gap-2 rounded-2xl bg-primary-600 py-2.5 text-xs font-bold text-white hover:bg-primary-500 transition-colors shadow-sm mt-2"
+                                >
+                                  <SlidersHorizontal size={14} />
+                                  Открыть в каталоге с этими фильтрами
+                                </button>
+                              )}
+                            </div>
+                          )}
+                        </div>
                       </div>
+
                       <div className="mt-1 flex items-center gap-1 px-1 text-[11px] text-stone-400">
                         <span>{msg.timestamp}</span>
                         {isUser && <CheckCheck size={13} className="text-primary-500" />}
@@ -922,6 +987,24 @@ function ChatContent() {
                   </div>
                 )}
               </div>
+
+              {/* Replying To Banner Preview */}
+              {replyingTo && (
+                <div className="flex items-center justify-between px-4 py-2 bg-stone-100 dark:bg-stone-800 border-t border-stone-200 dark:border-white/10 text-xs">
+                  <div className="flex items-center gap-2 min-w-0">
+                    <Reply size={14} className="text-primary-500 shrink-0" />
+                    <span className="text-stone-500 dark:text-stone-400">Ответ для <strong className="text-stone-900 dark:text-white">{replyingTo.senderName}</strong>:</span>
+                    <span className="text-stone-700 dark:text-stone-300 truncate max-w-xs">{replyingTo.text}</span>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => setReplyingTo(null)}
+                    className="p-1 rounded-lg text-stone-400 hover:text-stone-600 dark:hover:text-white"
+                  >
+                    <X size={14} />
+                  </button>
+                </div>
+              )}
 
               {/* Message Bottom Input Bar with Voice & Media */}
               <div className="border-t border-stone-200 dark:border-white/10 bg-white dark:bg-[#1A1A1A]">
