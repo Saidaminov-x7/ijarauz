@@ -322,7 +322,7 @@ export function ChatWidget() {
         type="button"
         onClick={() => setIsOpen((prev) => !prev)}
         aria-label="Открыть AI чат"
-        className="fixed bottom-6 right-6 z-50 flex h-14 w-14 items-center justify-center rounded-full bg-gradient-to-r from-teal-600 to-emerald-500 text-white shadow-xl shadow-teal-900/30 transition-transform duration-200 hover:scale-105 active:scale-95"
+        className="fixed bottom-6 right-6 z-50 flex h-14 w-14 items-center justify-center rounded-full bg-gradient-to-r from-primary-600 to-emerald-500 text-white shadow-xl shadow-primary-900/30 transition-transform duration-200 hover:scale-105 active:scale-95"
       >
         {isOpen ? <X size={24} /> : <Sparkles size={24} className="animate-pulse" />}
       </button>
@@ -334,7 +334,7 @@ export function ChatWidget() {
           <div className="border-b border-stone-200/80 bg-stone-50/80 p-4 dark:border-white/10 dark:bg-[#222222]">
             <div className="flex items-center justify-between mb-3">
               <div className="flex items-center gap-2.5">
-                <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-teal-500 to-emerald-600 text-white shadow-sm">
+                <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-primary-500 to-emerald-600 text-white shadow-sm">
                   <Bot size={20} />
                 </div>
                 <div>
@@ -362,7 +362,7 @@ export function ChatWidget() {
                 type="button"
                 onClick={() => setActiveTab('ai')}
                 className={`flex items-center justify-center gap-1.5 rounded-lg py-1.5 text-xs font-semibold transition-all ${activeTab === 'ai'
-                    ? 'bg-white text-teal-700 shadow-sm dark:bg-teal-600 dark:text-white'
+                    ? 'bg-white text-primary-700 shadow-sm dark:bg-primary-600 dark:text-white'
                     : 'text-stone-600 dark:text-stone-400'
                   }`}
               >
@@ -373,7 +373,7 @@ export function ChatWidget() {
                 type="button"
                 onClick={() => setActiveTab('peer')}
                 className={`flex items-center justify-center gap-1.5 rounded-lg py-1.5 text-xs font-semibold transition-all ${activeTab === 'peer'
-                    ? 'bg-white text-teal-700 shadow-sm dark:bg-teal-600 dark:text-white'
+                    ? 'bg-white text-primary-700 shadow-sm dark:bg-primary-600 dark:text-white'
                     : 'text-stone-600 dark:text-stone-400'
                   }`}
               >
@@ -391,7 +391,7 @@ export function ChatWidget() {
                 <div key={msg.id} className={`flex flex-col ${isUser ? 'items-end' : 'items-start'}`}>
                   <div
                     className={`max-w-[85%] rounded-2xl p-3.5 ${isUser
-                        ? 'bg-teal-600 text-white rounded-br-xs shadow-sm'
+                        ? 'bg-primary-600 text-white rounded-br-xs shadow-sm'
                         : 'bg-stone-100 text-stone-800 dark:bg-white/5 dark:text-stone-200 rounded-bl-xs border border-stone-200/60 dark:border-white/5'
                       }`}
                   >
@@ -418,7 +418,7 @@ export function ChatWidget() {
                               <p className="font-semibold text-stone-900 dark:text-white truncate">
                                 {apt.title}
                               </p>
-                              <p className="text-[10px] text-teal-600 dark:text-teal-400 font-bold">
+                              <p className="text-[10px] text-primary-600 dark:text-primary-400 font-bold">
                                 ${apt.price} / мес • {apt.location}
                               </p>
                             </div>
@@ -430,7 +430,7 @@ export function ChatWidget() {
                           <button
                             type="button"
                             onClick={() => applyFiltersToCatalog(msg.appliedFilters!)}
-                            className="w-full flex items-center justify-center gap-1.5 rounded-xl bg-teal-600 py-2 text-[11px] font-bold text-white hover:bg-teal-500 transition-colors shadow-xs"
+                            className="w-full flex items-center justify-center gap-1.5 rounded-xl bg-primary-600 py-2 text-[11px] font-bold text-white hover:bg-primary-500 transition-colors shadow-xs"
                           >
                             <SlidersHorizontal size={13} />
                             Открыть в каталоге с этими фильтрами
@@ -446,9 +446,9 @@ export function ChatWidget() {
 
             {isTyping && (
               <div className="flex items-center gap-1.5 text-stone-400 py-1">
-                <div className="h-2 w-2 rounded-full bg-teal-500 animate-bounce" />
-                <div className="h-2 w-2 rounded-full bg-teal-500 animate-bounce [animation-delay:0.2s]" />
-                <div className="h-2 w-2 rounded-full bg-teal-500 animate-bounce [animation-delay:0.4s]" />
+                <div className="h-2 w-2 rounded-full bg-primary-500 animate-bounce" />
+                <div className="h-2 w-2 rounded-full bg-primary-500 animate-bounce [animation-delay:0.2s]" />
+                <div className="h-2 w-2 rounded-full bg-primary-500 animate-bounce [animation-delay:0.4s]" />
                 <span className="text-[11px] ml-1">AI подбирает варианты...</span>
               </div>
             )}
@@ -470,7 +470,7 @@ export function ChatWidget() {
                   onClick={() => {
                     setInputText(suggestion);
                   }}
-                  className="shrink-0 rounded-full border border-stone-200 bg-stone-50 px-2.5 py-1 text-[10px] font-medium text-stone-600 hover:border-teal-500 hover:text-teal-600 dark:border-white/10 dark:bg-white/5 dark:text-stone-300 transition-colors"
+                  className="shrink-0 rounded-full border border-stone-200 bg-stone-50 px-2.5 py-1 text-[10px] font-medium text-stone-600 hover:border-primary-500 hover:text-primary-600 dark:border-white/10 dark:bg-white/5 dark:text-stone-300 transition-colors"
                 >
                   {suggestion}
                 </button>
@@ -496,12 +496,12 @@ export function ChatWidget() {
                     ? 'Спросите AI или опишите жильё...'
                     : 'Напишите сообщение...'
                 }
-                className="h-12 flex-1 rounded-xl border border-stone-200/80 bg-white/70 px-4 py-3 text-sm text-stone-900 placeholder-stone-400 outline-none focus:border-teal-500 focus:ring-2 focus:ring-teal-500/20 dark:border-white/15 dark:bg-white/10 dark:text-white dark:placeholder-stone-500 dark:focus:border-teal-500/50 transition-all shadow-sm"
+                className="h-12 flex-1 rounded-xl border border-stone-200/80 bg-white/70 px-4 py-3 text-sm text-stone-900 placeholder-stone-400 outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 dark:border-white/15 dark:bg-white/10 dark:text-white dark:placeholder-stone-500 dark:focus:border-primary-500/50 transition-all shadow-sm"
               />
               <button
                 type="submit"
                 disabled={!inputText.trim()}
-                className="flex h-10 w-10 items-center justify-center rounded-xl bg-teal-600 text-white transition-colors hover:bg-teal-500 disabled:opacity-40"
+                className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary-600 text-white transition-colors hover:bg-primary-500 disabled:opacity-40"
               >
                 <Send size={15} />
               </button>

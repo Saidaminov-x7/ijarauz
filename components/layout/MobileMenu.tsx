@@ -169,7 +169,7 @@ export function MobileMenu({ locale }: MobileMenuProps) {
                     {useAuthStore.getState().isAuthenticated ? (
                       <button
                         onClick={() => handleNavigation('/profile')}
-                        className="flex w-full items-center justify-center gap-2 rounded-lg bg-teal-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-teal-700"
+                        className="flex w-full items-center justify-center gap-2 rounded-lg bg-primary-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-primary-700"
                       >
                         <User size={18} />
                         {t('profile')}
@@ -186,7 +186,7 @@ export function MobileMenu({ locale }: MobileMenuProps) {
 
                         <button
                           onClick={() => handleNavigation('/register')}
-                          className="flex w-full items-center justify-center gap-2 rounded-lg bg-teal-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-teal-700"
+                          className="flex w-full items-center justify-center gap-2 rounded-lg bg-primary-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-primary-700"
                         >
                           <UserPlus size={18} />
                           {t('register')}

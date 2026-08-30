@@ -28,7 +28,7 @@ const BTN_CLASS =
   'hover:border-stone-300 hover:bg-stone-50 hover:text-stone-900 ' +
   'dark:border-white/10 dark:bg-stone-900 dark:text-stone-300 ' +
   'dark:hover:border-white/20 dark:hover:bg-stone-800 dark:hover:text-white ' +
-  'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-500/50';
+  'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500/50';
 
 function localeHref(pathname: string, code: string, search: string) {
   const rest = pathname.replace(/^\/(ru|uz|en)(?=\/|$)/, '') || '/';
@@ -75,7 +75,7 @@ function LanguagePicker() {
       <button
         type="button"
         onClick={handleToggle}
-        className={BTN_CLASS + ' gap-1 !w-auto px-3 text-sm font-semibold ' + (open ? '!border-teal-500 !text-teal-600 dark:!text-teal-400' : '')}
+        className={BTN_CLASS + ' gap-1 !w-auto px-3 text-sm font-semibold ' + (open ? '!border-primary-500 !text-primary-600 dark:!text-primary-400' : '')}
       >
         {current.short}
       </button>
@@ -98,7 +98,7 @@ function LanguagePicker() {
               className={
                 'flex w-full items-center px-3 py-2 text-xs font-medium transition-colors text-left ' +
                 (active
-                  ? 'bg-teal-50 text-teal-700 dark:bg-teal-950/40 dark:text-teal-400'
+                  ? 'bg-primary-50 text-primary-700 dark:bg-primary-950/40 dark:text-primary-400'
                   : 'text-stone-600 hover:bg-stone-50 dark:text-stone-300 dark:hover:bg-white/5')
               }
             >
@@ -214,8 +214,8 @@ export function Header({ locale: localeProp }: { locale?: string }) {
             href={to('/')}
             className="flex items-center gap-1.5 text-sm text-stone-400 hover:opacity-80 transition-opacity"
           >
-            <div className="h-2 w-2 rounded-full bg-teal-400 shadow-[0_0_6px_2px_rgba(52,211,153,0.4)]" />
-            <span className="text-teal-400 font-semibold tracking-tight">ijara.uz</span>
+            <div className="h-2 w-2 rounded-full bg-primary-400 shadow-[0_0_6px_2px_rgba(52,211,153,0.4)]" />
+            <span className="text-primary-400 font-semibold tracking-tight">ijara.uz</span>
           </Link>
         </div>
       </header>
@@ -280,7 +280,7 @@ export function Header({ locale: localeProp }: { locale?: string }) {
                       className={
                         'whitespace-nowrap rounded-xl px-3.5 py-2 text-sm font-semibold transition-colors duration-250 ' +
                         (isActive(href)
-                          ? 'bg-teal-50 text-teal-700 dark:bg-teal-950/50 dark:text-teal-300'
+                          ? 'bg-primary-50 text-primary-700 dark:bg-primary-950/50 dark:text-primary-300'
                           : 'text-stone-600 hover:bg-stone-100 hover:text-stone-950 dark:text-stone-400 dark:hover:bg-white/5 dark:hover:text-white')
                       }
                     >
@@ -296,7 +296,7 @@ export function Header({ locale: localeProp }: { locale?: string }) {
                     className={
                       'whitespace-nowrap rounded-xl px-3.5 py-2 text-sm font-semibold transition-colors duration-250 ' +
                       (isActive(href)
-                        ? 'bg-teal-50 text-teal-700 dark:bg-teal-950/50 dark:text-teal-300'
+                        ? 'bg-primary-50 text-primary-700 dark:bg-primary-950/50 dark:text-primary-300'
                         : 'text-stone-600 hover:bg-stone-100 hover:text-stone-950 dark:text-stone-400 dark:hover:bg-white/5 dark:hover:text-white')
                     }
                   >
@@ -324,7 +324,7 @@ export function Header({ locale: localeProp }: { locale?: string }) {
                     value={query}
                     onChange={(e) => handleQuery(e.target.value)}
                     placeholder={t('searchPlaceholder')}
-                    className="h-10 w-72 rounded-xl border border-stone-300 bg-stone-50 pl-10 pr-9 text-sm text-stone-900 placeholder:text-stone-400 outline-none focus:border-teal-500 focus:bg-white focus:ring-2 focus:ring-teal-500/20 dark:border-stone-700 dark:bg-stone-800 dark:text-white dark:placeholder:text-stone-500"
+                    className="h-10 w-72 rounded-xl border border-stone-300 bg-stone-50 pl-10 pr-9 text-sm text-stone-900 placeholder:text-stone-400 outline-none focus:border-primary-500 focus:bg-white focus:ring-2 focus:ring-primary-500/20 dark:border-stone-700 dark:bg-stone-800 dark:text-white dark:placeholder:text-stone-500"
                   />
                   <button
                     type="button"
@@ -367,7 +367,7 @@ export function Header({ locale: localeProp }: { locale?: string }) {
                   initial={{ scale: prefersReducedMotion ? 1 : 1.3 }}
                   animate={{ scale: 1 }}
                   transition={{ duration: 0.2 }}
-                  className="absolute -right-1 -top-1 flex h-4.5 min-w-4.5 items-center justify-center rounded-full bg-teal-600 px-1 text-[10px] font-bold text-white shadow"
+                  className="absolute -right-1 -top-1 flex h-4.5 min-w-4.5 items-center justify-center rounded-full bg-primary-600 px-1 text-[10px] font-bold text-white shadow"
                 >
                   {favCount}
                 </motion.span>
@@ -382,7 +382,7 @@ export function Header({ locale: localeProp }: { locale?: string }) {
                   initial={{ scale: prefersReducedMotion ? 1 : 1.3 }}
                   animate={{ scale: 1 }}
                   transition={{ duration: 0.2 }}
-                  className="absolute -right-1 -top-1 flex h-4.5 min-w-4.5 items-center justify-center rounded-full bg-teal-600 px-1 text-[10px] font-bold text-white shadow"
+                  className="absolute -right-1 -top-1 flex h-4.5 min-w-4.5 items-center justify-center rounded-full bg-primary-600 px-1 text-[10px] font-bold text-white shadow"
                 >
                   {compareCount}
                 </motion.span>
@@ -397,7 +397,7 @@ export function Header({ locale: localeProp }: { locale?: string }) {
             {isAuthenticated ? (
               <Link
                 href={to('/profile')}
-                className="inline-flex h-10 items-center gap-2 rounded-xl bg-teal-50 px-3.5 text-sm font-semibold text-teal-700 transition-colors hover:bg-teal-100 dark:bg-teal-950/50 dark:text-teal-300 dark:hover:bg-teal-900/50"
+                className="inline-flex h-10 items-center gap-2 rounded-xl bg-primary-50 px-3.5 text-sm font-semibold text-primary-700 transition-colors hover:bg-primary-100 dark:bg-primary-950/50 dark:text-primary-300 dark:hover:bg-primary-900/50"
               >
                 <User size={16} />
                 <span className="max-w-[120px] truncate">{user?.name || 'Профиль'}</span>
@@ -412,7 +412,7 @@ export function Header({ locale: localeProp }: { locale?: string }) {
                 </Link>
                 <Link
                   href={to('/register')}
-                  className="inline-flex h-10 items-center justify-center rounded-xl bg-teal-600 px-4 text-sm font-semibold text-white shadow-sm transition-colors hover:bg-teal-700"
+                  className="inline-flex h-10 items-center justify-center rounded-xl bg-primary-600 px-4 text-sm font-semibold text-white shadow-sm transition-colors hover:bg-primary-700"
                 >
                   {t('register')}
                 </Link>
@@ -438,7 +438,7 @@ export function Header({ locale: localeProp }: { locale?: string }) {
                     value={query}
                     onChange={(e) => handleQuery(e.target.value)}
                     placeholder={t('searchPlaceholder')}
-                    className="h-10 w-52 sm:w-60 rounded-xl border border-stone-200 bg-white py-0 pl-10 pr-9 text-sm text-stone-900 placeholder:text-stone-400 shadow-sm outline-none focus:border-teal-500 focus:ring-2 focus:ring-teal-500/20 dark:border-white/10 dark:bg-stone-800 dark:text-white dark:placeholder:text-stone-500 transition-all"
+                    className="h-10 w-52 sm:w-60 rounded-xl border border-stone-200 bg-white py-0 pl-10 pr-9 text-sm text-stone-900 placeholder:text-stone-400 shadow-sm outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 dark:border-white/10 dark:bg-stone-800 dark:text-white dark:placeholder:text-stone-500 transition-all"
                   />
                   <button
                     type="button"
@@ -488,7 +488,7 @@ export function Header({ locale: localeProp }: { locale?: string }) {
                   initial={{ scale: prefersReducedMotion ? 1 : 1.3 }}
                   animate={{ scale: 1 }}
                   transition={{ duration: 0.2 }}
-                  className="absolute -right-1 -top-1 flex h-4.5 min-w-4.5 items-center justify-center rounded-full bg-teal-600 text-[10px] font-bold text-white"
+                  className="absolute -right-1 -top-1 flex h-4.5 min-w-4.5 items-center justify-center rounded-full bg-primary-600 text-[10px] font-bold text-white"
                 >
                   {favCount}
                 </motion.span>
@@ -529,7 +529,7 @@ export function Header({ locale: localeProp }: { locale?: string }) {
       >
         <div className="flex h-20 shrink-0 items-center justify-between border-b border-stone-200 px-5 dark:border-white/10">
           <Link href={to('/')} onClick={() => setMobileOpen(false)} className="flex items-center text-xl font-black text-stone-900 dark:text-white">
-            <span>ija</span><span className="text-teal-600 dark:text-teal-400">rauz</span>
+            <span>ija</span><span className="text-primary-600 dark:text-primary-400">rauz</span>
           </Link>
           <button type="button" aria-label={t('close')} onClick={() => setMobileOpen(false)} className={BTN_CLASS}>
             <X size={18} />
@@ -547,7 +547,7 @@ export function Header({ locale: localeProp }: { locale?: string }) {
               value={query}
               onChange={(e) => handleMobileQuery(e.target.value)}
               placeholder={t('searchPlaceholder')}
-              className="h-10 w-full rounded-xl border border-stone-200 bg-stone-50 pl-10 pr-8 text-sm text-stone-900 placeholder:text-stone-400 outline-none focus:border-teal-500 focus:bg-white dark:border-stone-700 dark:bg-stone-800 dark:text-white dark:placeholder:text-stone-500"
+              className="h-10 w-full rounded-xl border border-stone-200 bg-stone-50 pl-10 pr-8 text-sm text-stone-900 placeholder:text-stone-400 outline-none focus:border-primary-500 focus:bg-white dark:border-stone-700 dark:bg-stone-800 dark:text-white dark:placeholder:text-stone-500"
             />
             {query && (
               <button
@@ -590,7 +590,7 @@ export function Header({ locale: localeProp }: { locale?: string }) {
                   className={
                     'flex items-center justify-between rounded-xl px-4 py-3 text-sm font-medium transition-colors ' +
                     (isActive(href)
-                      ? 'bg-teal-50 text-teal-700 dark:bg-teal-950/50 dark:text-teal-300 font-semibold'
+                      ? 'bg-primary-50 text-primary-700 dark:bg-primary-950/50 dark:text-primary-300 font-semibold'
                       : 'text-stone-700 hover:bg-stone-100 dark:text-stone-300 dark:hover:bg-white/5')
                   }
                 >
@@ -608,7 +608,7 @@ export function Header({ locale: localeProp }: { locale?: string }) {
                 className={
                   'flex items-center justify-between rounded-xl px-4 py-3 text-sm font-medium transition-colors ' +
                   (isActive(href)
-                    ? 'bg-teal-50 text-teal-700 dark:bg-teal-950/50 dark:text-teal-300 font-semibold'
+                    ? 'bg-primary-50 text-primary-700 dark:bg-primary-950/50 dark:text-primary-300 font-semibold'
                     : 'text-stone-700 hover:bg-stone-100 dark:text-stone-300 dark:hover:bg-white/5')
                 }
               >
@@ -631,7 +631,7 @@ export function Header({ locale: localeProp }: { locale?: string }) {
             <Link
               href={to('/profile')}
               onClick={() => setMobileOpen(false)}
-              className="flex h-11 items-center justify-center gap-2 rounded-xl bg-teal-600 text-sm font-semibold text-white w-full"
+              className="flex h-11 items-center justify-center gap-2 rounded-xl bg-primary-600 text-sm font-semibold text-white w-full"
             >
               <User size={16} />
               <span>{user?.name || 'Профиль'}</span>
@@ -649,7 +649,7 @@ export function Header({ locale: localeProp }: { locale?: string }) {
               <Link
                 href={to('/register')}
                 onClick={() => setMobileOpen(false)}
-                className="flex h-11 items-center justify-center gap-2 rounded-xl bg-teal-600 text-sm font-semibold text-white"
+                className="flex h-11 items-center justify-center gap-2 rounded-xl bg-primary-600 text-sm font-semibold text-white"
               >
                 <UserPlus size={15} />
                 {t('register')}

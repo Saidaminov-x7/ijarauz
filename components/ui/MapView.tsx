@@ -30,14 +30,14 @@ export function MapView({ lat, lng, label }: MapViewProps) {
       {/* Заголовок секции карты с кнопкой Показать / Скрыть прямо напротив текста */}
       <div className="flex items-center justify-between gap-3">
         <h2 className="text-lg font-bold text-stone-900 dark:text-white flex items-center gap-2">
-          <Compass size={18} className="text-teal-500" />
+          <Compass size={18} className="text-primary-500" />
           Расположение на карте
         </h2>
 
         <button
           type="button"
           onClick={() => setIsRevealed(!isRevealed)}
-          className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl border border-teal-600/30 bg-teal-50 hover:bg-teal-100 dark:bg-teal-950/40 dark:hover:bg-teal-900/50 text-teal-700 dark:text-teal-300 text-xs font-bold transition-all cursor-pointer shadow-xs"
+          className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl border border-primary-600/30 bg-primary-50 hover:bg-primary-100 dark:bg-primary-950/40 dark:hover:bg-primary-900/50 text-primary-700 dark:text-primary-300 text-xs font-bold transition-all cursor-pointer shadow-xs"
         >
           {isRevealed ? (
             <>
@@ -66,7 +66,7 @@ export function MapView({ lat, lng, label }: MapViewProps) {
             onClick={() => setIsRevealed(true)}
             className="absolute inset-0 z-10 flex flex-col items-center justify-center bg-stone-900/30 dark:bg-black/50 backdrop-blur-xs p-4 text-center cursor-pointer transition-opacity"
           >
-            <div className="p-3 bg-teal-600/90 text-white rounded-2xl mb-3 shadow-lg animate-bounce">
+            <div className="p-3 bg-primary-600/90 text-white rounded-2xl mb-3 shadow-lg animate-bounce">
               <MapPin size={26} />
             </div>
             <h4 className="text-sm font-bold text-white mb-1 drop-shadow-md">
@@ -81,7 +81,7 @@ export function MapView({ lat, lng, label }: MapViewProps) {
                 e.stopPropagation();
                 setIsRevealed(true);
               }}
-              className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-teal-600 hover:bg-teal-500 text-white text-xs font-bold shadow-lg shadow-teal-600/30 transition-all transform hover:scale-105 cursor-pointer"
+              className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-primary-600 hover:bg-primary-500 text-white text-xs font-bold shadow-lg shadow-primary-600/30 transition-all transform hover:scale-105 cursor-pointer"
             >
               <Eye size={15} />
               <span>Показать на карте</span>
@@ -96,9 +96,9 @@ export function MapView({ lat, lng, label }: MapViewProps) {
           href={googleMapsUrl}
           target="_blank"
           rel="noopener noreferrer"
-          className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-teal-50 hover:bg-teal-100 dark:bg-teal-950/40 dark:hover:bg-teal-900/50 text-teal-700 dark:text-teal-300 text-xs font-bold border border-teal-500/30 transition-all cursor-pointer shadow-xs"
+          className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-primary-50 hover:bg-primary-100 dark:bg-primary-950/40 dark:hover:bg-primary-900/50 text-primary-700 dark:text-primary-300 text-xs font-bold border border-primary-500/30 transition-all cursor-pointer shadow-xs"
         >
-          <Navigation size={14} className="text-teal-600 dark:text-teal-400" />
+          <Navigation size={14} className="text-primary-600 dark:text-primary-400" />
           <span>Построить маршрут в Google Maps</span>
           <ExternalLink size={12} className="opacity-70" />
         </a>

@@ -20,8 +20,8 @@ export function CityFilter({ locale }: { locale: string }) {
             onClick={() => setSelectedCity(city)}
             className={`flex flex-col items-center justify-center rounded-xl border px-8 py-4 transition-all ${
               selectedCity === city
-                ? 'border-teal-600 bg-teal-600/10 text-teal-600'
-                : 'border-stone-200 hover:border-teal-600 dark:border-stone-800 dark:text-white'
+                ? 'border-primary-600 bg-primary-600/10 text-primary-600'
+                : 'border-stone-200 hover:border-primary-600 dark:border-stone-800 dark:text-white'
             }`}
           >
             {/* Иконка локации (заглушка, если используешь lucide-react, можешь добавить <MapPin />) */}

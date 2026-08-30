@@ -50,8 +50,8 @@ export function ForgotPasswordForm({ locale }: ForgotPasswordFormProps) {
     return (
       <div className="space-y-6 text-center">
         <div className="flex flex-col items-center gap-4">
-          <div className="flex h-16 w-16 items-center justify-center rounded-full bg-teal-500/10 border border-teal-500/20">
-            <MailCheck size={28} className="text-teal-400" />
+          <div className="flex h-16 w-16 items-center justify-center rounded-full bg-primary-500/10 border border-primary-500/20">
+            <MailCheck size={28} className="text-primary-400" />
           </div>
           <div className="space-y-1.5">
             <h2 className="text-xl font-bold text-white">{t('successTitle')}</h2>
@@ -60,7 +60,7 @@ export function ForgotPasswordForm({ locale }: ForgotPasswordFormProps) {
         </div>
         <button
           onClick={() => router.push(`/${locale}/login`)}
-          className="flex h-11 w-full items-center justify-center rounded-xl bg-teal-600 font-semibold text-white transition-all hover:bg-teal-500"
+          className="flex h-11 w-full items-center justify-center rounded-xl bg-primary-600 font-semibold text-white transition-all hover:bg-primary-500"
         >
           {t('backToLogin')}
         </button>
@@ -96,7 +96,7 @@ export function ForgotPasswordForm({ locale }: ForgotPasswordFormProps) {
                   <input
                     type="email"
                     placeholder="example@mail.com"
-                    className="h-11 w-full rounded-xl border border-white/10 bg-white/5 px-4 text-sm text-white placeholder-stone-500 outline-none transition-all focus:border-teal-500/50 focus:ring-2 focus:ring-teal-500/20"
+                    className="h-11 w-full rounded-xl border border-white/10 bg-white/5 px-4 text-sm text-white placeholder-stone-500 outline-none transition-all focus:border-primary-500/50 focus:ring-2 focus:ring-primary-500/20"
                     {...field}
                   />
                 </FormControl>
@@ -108,7 +108,7 @@ export function ForgotPasswordForm({ locale }: ForgotPasswordFormProps) {
           <button
             type="submit"
             disabled={isLoading}
-            className="flex h-11 w-full items-center justify-center rounded-xl bg-teal-600 font-semibold text-white shadow-lg shadow-teal-900/30 transition-all hover:bg-teal-500 active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed"
+            className="flex h-11 w-full items-center justify-center rounded-xl bg-primary-600 font-semibold text-white shadow-lg shadow-primary-900/30 transition-all hover:bg-primary-500 active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {isLoading ? (
               <svg className="h-5 w-5 animate-spin" viewBox="0 0 24 24" fill="none">
@@ -125,7 +125,7 @@ export function ForgotPasswordForm({ locale }: ForgotPasswordFormProps) {
         <button
           type="button"
           onClick={() => router.push(`/${locale}/login`)}
-          className="font-semibold text-teal-400 hover:text-teal-300 transition-colors"
+          className="font-semibold text-primary-400 hover:text-primary-300 transition-colors"
         >
           {t('login')}
         </button>

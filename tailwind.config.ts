@@ -9,7 +9,25 @@ const config: Config = {
     "./app/**/*.{js,ts,jsx,tsx,mdx}",
   ],
   theme: {
-    extend: {},
+    extend: {
+      colors: {
+        // Акцентный primary — динамический через CSS-переменные (DesignTokensInjector)
+        primary: {
+          DEFAULT: "var(--color-primary)",
+          50: "color-mix(in srgb, var(--color-primary) 5%, white)",
+          100: "color-mix(in srgb, var(--color-primary) 10%, white)",
+          200: "color-mix(in srgb, var(--color-primary) 20%, white)",
+          300: "color-mix(in srgb, var(--color-primary) 40%, white)",
+          400: "color-mix(in srgb, var(--color-primary) 60%, white)",
+          500: "var(--color-primary)",
+          600: "var(--color-primary)",
+          700: "var(--color-secondary, color-mix(in srgb, var(--color-primary) 80%, black))",
+          800: "color-mix(in srgb, var(--color-primary) 70%, black)",
+          900: "color-mix(in srgb, var(--color-primary) 60%, black)",
+          950: "color-mix(in srgb, var(--color-primary) 50%, black)",
+        },
+      },
+    },
   },
   plugins: [],
 };

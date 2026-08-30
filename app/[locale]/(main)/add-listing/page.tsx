@@ -335,7 +335,7 @@ function AddListingContent() {
                       }
                       toast.success('✨ AI успешно сгенерировал продающее описание!');
                     }}
-                    className="inline-flex items-center gap-1 text-xs font-bold text-teal-600 dark:text-teal-400 hover:underline cursor-pointer"
+                    className="inline-flex items-center gap-1 text-xs font-bold text-primary-600 dark:text-primary-400 hover:underline cursor-pointer"
                   >
                     <Sparkles size={13} className="text-amber-500" />
                     ✨ Сгенерировать с помощью ИИ
@@ -435,7 +435,7 @@ function AddListingContent() {
                         }
                       );
                     }}
-                    className="inline-flex items-center gap-1 text-xs font-semibold text-teal-600 dark:text-teal-400 hover:underline cursor-pointer"
+                    className="inline-flex items-center gap-1 text-xs font-semibold text-primary-600 dark:text-primary-400 hover:underline cursor-pointer"
                   >
                     📍 Определить моё местоположение (GPS)
                   </button>
@@ -457,7 +457,7 @@ function AddListingContent() {
                   <div className="flex items-center justify-between">
                     <FormLabel>{t('price')}</FormLabel>
                     {priceEstimate && priceEstimate.average && (
-                      <span className="text-[11px] font-semibold text-teal-600 dark:text-teal-400">
+                      <span className="text-[11px] font-semibold text-primary-600 dark:text-primary-400">
                         Средняя цена: ~${priceEstimate.average}/мес
                       </span>
                     )}
@@ -538,7 +538,7 @@ function AddListingContent() {
               </span>
             </div>
 
-            <div className="flex flex-col items-center justify-center rounded-2xl border-2 border-dashed border-stone-200 p-6 transition-colors hover:border-teal-500 dark:border-white/10 dark:hover:border-teal-500/50 bg-stone-50/50 dark:bg-white/[0.02]">
+            <div className="flex flex-col items-center justify-center rounded-2xl border-2 border-dashed border-stone-200 p-6 transition-colors hover:border-primary-500 dark:border-white/10 dark:hover:border-primary-500/50 bg-stone-50/50 dark:bg-white/[0.02]">
               <UploadCloud className="h-10 w-10 text-stone-400 mb-2" />
               <p className="text-sm font-medium text-stone-700 dark:text-stone-300">
                 Загрузите фотографии жилья
@@ -549,7 +549,7 @@ function AddListingContent() {
                 multiple
                 accept="image/*"
                 onChange={handleFileChange}
-                className="mt-4 text-xs file:mr-4 file:rounded-xl file:border-0 file:bg-teal-50 file:px-4 file:py-2 file:text-xs file:font-semibold file:text-teal-700 hover:file:bg-teal-100 dark:file:bg-teal-950/60 dark:file:text-teal-400 cursor-pointer"
+                className="mt-4 text-xs file:mr-4 file:rounded-xl file:border-0 file:bg-primary-50 file:px-4 file:py-2 file:text-xs file:font-semibold file:text-primary-700 hover:file:bg-primary-100 dark:file:bg-primary-950/60 dark:file:text-primary-400 cursor-pointer"
               />
             </div>
 
@@ -564,9 +564,9 @@ function AddListingContent() {
                     onDragEnd={handleDragEnd}
                     className={`relative group aspect-video rounded-xl overflow-hidden border transition-all cursor-grab active:cursor-grabbing ${
                       draggedIndex === index
-                        ? 'opacity-40 scale-95 border-teal-500'
+                        ? 'opacity-40 scale-95 border-primary-500'
                         : index === 0
-                        ? 'border-teal-500 ring-2 ring-teal-500/30'
+                        ? 'border-primary-500 ring-2 ring-primary-500/30'
                         : 'border-stone-200 dark:border-white/10 hover:border-stone-300'
                     }`}
                   >
@@ -574,7 +574,7 @@ function AddListingContent() {
 
                     {/* Cover badge */}
                     {index === 0 && (
-                      <span className="absolute top-2 left-2 px-2 py-0.5 rounded-md bg-teal-600 text-white text-[10px] font-bold shadow-md flex items-center gap-1">
+                      <span className="absolute top-2 left-2 px-2 py-0.5 rounded-md bg-primary-600 text-white text-[10px] font-bold shadow-md flex items-center gap-1">
                         <CheckCircle2 size={11} />
                         Обложка
                       </span>
@@ -604,7 +604,7 @@ function AddListingContent() {
 
           <Button
             type="submit"
-            className="w-full h-12 rounded-xl bg-teal-600 font-bold text-white transition-colors hover:bg-teal-700 disabled:opacity-50"
+            className="w-full h-12 rounded-xl bg-primary-600 font-bold text-white transition-colors hover:bg-primary-700 disabled:opacity-50"
             disabled={isLoading}
           >
             {isLoading ? t('loading') : t('submit')}

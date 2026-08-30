@@ -109,7 +109,7 @@ export function CatalogFilters({ locale }: { locale: string }) {
           <div className="flex items-center justify-between">
             <h2 className="text-sm font-semibold text-stone-900 dark:text-white">Фильтры</h2>
             <button type="button" onClick={reset}
-              className="text-xs text-teal-600 hover:underline dark:text-teal-400">
+              className="text-xs text-primary-600 hover:underline dark:text-primary-400">
               Сбросить
             </button>
           </div>
@@ -122,7 +122,7 @@ export function CatalogFilters({ locale }: { locale: string }) {
                 <button key={value} type="button" onClick={() => setTypeAndFlag(value)}
                   className={`rounded-lg border px-3 py-1.5 text-xs font-medium transition-colors ${
                     type === value
-                      ? 'border-teal-500 bg-teal-50 text-teal-700 dark:border-teal-600 dark:bg-teal-950/60 dark:text-teal-300'
+                      ? 'border-primary-500 bg-primary-50 text-primary-700 dark:border-primary-600 dark:bg-primary-950/60 dark:text-primary-300'
                       : 'border-stone-200 text-stone-600 hover:border-stone-300 dark:border-white/10 dark:text-stone-400 dark:hover:border-white/20'
                   }`}>
                   {label}
@@ -161,11 +161,11 @@ export function CatalogFilters({ locale }: { locale: string }) {
             <div className="flex items-center gap-2">
               <input type="number" min="0" placeholder="от" value={minPrice}
                 onChange={e => { setMinPrice(e.target.value); setHasFilter(true); }}
-                className="w-full rounded-xl border border-stone-200 bg-white px-3 py-2.5 text-sm text-stone-900 outline-none transition placeholder:text-stone-400 focus:border-teal-400 focus:ring-2 focus:ring-teal-100 dark:border-white/10 dark:bg-[#2A2A2A] dark:text-white dark:placeholder:text-stone-500 dark:focus:border-teal-600 dark:focus:ring-teal-950" />
+                className="w-full rounded-xl border border-stone-200 bg-white px-3 py-2.5 text-sm text-stone-900 outline-none transition placeholder:text-stone-400 focus:border-primary-400 focus:ring-2 focus:ring-primary-100 dark:border-white/10 dark:bg-[#2A2A2A] dark:text-white dark:placeholder:text-stone-500 dark:focus:border-primary-600 dark:focus:ring-primary-950" />
               <span className="text-stone-400">—</span>
               <input type="number" min="0" placeholder="до" value={maxPrice}
                 onChange={e => { setMaxPrice(e.target.value); setHasFilter(true); }}
-                className="w-full rounded-xl border border-stone-200 bg-white px-3 py-2.5 text-sm text-stone-900 outline-none transition placeholder:text-stone-400 focus:border-teal-400 focus:ring-2 focus:ring-teal-100 dark:border-white/10 dark:bg-[#2A2A2A] dark:text-white dark:placeholder:text-stone-500 dark:focus:border-teal-600 dark:focus:ring-teal-950" />
+                className="w-full rounded-xl border border-stone-200 bg-white px-3 py-2.5 text-sm text-stone-900 outline-none transition placeholder:text-stone-400 focus:border-primary-400 focus:ring-2 focus:ring-primary-100 dark:border-white/10 dark:bg-[#2A2A2A] dark:text-white dark:placeholder:text-stone-500 dark:focus:border-primary-600 dark:focus:ring-primary-950" />
             </div>
           </div>
 
@@ -177,7 +177,7 @@ export function CatalogFilters({ locale }: { locale: string }) {
             ].map(({ id, label, checked, onChange }) => (
               <label key={id} className="flex cursor-pointer items-center gap-2.5">
                 <input type="checkbox" id={id} checked={checked} onChange={onChange}
-                  className="h-4 w-4 rounded border-stone-300 accent-teal-600 dark:border-white/20" />
+                  className="h-4 w-4 rounded border-stone-300 accent-primary-600 dark:border-white/20" />
                 <span className="text-sm text-stone-700 dark:text-stone-300">{label}</span>
               </label>
             ))}
@@ -212,7 +212,7 @@ export function CatalogFilters({ locale }: { locale: string }) {
                   <button key={p} type="button" onClick={() => setPage(p)}
                     className={`flex h-9 w-9 items-center justify-center rounded-lg text-sm font-medium transition-colors ${
                       p === page
-                        ? 'bg-teal-600 text-white'
+                        ? 'bg-primary-600 text-white'
                         : 'text-stone-600 hover:bg-stone-100 dark:text-stone-400 dark:hover:bg-white/5'
                     }`}>
                     {p}
@@ -231,7 +231,7 @@ export function CatalogFilters({ locale }: { locale: string }) {
             <p className="mt-3 font-medium text-stone-900 dark:text-white">Ничего не найдено</p>
             <p className="mt-1 text-sm text-stone-500 dark:text-stone-400">Попробуйте изменить фильтры</p>
             <button type="button" onClick={reset}
-              className="mt-4 rounded-lg bg-teal-600 px-5 py-2 text-sm font-semibold text-white hover:bg-teal-700">
+              className="mt-4 rounded-lg bg-primary-600 px-5 py-2 text-sm font-semibold text-white hover:bg-primary-700">
               Сбросить фильтры
             </button>
           </div>

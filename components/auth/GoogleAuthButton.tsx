@@ -192,12 +192,12 @@ export function GoogleAuthButton({ locale, mode = 'login' }: GoogleAuthButtonPro
             value={phone}
             onChange={(e) => setPhone(e.target.value)}
             placeholder="+998 90 123 45 67"
-            className="h-10 flex-1 rounded-xl border border-stone-200 bg-white px-4 text-sm text-stone-900 placeholder-stone-400 outline-none focus:border-teal-500 focus:ring-2 focus:ring-teal-500/20 dark:border-white/10 dark:bg-stone-900 dark:text-white"
+            className="h-10 flex-1 rounded-xl border border-stone-200 bg-white px-4 text-sm text-stone-900 placeholder-stone-400 outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 dark:border-white/10 dark:bg-stone-900 dark:text-white"
           />
           <button
             type="button"
             onClick={sendOtp}
-            className="flex h-10 items-center gap-1.5 rounded-xl bg-teal-600 px-4 text-sm font-semibold text-white hover:bg-teal-500 transition-colors"
+            className="flex h-10 items-center gap-1.5 rounded-xl bg-primary-600 px-4 text-sm font-semibold text-white hover:bg-primary-500 transition-colors"
           >
             <ArrowRight size={16} />
           </button>
@@ -224,14 +224,14 @@ export function GoogleAuthButton({ locale, mode = 'login' }: GoogleAuthButtonPro
           onChange={(e) => setOtpCode(e.target.value.replace(/\D/g, '').slice(0, 6))}
           placeholder="6-значный код"
           maxLength={6}
-          className="h-10 w-full rounded-xl border border-stone-200 bg-white px-4 text-center text-lg font-mono font-bold tracking-widest text-stone-900 outline-none focus:border-teal-500 focus:ring-2 focus:ring-teal-500/20 dark:border-white/10 dark:bg-stone-900 dark:text-white"
+          className="h-10 w-full rounded-xl border border-stone-200 bg-white px-4 text-center text-lg font-mono font-bold tracking-widest text-stone-900 outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 dark:border-white/10 dark:bg-stone-900 dark:text-white"
         />
         <div className="flex gap-2">
           <button
             type="button"
             onClick={verifyOtpAndComplete}
             disabled={otpCode.length !== 6}
-            className="flex h-10 flex-1 items-center justify-center rounded-xl bg-teal-600 text-sm font-semibold text-white hover:bg-teal-500 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+            className="flex h-10 flex-1 items-center justify-center rounded-xl bg-primary-600 text-sm font-semibold text-white hover:bg-primary-500 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
           >
             Подтвердить и войти
           </button>
@@ -251,7 +251,7 @@ export function GoogleAuthButton({ locale, mode = 'login' }: GoogleAuthButtonPro
 
   if (step === 'done') {
     return (
-      <div className="flex h-10 items-center justify-center gap-2 rounded-xl bg-teal-50 text-sm font-semibold text-teal-700 dark:bg-teal-950/40 dark:text-teal-300">
+      <div className="flex h-10 items-center justify-center gap-2 rounded-xl bg-primary-50 text-sm font-semibold text-primary-700 dark:bg-primary-950/40 dark:text-primary-300">
         <CheckCircle2 size={16} /> Готово! Входим в аккаунт...
       </div>
     );
@@ -275,7 +275,7 @@ export function GoogleAuthButton({ locale, mode = 'login' }: GoogleAuthButtonPro
         className="flex h-10 w-full items-center justify-center gap-2.5 rounded-xl border border-stone-200 bg-white px-4 text-sm font-semibold text-stone-700 shadow-xs transition-colors hover:bg-stone-50 active:scale-[0.99] disabled:cursor-not-allowed disabled:opacity-50 dark:border-white/10 dark:bg-stone-900 dark:text-stone-200 dark:hover:bg-stone-800"
       >
         {step === 'loading' ? (
-          <svg className="h-4 w-4 animate-spin text-teal-600" viewBox="0 0 24 24" fill="none">
+          <svg className="h-4 w-4 animate-spin text-primary-600" viewBox="0 0 24 24" fill="none">
             <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
             <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
           </svg>

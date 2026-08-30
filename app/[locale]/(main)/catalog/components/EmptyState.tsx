@@ -31,7 +31,7 @@ export function EmptyState({ query }: EmptyStateProps) {
       </p>
       <button
         onClick={handleReset}
-        className="mt-6 inline-flex items-center gap-2 rounded-xl bg-teal-600 px-6 py-3 text-sm font-semibold text-white transition-colors hover:bg-teal-700"
+        className="mt-6 inline-flex items-center gap-2 rounded-xl bg-primary-600 px-6 py-3 text-sm font-semibold text-white transition-colors hover:bg-primary-700"
       >
         {t('resetSearch')}
       </button>

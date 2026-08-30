@@ -129,7 +129,7 @@ export function Footer({ locale: localeProp }: { locale?: string }) {
                 href="https://t.me"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex size-8 items-center justify-center rounded-lg text-stone-400 transition-colors hover:bg-stone-100 hover:text-teal-600 dark:hover:bg-white/10 dark:hover:text-teal-400"
+                className="inline-flex size-8 items-center justify-center rounded-lg text-stone-400 transition-colors hover:bg-stone-100 hover:text-primary-600 dark:hover:bg-white/10 dark:hover:text-primary-400"
               >
                 <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor">
                   <path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm5.894 8.221-1.97 9.28c-.145.658-.537.818-1.084.508l-3-2.21-1.447 1.394c-.16.16-.295.295-.605.295l.213-3.053 5.56-5.023c.242-.213-.054-.333-.373-.12L6.922 14.44l-2.962-.924c-.643-.204-.657-.643.136-.953l11.57-4.461c.537-.194 1.006.131.228.119z" />

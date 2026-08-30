@@ -69,12 +69,12 @@ export function ApartmentCard({ apartment, locale, activeAmenities = [] }: Apart
       return { text: 'Девушкам', bg: 'bg-pink-600/90 text-white' };
     }
     if (apartment.type === 'room') {
-      return { text: 'Комната', bg: 'bg-teal-700/90 text-white' };
+      return { text: 'Комната', bg: 'bg-primary-700/90 text-white' };
     }
     if (apartment.type === 'house') {
       return { text: 'Дом', bg: 'bg-blue-700/90 text-white' };
     }
-    return { text: 'Квартира', bg: 'bg-teal-600/90 text-white' };
+    return { text: 'Квартира', bg: 'bg-primary-600/90 text-white' };
   };
 
   // Вычисляем отсутствующие удобства из числа выбранных пользователем в фильтрах
@@ -185,8 +185,8 @@ export function ApartmentCard({ apartment, locale, activeAmenities = [] }: Apart
               className={cn(
                 'flex h-8 w-8 items-center justify-center rounded-full backdrop-blur-md transition-all duration-200 hover:scale-105 active:scale-95 cursor-pointer shadow-md border',
                 isInCompare
-                  ? 'bg-teal-600 border-teal-500 text-white'
-                  : 'bg-black/50 border-white/20 text-white hover:bg-black/70 hover:text-teal-400'
+                  ? 'bg-primary-600 border-primary-500 text-white'
+                  : 'bg-black/50 border-white/20 text-white hover:bg-black/70 hover:text-primary-400'
               )}
               title={isInCompare ? 'В сравнении' : 'Добавить к сравнению'}
             >
@@ -237,7 +237,7 @@ export function ApartmentCard({ apartment, locale, activeAmenities = [] }: Apart
           </div>
 
           <div className="mt-3 flex items-center justify-between border-t border-stone-100 pt-3 dark:border-white/5">
-            <span className="text-base font-bold text-teal-600 dark:text-teal-400">
+            <span className="text-base font-bold text-primary-600 dark:text-primary-400">
               ${apartment.price}{' '}
               <span className="text-xs font-normal text-stone-400">
                 / {apartment.type === 'daily' ? 'сутки' : t('month')}

@@ -86,7 +86,7 @@ export function SavedSearchModal({ currentFilters, isOpen, onClose }: SavedSearc
                       placeholder="@username или +998 90 123 45 67"
                       value={notifyTelegram}
                       onChange={(e) => setNotifyTelegram(e.target.value)}
-                      className="w-full h-10 px-3.5 rounded-xl border border-stone-200 dark:border-white/10 bg-stone-50 dark:bg-white/5 text-xs text-stone-900 dark:text-white outline-none focus:border-teal-500 transition-all"
+                      className="w-full h-10 px-3.5 rounded-xl border border-stone-200 dark:border-white/10 bg-stone-50 dark:bg-white/5 text-xs text-stone-900 dark:text-white outline-none focus:border-primary-500 transition-all"
                     />
                   </div>
                 </div>
@@ -100,7 +100,7 @@ export function SavedSearchModal({ currentFilters, isOpen, onClose }: SavedSearc
                     placeholder="example@mail.uz"
                     value={notifyEmail}
                     onChange={(e) => setNotifyEmail(e.target.value)}
-                    className="w-full h-10 px-3.5 rounded-xl border border-stone-200 dark:border-white/10 bg-stone-50 dark:bg-white/5 text-xs text-stone-900 dark:text-white outline-none focus:border-teal-500 transition-all"
+                    className="w-full h-10 px-3.5 rounded-xl border border-stone-200 dark:border-white/10 bg-stone-50 dark:bg-white/5 text-xs text-stone-900 dark:text-white outline-none focus:border-primary-500 transition-all"
                   />
                 </div>
 

@@ -60,15 +60,15 @@ export function LanguageDropdown({ locale }: { locale: string }) {
                 type="button"
                 onClick={() => switchLocale(code)}
                 className={`flex w-full items-center gap-3 px-4 py-2.5 text-left text-sm transition-colors ${
-                  isActive ? 'bg-teal-50 dark:bg-teal-950/40' : 'hover:bg-stone-50 dark:hover:bg-white/5'
+                  isActive ? 'bg-primary-50 dark:bg-primary-950/40' : 'hover:bg-stone-50 dark:hover:bg-white/5'
                 }`}
               >
                 <span className="text-lg leading-none">{flag}</span>
-                <span className={`flex-1 font-medium ${isActive ? 'text-teal-700 dark:text-teal-400' : 'text-stone-700 dark:text-stone-300'}`}>
+                <span className={`flex-1 font-medium ${isActive ? 'text-primary-700 dark:text-primary-400' : 'text-stone-700 dark:text-stone-300'}`}>
                   {label}
                 </span>
                 {isActive && (
-                  <svg className="text-teal-500" width="14" height="14" viewBox="0 0 24 24"
+                  <svg className="text-primary-500" width="14" height="14" viewBox="0 0 24 24"
                     fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
                     <polyline points="20 6 9 17 4 12" />
                   </svg>

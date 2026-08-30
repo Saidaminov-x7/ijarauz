@@ -10,12 +10,12 @@ import { useCompareStore } from '@/store/useCompareStore';
 import { cn } from '@/lib/utils';
 
 const gradients = [
-  'from-teal-500 to-emerald-700',
+  'from-primary-500 to-emerald-700',
   'from-amber-500 to-orange-700',
   'from-sky-500 to-blue-700',
   'from-rose-500 to-pink-700',
   'from-violet-500 to-purple-700',
-  'from-cyan-500 to-teal-700',
+  'from-cyan-500 to-primary-700',
 ];
 
 function typeIcon(type: Listing['type']) {
@@ -204,8 +204,8 @@ export function ListingCard({ item, locale }: { item: Listing; locale: string })
             className={cn(
               'flex h-8 w-8 items-center justify-center rounded-full backdrop-blur-md shadow-md transition-all duration-200 hover:scale-105 active:scale-95 cursor-pointer border',
               isInCompare
-                ? 'bg-teal-600 border-teal-500 text-white'
-                : 'bg-black/50 border-white/20 text-white hover:bg-black/70 hover:text-teal-400'
+                ? 'bg-primary-600 border-primary-500 text-white'
+                : 'bg-black/50 border-white/20 text-white hover:bg-black/70 hover:text-primary-400'
             )}
             title={isInCompare ? 'В сравнении' : 'Добавить к сравнению'}
           >

@@ -163,7 +163,7 @@ export function RegisterForm({ locale }: RegisterFormProps) {
           {t('haveAccount')}{' '}
           <button
             onClick={() => router.push(`/${locale}/login`)}
-            className="text-teal-600 hover:underline"
+            className="text-primary-600 hover:underline"
           >
             {t('login')}
           </button>

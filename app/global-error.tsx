@@ -49,7 +49,7 @@ export default function GlobalError({
             <button
               type="button"
               onClick={() => reset()}
-              className="inline-flex h-10 items-center justify-center rounded-xl bg-teal-600 px-5 text-xs font-semibold text-white hover:bg-teal-700 transition-colors"
+              className="inline-flex h-10 items-center justify-center rounded-xl bg-primary-600 px-5 text-xs font-semibold text-white hover:bg-primary-700 transition-colors"
             >
               Попробовать снова
             </button>

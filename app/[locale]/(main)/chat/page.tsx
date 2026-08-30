@@ -549,7 +549,7 @@ function ChatContent() {
           <div className="p-3 border-b border-stone-200 dark:border-white/10 bg-stone-50/50 dark:bg-[#1E1E1E]">
             <div className="flex items-center justify-between mb-2.5 px-1">
               <h2 className="text-base font-bold text-stone-900 dark:text-white flex items-center gap-2">
-                <MessageSquare size={18} className="text-teal-600 dark:text-teal-400" />
+                <MessageSquare size={18} className="text-primary-600 dark:text-primary-400" />
                 Сообщения
               </h2>
               <span className="text-xs text-stone-400 font-medium">
@@ -564,7 +564,7 @@ function ChatContent() {
                 value={searchContact}
                 onChange={(e) => setSearchContact(e.target.value)}
                 placeholder="Поиск по чатам..."
-                className="h-9 w-full rounded-xl border border-stone-200 bg-stone-100/80 pl-9 pr-3 text-xs text-stone-900 placeholder-stone-400 outline-none focus:border-teal-500 focus:bg-white dark:border-white/10 dark:bg-white/5 dark:text-white"
+                className="h-9 w-full rounded-xl border border-stone-200 bg-stone-100/80 pl-9 pr-3 text-xs text-stone-900 placeholder-stone-400 outline-none focus:border-primary-500 focus:bg-white dark:border-white/10 dark:bg-white/5 dark:text-white"
               />
               <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-stone-400" />
             </div>
@@ -579,7 +579,7 @@ function ChatContent() {
                   key={contact.id}
                   onClick={() => setSelectedContactId(contact.id)}
                   className={`flex items-center gap-3 p-3.5 cursor-pointer transition-colors relative ${active
-                      ? 'bg-teal-50/80 dark:bg-teal-950/40'
+                      ? 'bg-primary-50/80 dark:bg-primary-950/40'
                       : 'hover:bg-stone-50 dark:hover:bg-white/5'
                     }`}
                 >
@@ -593,7 +593,7 @@ function ChatContent() {
                   {/* Avatar */}
                   <div className="relative shrink-0">
                     {contact.isAi ? (
-                      <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-br from-teal-500 to-emerald-600 text-white shadow-sm">
+                      <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-br from-primary-500 to-emerald-600 text-white shadow-sm">
                         <Bot size={24} />
                       </div>
                     ) : contact.avatar ? (
@@ -615,7 +615,7 @@ function ChatContent() {
                   {/* Info */}
                   <div className="min-w-0 flex-1">
                     <div className="flex items-center justify-between mb-0.5">
-                      <h3 className={`text-sm font-semibold truncate ${active ? 'text-teal-700 dark:text-teal-300' : 'text-stone-900 dark:text-white'}`}>
+                      <h3 className={`text-sm font-semibold truncate ${active ? 'text-primary-700 dark:text-primary-300' : 'text-stone-900 dark:text-white'}`}>
                         {contact.name}
                       </h3>
                       <span className="text-[10px] text-stone-400 shrink-0 ml-2">
@@ -624,7 +624,7 @@ function ChatContent() {
                     </div>
 
                     {contact.listingTitle && (
-                      <p className="text-[10px] font-medium text-teal-600 dark:text-teal-400 truncate mb-0.5">
+                      <p className="text-[10px] font-medium text-primary-600 dark:text-primary-400 truncate mb-0.5">
                         {contact.listingTitle}
                       </p>
                     )}
@@ -635,7 +635,7 @@ function ChatContent() {
                   </div>
 
                   {contact.unread && !active ? (
-                    <span className="flex h-5 w-5 items-center justify-center rounded-full bg-teal-600 text-[10px] font-bold text-white shrink-0">
+                    <span className="flex h-5 w-5 items-center justify-center rounded-full bg-primary-600 text-[10px] font-bold text-white shrink-0">
                       {contact.unread}
                     </span>
                   ) : null}
@@ -676,7 +676,7 @@ function ChatContent() {
 
                   <div className="relative shrink-0">
                     {selectedContact.isAi ? (
-                      <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-teal-500 to-emerald-600 text-white">
+                      <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-primary-500 to-emerald-600 text-white">
                         <Bot size={20} />
                       </div>
                     ) : selectedContact.avatar ? (
@@ -696,7 +696,7 @@ function ChatContent() {
                     <h3 className="text-sm font-bold text-stone-900 dark:text-white truncate flex items-center gap-1.5">
                       {selectedContact.name}
                       {selectedContact.isPinned && (
-                        <span className="rounded-md bg-teal-50 px-1.5 py-0.2 text-[10px] font-semibold text-teal-700 dark:bg-teal-950/60 dark:text-teal-300">
+                        <span className="rounded-md bg-primary-50 px-1.5 py-0.2 text-[10px] font-semibold text-primary-700 dark:bg-primary-950/60 dark:text-primary-300">
                           Закреплено
                         </span>
                       )}
@@ -714,7 +714,7 @@ function ChatContent() {
 
                 <div className="flex items-center gap-2">
                   {selectedContact.isAi ? (
-                    <div className="flex items-center gap-1.5 rounded-full bg-teal-50 px-3 py-1 text-xs font-semibold text-teal-700 dark:bg-teal-950/60 dark:text-teal-300">
+                    <div className="flex items-center gap-1.5 rounded-full bg-primary-50 px-3 py-1 text-xs font-semibold text-primary-700 dark:bg-primary-950/60 dark:text-primary-300">
                       <ShieldCheck size={14} />
                       <span className="hidden sm:inline">AI Помощник (Демо)</span>
                     </div>
@@ -739,7 +739,7 @@ function ChatContent() {
                     <div key={msg.id} className={`flex flex-col ${isUser ? 'items-end' : 'items-start'}`}>
                       <div
                         className={`max-w-[88%] sm:max-w-[70%] rounded-2xl p-4 text-sm leading-relaxed ${isUser
-                            ? 'bg-teal-600 text-white rounded-br-xs shadow-sm'
+                            ? 'bg-primary-600 text-white rounded-br-xs shadow-sm'
                             : 'bg-white text-stone-800 dark:bg-[#1E1E1E] dark:text-stone-200 rounded-bl-xs border border-stone-200/80 dark:border-white/5 shadow-xs'
                           }`}
                       >
@@ -763,7 +763,7 @@ function ChatContent() {
                                   <p className="font-semibold text-stone-900 dark:text-white truncate">
                                     {apt.title}
                                   </p>
-                                  <p className="text-xs text-teal-600 dark:text-teal-400 font-bold mt-0.5">
+                                  <p className="text-xs text-primary-600 dark:text-primary-400 font-bold mt-0.5">
                                     ${apt.price} / {apt.type === 'daily' ? 'сутки' : 'мес'} • {apt.location}
                                   </p>
                                 </div>
@@ -775,7 +775,7 @@ function ChatContent() {
                               <button
                                 type="button"
                                 onClick={() => applyFiltersToCatalog(msg.appliedFilters!)}
-                                className="w-full flex items-center justify-center gap-2 rounded-2xl bg-teal-600 py-2.5 text-xs font-bold text-white hover:bg-teal-500 transition-colors shadow-sm mt-2"
+                                className="w-full flex items-center justify-center gap-2 rounded-2xl bg-primary-600 py-2.5 text-xs font-bold text-white hover:bg-primary-500 transition-colors shadow-sm mt-2"
                               >
                                 <SlidersHorizontal size={14} />
                                 Открыть в каталоге с этими фильтрами
@@ -786,7 +786,7 @@ function ChatContent() {
                       </div>
                       <div className="mt-1 flex items-center gap-1 px-1 text-[11px] text-stone-400">
                         <span>{msg.timestamp}</span>
-                        {isUser && <CheckCheck size={13} className="text-teal-500" />}
+                        {isUser && <CheckCheck size={13} className="text-primary-500" />}
                       </div>
 
                       {/* Quick Replies */}
@@ -797,7 +797,7 @@ function ChatContent() {
                               key={qr}
                               type="button"
                               onClick={() => handleSendMessage(qr)}
-                              className="rounded-full border border-stone-200 bg-white px-3 py-1 text-xs font-medium text-stone-700 hover:border-teal-500 hover:text-teal-600 dark:border-white/10 dark:bg-[#1E1E1E] dark:text-stone-300 transition-colors shadow-xs"
+                              className="rounded-full border border-stone-200 bg-white px-3 py-1 text-xs font-medium text-stone-700 hover:border-primary-500 hover:text-primary-600 dark:border-white/10 dark:bg-[#1E1E1E] dark:text-stone-300 transition-colors shadow-xs"
                             >
                               {qr}
                             </button>
@@ -811,9 +811,9 @@ function ChatContent() {
                 {isTyping && (
                   <div className="flex items-center gap-2 text-stone-400 py-2 px-2">
                     <div className="flex gap-1">
-                      <div className="h-2 w-2 rounded-full bg-teal-500 animate-bounce" />
-                      <div className="h-2 w-2 rounded-full bg-teal-500 animate-bounce [animation-delay:0.2s]" />
-                      <div className="h-2 w-2 rounded-full bg-teal-500 animate-bounce [animation-delay:0.4s]" />
+                      <div className="h-2 w-2 rounded-full bg-primary-500 animate-bounce" />
+                      <div className="h-2 w-2 rounded-full bg-primary-500 animate-bounce [animation-delay:0.2s]" />
+                      <div className="h-2 w-2 rounded-full bg-primary-500 animate-bounce [animation-delay:0.4s]" />
                     </div>
                     <span className="text-xs">AI анализирует варианты...</span>
                   </div>

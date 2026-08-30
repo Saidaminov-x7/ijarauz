@@ -281,7 +281,7 @@ function CatalogContent() {
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 placeholder="Поиск по району, метро или улице..."
-                className="h-10 w-full rounded-xl border border-stone-200 bg-stone-100/70 pl-9 pr-4 text-xs text-stone-900 placeholder-stone-400 outline-none transition-all focus:border-teal-500 focus:bg-white dark:border-white/10 dark:bg-white/5 dark:text-white dark:focus:border-teal-500/50"
+                className="h-10 w-full rounded-xl border border-stone-200 bg-stone-100/70 pl-9 pr-4 text-xs text-stone-900 placeholder-stone-400 outline-none transition-all focus:border-primary-500 focus:bg-white dark:border-white/10 dark:bg-white/5 dark:text-white dark:focus:border-primary-500/50"
               />
               <Search size={15} className="absolute left-3 top-1/2 -translate-y-1/2 text-stone-400" />
             </form>
@@ -301,7 +301,7 @@ function CatalogContent() {
                   <h2 className="text-base sm:text-lg font-bold text-stone-900 dark:text-white">
                     Найдено: {apartments.length}
                   </h2>
-                  <span className="rounded-full bg-teal-50 px-2 py-0.5 text-[11px] font-semibold text-teal-700 dark:bg-teal-950/60 dark:text-teal-400">
+                  <span className="rounded-full bg-primary-50 px-2 py-0.5 text-[11px] font-semibold text-primary-700 dark:bg-primary-950/60 dark:text-primary-400">
                     по фильтрам
                   </span>
                 </div>
@@ -315,9 +315,9 @@ function CatalogContent() {
               <button
                 type="button"
                 onClick={() => setShowCatalogMap(!showCatalogMap)}
-                className="inline-flex h-10 items-center gap-1.5 px-3.5 rounded-xl border border-teal-600/30 bg-teal-50 text-teal-700 dark:bg-teal-950/40 dark:text-teal-300 text-xs font-bold hover:bg-teal-100 dark:hover:bg-teal-900/50 transition-all cursor-pointer shadow-xs"
+                className="inline-flex h-10 items-center gap-1.5 px-3.5 rounded-xl border border-primary-600/30 bg-primary-50 text-primary-700 dark:bg-primary-950/40 dark:text-primary-300 text-xs font-bold hover:bg-primary-100 dark:hover:bg-primary-900/50 transition-all cursor-pointer shadow-xs"
               >
-                <MapPin size={14} className="text-teal-600 dark:text-teal-400" />
+                <MapPin size={14} className="text-primary-600 dark:text-primary-400" />
                 <span>{showCatalogMap ? 'Скрыть карту' : 'Показать на карте'}</span>
               </button>
             </div>
@@ -349,11 +349,11 @@ function CatalogContent() {
                 onClick={() => toggleFilters(!isFiltersOpen)}
                 className={`inline-flex h-10 items-center gap-2 px-3.5 sm:px-4 rounded-xl border text-xs font-bold transition-all cursor-pointer shadow-xs ${
                   isFiltersOpen
-                    ? 'bg-teal-600 border-teal-600 text-white shadow-teal-900/20'
-                    : 'bg-white border-stone-200 text-stone-800 hover:border-teal-500 dark:bg-[#1E1E1E] dark:border-white/10 dark:text-white'
+                    ? 'bg-primary-600 border-primary-600 text-white shadow-primary-900/20'
+                    : 'bg-white border-stone-200 text-stone-800 hover:border-primary-500 dark:bg-[#1E1E1E] dark:border-white/10 dark:text-white'
                 }`}
               >
-                <SlidersHorizontal size={14} className={isFiltersOpen ? 'text-white' : 'text-teal-600 dark:text-teal-400'} />
+                <SlidersHorizontal size={14} className={isFiltersOpen ? 'text-white' : 'text-primary-600 dark:text-primary-400'} />
                 <span>Фильтры</span>
                 <ChevronDown
                   size={14}
@@ -364,7 +364,7 @@ function CatalogContent() {
               <button
                 type="button"
                 onClick={() => setIsSavedSearchModalOpen(true)}
-                className="inline-flex h-10 items-center gap-1.5 rounded-xl border border-stone-200 bg-white px-3.5 text-xs font-semibold text-stone-700 shadow-xs hover:border-teal-500 hover:text-teal-600 dark:border-white/10 dark:bg-[#1E1E1E] dark:text-stone-300 transition-colors cursor-pointer"
+                className="inline-flex h-10 items-center gap-1.5 rounded-xl border border-stone-200 bg-white px-3.5 text-xs font-semibold text-stone-700 shadow-xs hover:border-primary-500 hover:text-primary-600 dark:border-white/10 dark:bg-[#1E1E1E] dark:text-stone-300 transition-colors cursor-pointer"
                 title="Получать уведомления о новых похожих квартирах"
               >
                 <Bell size={14} className="text-amber-500 shrink-0" />
@@ -390,13 +390,13 @@ function CatalogContent() {
                 return (
                   <span
                     key={key}
-                    className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-teal-50 text-teal-700 dark:bg-teal-950/60 dark:text-teal-300 text-xs font-semibold border border-teal-200 dark:border-teal-800/40"
+                    className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-primary-50 text-primary-700 dark:bg-primary-950/60 dark:text-primary-300 text-xs font-semibold border border-primary-200 dark:border-primary-800/40"
                   >
                     <span>{item ? tAmenities(item.translationKey as any) : key}</span>
                     <button
                       type="button"
                       onClick={() => removeSingleAmenity(key)}
-                      className="hover:text-teal-900 dark:hover:text-white transition-colors cursor-pointer"
+                      className="hover:text-primary-900 dark:hover:text-white transition-colors cursor-pointer"
                       title="Удалить"
                     >
                       <X size={13} />
@@ -423,14 +423,14 @@ function CatalogContent() {
                   <div className="w-full sm:w-80 rounded-2xl border border-stone-200/80 bg-white p-5 shadow-sm dark:border-white/10 dark:bg-[#1A1A1A] space-y-6">
                     <div className="flex items-center justify-between pb-3 border-b border-stone-100 dark:border-white/5">
                       <div className="flex items-center gap-2">
-                        <Filter size={16} className="text-teal-600 dark:text-teal-400" />
+                        <Filter size={16} className="text-primary-600 dark:text-primary-400" />
                         <span className="text-sm font-bold text-stone-900 dark:text-white">Параметры поиска</span>
                       </div>
                       {isFiltered && (
                         <button
                           type="button"
                           onClick={handleReset}
-                          className="flex items-center gap-1 text-xs font-semibold text-teal-600 hover:text-teal-700 dark:text-teal-400 transition-colors cursor-pointer"
+                          className="flex items-center gap-1 text-xs font-semibold text-primary-600 hover:text-primary-700 dark:text-primary-400 transition-colors cursor-pointer"
                         >
                           <RotateCcw size={12} />
                           Сбросить
@@ -453,7 +453,7 @@ function CatalogContent() {
                               onClick={() => handleTypeChange(cat.id)}
                               className={`rounded-xl px-3 py-1.5 text-xs font-semibold transition-all cursor-pointer ${
                                 active
-                                  ? 'bg-teal-600 text-white shadow-sm shadow-teal-700/30'
+                                  ? 'bg-primary-600 text-white shadow-sm shadow-primary-700/30'
                                   : 'border border-stone-200 bg-stone-50 text-stone-700 hover:bg-stone-100 dark:border-white/10 dark:bg-white/5 dark:text-stone-300 dark:hover:bg-white/10'
                               }`}
                             >
@@ -479,7 +479,7 @@ function CatalogContent() {
                               onClick={() => handleAudienceChange(aud.id)}
                               className={`flex items-center justify-between rounded-xl px-3 py-2 text-xs font-medium transition-all cursor-pointer ${
                                 active
-                                  ? 'bg-teal-600 text-white font-semibold shadow-sm'
+                                  ? 'bg-primary-600 text-white font-semibold shadow-sm'
                                   : 'border border-stone-200 bg-stone-50 text-stone-700 hover:bg-stone-100 dark:border-white/10 dark:bg-white/5 dark:text-stone-300 dark:hover:bg-white/10'
                               }`}
                             >
@@ -545,7 +545,7 @@ function CatalogContent() {
                             updateUrlParams({ minPrice: e.target.value });
                           }}
                           placeholder="От ($)"
-                          className="h-10 w-full rounded-xl border border-stone-200 bg-white px-3 text-xs font-semibold text-stone-900 placeholder-stone-400 outline-none focus:border-teal-500 dark:border-white/10 dark:bg-[#1E1E1E] dark:text-white"
+                          className="h-10 w-full rounded-xl border border-stone-200 bg-white px-3 text-xs font-semibold text-stone-900 placeholder-stone-400 outline-none focus:border-primary-500 dark:border-white/10 dark:bg-[#1E1E1E] dark:text-white"
                         />
                         <input
                           type="number"
@@ -555,7 +555,7 @@ function CatalogContent() {
                             updateUrlParams({ maxPrice: e.target.value });
                           }}
                           placeholder="До ($)"
-                          className="h-10 w-full rounded-xl border border-stone-200 bg-white px-3 text-xs font-semibold text-stone-900 placeholder-stone-400 outline-none focus:border-teal-500 dark:border-white/10 dark:bg-[#1E1E1E] dark:text-white"
+                          className="h-10 w-full rounded-xl border border-stone-200 bg-white px-3 text-xs font-semibold text-stone-900 placeholder-stone-400 outline-none focus:border-primary-500 dark:border-white/10 dark:bg-[#1E1E1E] dark:text-white"
                         />
                       </div>
                     </div>
@@ -573,7 +573,7 @@ function CatalogContent() {
 
                     <Button
                       onClick={fetchListings}
-                      className="w-full h-11 bg-teal-600 hover:bg-teal-700 text-white font-bold rounded-xl shadow-md shadow-teal-900/20 cursor-pointer"
+                      className="w-full h-11 bg-primary-600 hover:bg-primary-700 text-white font-bold rounded-xl shadow-md shadow-primary-900/20 cursor-pointer"
                     >
                       Показать результаты
                     </Button>
@@ -629,7 +629,7 @@ function CatalogContent() {
                 <div className="space-y-8">
                   {/* Empty State Card */}
                   <div className="rounded-2xl border border-stone-200/80 bg-white p-10 text-center dark:border-white/10 dark:bg-[#1A1A1A]">
-                    <div className="mx-auto w-12 h-12 rounded-2xl bg-teal-50 dark:bg-teal-950/50 flex items-center justify-center text-teal-600 dark:text-teal-400 mb-3">
+                    <div className="mx-auto w-12 h-12 rounded-2xl bg-primary-50 dark:bg-primary-950/50 flex items-center justify-center text-primary-600 dark:text-primary-400 mb-3">
                       <Compass size={24} />
                     </div>
                     <h3 className="text-lg font-bold text-stone-900 dark:text-white mb-1">
@@ -648,7 +648,7 @@ function CatalogContent() {
                   {recommendations.length > 0 && (
                     <div>
                       <h3 className="text-sm font-bold text-stone-900 dark:text-white uppercase tracking-wider mb-4 flex items-center gap-2">
-                        <Sparkles size={16} className="text-teal-600" />
+                        <Sparkles size={16} className="text-primary-600" />
                         Похожие варианты в этом регионе
                       </h3>
                       <div

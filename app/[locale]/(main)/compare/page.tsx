@@ -42,7 +42,7 @@ export default function ComparePage() {
   if (loading) {
     return (
       <div className="mx-auto max-w-7xl px-4 py-16 text-center">
-        <div className="inline-block h-8 w-8 animate-spin rounded-full border-4 border-teal-500 border-t-transparent" />
+        <div className="inline-block h-8 w-8 animate-spin rounded-full border-4 border-primary-500 border-t-transparent" />
         <p className="mt-4 text-stone-500">Загрузка сравнения объектов...</p>
       </div>
     );
@@ -51,7 +51,7 @@ export default function ComparePage() {
   if (apartments.length === 0) {
     return (
       <div className="mx-auto max-w-3xl px-4 py-20 text-center">
-        <div className="mx-auto flex h-20 w-20 items-center justify-center rounded-3xl bg-teal-50 text-teal-600 dark:bg-teal-950/40 dark:text-teal-400">
+        <div className="mx-auto flex h-20 w-20 items-center justify-center rounded-3xl bg-primary-50 text-primary-600 dark:bg-primary-950/40 dark:text-primary-400">
           <Scale size={36} />
         </div>
         <h1 className="mt-6 text-2xl font-bold text-stone-900 dark:text-white">
@@ -63,7 +63,7 @@ export default function ComparePage() {
         <div className="mt-8">
           <Link
             href={`/${locale}/catalog`}
-            className="inline-flex items-center gap-2 rounded-2xl bg-teal-600 px-6 py-3 text-sm font-semibold text-white shadow-lg shadow-teal-600/25 transition-transform hover:-translate-y-0.5 hover:bg-teal-700"
+            className="inline-flex items-center gap-2 rounded-2xl bg-primary-600 px-6 py-3 text-sm font-semibold text-white shadow-lg shadow-primary-600/25 transition-transform hover:-translate-y-0.5 hover:bg-primary-700"
           >
             Перейти в каталог <ArrowRight size={16} />
           </Link>
@@ -82,7 +82,7 @@ export default function ComparePage() {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-stone-200/80 pb-6 dark:border-white/10">
         <div>
           <h1 className="text-2xl sm:text-3xl font-bold text-stone-900 dark:text-white flex items-center gap-3">
-            <Scale className="text-teal-600" size={30} />
+            <Scale className="text-primary-600" size={30} />
             Сравнение объявлений ({apartments.length})
           </h1>
           <p className="mt-1 text-sm text-stone-500 dark:text-stone-400">
@@ -127,12 +127,12 @@ export default function ComparePage() {
                   <h3 className="text-xs font-bold text-stone-900 dark:text-white line-clamp-2">
                     {apt.title}
                   </h3>
-                  <div className="mt-1 text-sm font-black text-teal-600 dark:text-teal-400">
+                  <div className="mt-1 text-sm font-black text-primary-600 dark:text-primary-400">
                     ${apt.price} <span className="text-[10px] font-normal text-stone-400">/мес</span>
                   </div>
                   <Link
                     href={`/${locale}/catalog/${apt.id}`}
-                    className="mt-2 inline-flex w-full items-center justify-center gap-1 rounded-lg bg-stone-100 py-1.5 text-[11px] font-semibold text-stone-800 hover:bg-teal-600 hover:text-white transition-colors dark:bg-white/10 dark:text-white"
+                    className="mt-2 inline-flex w-full items-center justify-center gap-1 rounded-lg bg-stone-100 py-1.5 text-[11px] font-semibold text-stone-800 hover:bg-primary-600 hover:text-white transition-colors dark:bg-white/10 dark:text-white"
                   >
                     Перейти <ArrowRight size={12} />
                   </Link>
@@ -158,7 +158,7 @@ export default function ComparePage() {
               <span className="col-span-1 font-medium text-stone-500 dark:text-stone-400">Расположение</span>
               {apartments.map((apt) => (
                 <span key={apt.id} className="flex items-center gap-1 text-stone-700 dark:text-stone-300">
-                  <MapPin size={14} className="text-teal-500 shrink-0" />
+                  <MapPin size={14} className="text-primary-500 shrink-0" />
                   {apt.district || apt.city || apt.location}
                 </span>
               ))}
@@ -200,7 +200,7 @@ export default function ComparePage() {
               {apartments.map((apt) => (
                 <span key={apt.id}>
                   {apt.isVerified || apt.verified ? (
-                    <span className="inline-flex items-center gap-1 text-xs font-semibold text-teal-600 dark:text-teal-400">
+                    <span className="inline-flex items-center gap-1 text-xs font-semibold text-primary-600 dark:text-primary-400">
                       <ShieldCheck size={16} /> Да
                     </span>
                   ) : (
@@ -221,7 +221,7 @@ export default function ComparePage() {
                   return (
                     <span key={apt.id}>
                       {has ? (
-                        <Check size={16} className="text-teal-600" />
+                        <Check size={16} className="text-primary-600" />
                       ) : (
                         <span className="text-stone-300 dark:text-stone-700">—</span>
                       )}

@@ -94,7 +94,7 @@ const SelectTrigger = forwardRef<HTMLButtonElement, React.ButtonHTMLAttributes<H
         disabled={disabled}
         onClick={() => !disabled && context?.setOpen((prev) => !prev)}
         className={cn(
-          'flex h-10 w-full items-center justify-between rounded-lg border border-stone-200 bg-white px-3 py-2 text-sm text-stone-900 shadow-sm transition-colors focus:border-teal-500 focus:outline-none focus:ring-1 focus:ring-teal-500 disabled:cursor-not-allowed disabled:opacity-50 dark:border-stone-700 dark:bg-stone-800 dark:text-stone-100',
+          'flex h-10 w-full items-center justify-between rounded-lg border border-stone-200 bg-white px-3 py-2 text-sm text-stone-900 shadow-sm transition-colors focus:border-primary-500 focus:outline-none focus:ring-1 focus:ring-primary-500 disabled:cursor-not-allowed disabled:opacity-50 dark:border-stone-700 dark:bg-stone-800 dark:text-stone-100',
           className
         )}
         {...props}
@@ -174,13 +174,13 @@ const SelectItem = forwardRef<HTMLButtonElement, SelectItemProps>(
         onClick={() => context?.onValueChange(value)}
         className={cn(
           'relative flex w-full cursor-pointer select-none items-center rounded-md px-2 py-2 text-sm text-stone-700 transition-colors hover:bg-stone-100 dark:text-stone-200 dark:hover:bg-stone-700',
-          isSelected && 'bg-teal-50 font-medium text-teal-700 dark:bg-teal-950/60 dark:text-teal-300',
+          isSelected && 'bg-primary-50 font-medium text-primary-700 dark:bg-primary-950/60 dark:text-primary-300',
           className
         )}
         {...props}
       >
         <span className="flex-1 text-left">{children}</span>
-        {isSelected && <Check className="h-4 w-4 shrink-0 text-teal-600 dark:text-teal-400" />}
+        {isSelected && <Check className="h-4 w-4 shrink-0 text-primary-600 dark:text-primary-400" />}
       </button>
     );
   }

@@ -55,7 +55,7 @@ export default function ProfilePage() {
   return (
     <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-10">
       <div className="mb-8 flex flex-col items-center gap-6 rounded-2xl border border-stone-200/80 bg-white p-6 md:flex-row md:items-center dark:border-white/10 dark:bg-[#1f1f1f]">
-        <div className="flex h-20 w-20 shrink-0 items-center justify-center rounded-full bg-teal-100 text-teal-700 dark:bg-teal-950/60 dark:text-teal-400">
+        <div className="flex h-20 w-20 shrink-0 items-center justify-center rounded-full bg-primary-100 text-primary-700 dark:bg-primary-950/60 dark:text-primary-400">
           <User size={36} />
         </div>
         <div className="flex-1 text-center md:text-left">
@@ -64,7 +64,7 @@ export default function ProfilePage() {
               {user?.name || 'Пользователь'}
             </h1>
             {user?.role && (
-              <span className="rounded-full bg-teal-50 px-2.5 py-0.5 text-xs font-semibold text-teal-700 dark:bg-teal-950/50 dark:text-teal-300">
+              <span className="rounded-full bg-primary-50 px-2.5 py-0.5 text-xs font-semibold text-primary-700 dark:bg-primary-950/50 dark:text-primary-300">
                 {user.role}
               </span>
             )}
@@ -115,7 +115,7 @@ export default function ProfilePage() {
             <h2 className="text-xl font-bold text-stone-900 dark:text-white">
               {t('myListings')}
             </h2>
-            <Button asChild className="bg-teal-600 hover:bg-teal-700 text-white">
+            <Button asChild className="bg-primary-600 hover:bg-primary-700 text-white">
               <Link href={`/${locale}/add-listing`}>
                 <PlusCircle size={16} className="mr-2" />
                 {t('addListing')}
@@ -142,7 +142,7 @@ export default function ProfilePage() {
               <p className="mb-6 text-sm text-stone-500 dark:text-stone-400">
                 {t('noListingsText')}
               </p>
-              <Button asChild className="bg-teal-600 hover:bg-teal-700 text-white">
+              <Button asChild className="bg-primary-600 hover:bg-primary-700 text-white">
                 <Link href={`/${locale}/add-listing`}>
                   <PlusCircle size={16} className="mr-2" />
                   {t('addFirstListing')}

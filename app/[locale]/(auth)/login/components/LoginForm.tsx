@@ -64,7 +64,7 @@ export function LoginForm({ locale }: LoginFormProps) {
                 <FormControl>
                   <input
                     placeholder="example@mail.com"
-                    className="h-11 w-full rounded-xl border border-white/10 bg-white/5 px-4 text-sm text-white placeholder-stone-500 outline-none ring-0 transition-all focus:border-teal-500/50 focus:bg-white/8 focus:ring-2 focus:ring-teal-500/20"
+                    className="h-11 w-full rounded-xl border border-white/10 bg-white/5 px-4 text-sm text-white placeholder-stone-500 outline-none ring-0 transition-all focus:border-primary-500/50 focus:bg-white/8 focus:ring-2 focus:ring-primary-500/20"
                     {...field}
                   />
                 </FormControl>
@@ -86,7 +86,7 @@ export function LoginForm({ locale }: LoginFormProps) {
                     <input
                       type={showPass ? 'text' : 'password'}
                       placeholder="••••••••"
-                      className="h-11 w-full rounded-xl border border-white/10 bg-white/5 px-4 pr-11 text-sm text-white placeholder-stone-500 outline-none transition-all focus:border-teal-500/50 focus:bg-white/8 focus:ring-2 focus:ring-teal-500/20"
+                      className="h-11 w-full rounded-xl border border-white/10 bg-white/5 px-4 pr-11 text-sm text-white placeholder-stone-500 outline-none transition-all focus:border-primary-500/50 focus:bg-white/8 focus:ring-2 focus:ring-primary-500/20"
                       {...field}
                     />
                     <button
@@ -107,7 +107,7 @@ export function LoginForm({ locale }: LoginFormProps) {
             <button
               type="button"
               onClick={() => router.push(`/${locale}/forgot-password`)}
-              className="text-xs text-stone-400 hover:text-teal-400 transition-colors"
+              className="text-xs text-stone-400 hover:text-primary-400 transition-colors"
             >
               {t('forgotPassword')}
             </button>
@@ -116,7 +116,7 @@ export function LoginForm({ locale }: LoginFormProps) {
           <button
             type="submit"
             disabled={isLoading}
-            className="relative flex h-11 w-full items-center justify-center overflow-hidden rounded-xl bg-teal-600 font-semibold text-white shadow-lg shadow-teal-900/30 transition-all hover:bg-teal-500 active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed"
+            className="relative flex h-11 w-full items-center justify-center overflow-hidden rounded-xl bg-primary-600 font-semibold text-white shadow-lg shadow-primary-900/30 transition-all hover:bg-primary-500 active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {isLoading ? (
               <svg className="h-5 w-5 animate-spin" viewBox="0 0 24 24" fill="none">
@@ -144,7 +144,7 @@ export function LoginForm({ locale }: LoginFormProps) {
         <button
           type="button"
           onClick={() => router.push(`/${locale}/register`)}
-          className="font-semibold text-teal-400 hover:text-teal-300 transition-colors"
+          className="font-semibold text-primary-400 hover:text-primary-300 transition-colors"
         >
           {t('createAccount')}
         </button>

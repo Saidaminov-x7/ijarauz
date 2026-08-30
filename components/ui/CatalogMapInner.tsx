@@ -129,12 +129,12 @@ export default function CatalogMapInner({ apartments, locale }: CatalogMapProps)
                   {apt.district || apt.city || 'Ташкент'}
                 </p>
                 <div className="flex items-center justify-between pt-1 border-t border-stone-100">
-                  <span className="text-xs font-black text-teal-600">
+                  <span className="text-xs font-black text-primary-600">
                     ${apt.price}/мес
                   </span>
                   <Link
                     href={`/${locale}/catalog/${apt.id}`}
-                    className="text-[11px] font-bold px-3 py-1 rounded-lg bg-teal-600 text-white hover:bg-teal-700 transition-colors shadow-xs"
+                    className="text-[11px] font-bold px-3 py-1 rounded-lg bg-primary-600 text-white hover:bg-primary-700 transition-colors shadow-xs"
                   >
                     Смотреть
                   </Link>

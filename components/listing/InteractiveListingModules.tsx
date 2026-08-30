@@ -98,7 +98,7 @@ export function ShareModal({
           >
         <div className="flex items-center justify-between">
           <h3 className="text-lg font-bold text-stone-900 dark:text-white flex items-center gap-2">
-            <Share2 size={18} className="text-teal-500" />
+            <Share2 size={18} className="text-primary-500" />
             Поделиться квартирой
           </h3>
           <button
@@ -118,7 +118,7 @@ export function ShareModal({
               className="w-20 h-16 object-cover rounded-lg shrink-0"
             />
           ) : (
-            <div className="w-20 h-16 rounded-lg bg-teal-600/20 text-teal-600 flex items-center justify-center shrink-0 font-bold text-xs">
+            <div className="w-20 h-16 rounded-lg bg-primary-600/20 text-primary-600 flex items-center justify-center shrink-0 font-bold text-xs">
               Ijarauz
             </div>
           )}
@@ -129,7 +129,7 @@ export function ShareModal({
             <p className="text-[11px] text-stone-400 truncate">
               {district ? `${district}, ` : ''}{city}
             </p>
-            <div className="text-xs font-black text-teal-600 dark:text-teal-400 mt-1">
+            <div className="text-xs font-black text-primary-600 dark:text-primary-400 mt-1">
               ${price} / месяц
             </div>
           </div>
@@ -174,7 +174,7 @@ export function ShareModal({
           <button
             type="button"
             onClick={copyToClipboard}
-            className="flex h-10 px-4 items-center justify-center gap-1.5 rounded-xl bg-teal-600 text-white text-xs font-bold hover:bg-teal-500 transition-colors cursor-pointer shrink-0"
+            className="flex h-10 px-4 items-center justify-center gap-1.5 rounded-xl bg-primary-600 text-white text-xs font-bold hover:bg-primary-500 transition-colors cursor-pointer shrink-0"
           >
             {copied ? <Check size={14} /> : <Copy size={14} />}
             {copied ? 'Скопировано' : 'Копировать'}

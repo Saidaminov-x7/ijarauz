@@ -68,10 +68,10 @@ export function AmenitiesFilter({ selected, onChange, className }: AmenitiesFilt
       <button
         type="button"
         onClick={() => setIsOpen(!isOpen)}
-        className="flex h-10 w-full items-center justify-between rounded-xl border border-stone-200 bg-stone-50 px-3.5 text-xs font-semibold text-stone-900 transition-colors hover:border-teal-500 dark:border-white/10 dark:bg-white/5 dark:text-white cursor-pointer select-none"
+        className="flex h-10 w-full items-center justify-between rounded-xl border border-stone-200 bg-stone-50 px-3.5 text-xs font-semibold text-stone-900 transition-colors hover:border-primary-500 dark:border-white/10 dark:bg-white/5 dark:text-white cursor-pointer select-none"
       >
         <div className="flex items-center gap-2">
-          <Sparkles size={14} className="text-teal-600 dark:text-teal-400" />
+          <Sparkles size={14} className="text-primary-600 dark:text-primary-400" />
           <span>{selected.length === 0 ? 'Выбрать удобства...' : `Выбрано: ${selected.length}`}</span>
         </div>
         <ChevronDown
@@ -101,11 +101,11 @@ export function AmenitiesFilter({ selected, onChange, className }: AmenitiesFilt
                     className={cn(
                       'inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl text-xs font-semibold transition-all cursor-pointer border shadow-xs',
                       active
-                        ? 'bg-teal-600 border-teal-600 text-white shadow-teal-900/20'
+                        ? 'bg-primary-600 border-primary-600 text-white shadow-primary-900/20'
                         : 'bg-stone-50 hover:bg-stone-100 dark:bg-white/5 dark:hover:bg-white/10 text-stone-700 dark:text-stone-300 border-stone-200 dark:border-white/10'
                     )}
                   >
-                    <Icon size={13} className={cn(active ? 'text-white' : 'text-teal-600 dark:text-teal-400')} />
+                    <Icon size={13} className={cn(active ? 'text-white' : 'text-primary-600 dark:text-primary-400')} />
                     <span>{t(translationKey as any)}</span>
                     {active && <Check size={11} strokeWidth={3} className="ml-0.5" />}
                   </button>

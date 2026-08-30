@@ -69,7 +69,7 @@ export function SmartSearch({ locale }: { locale: string }) {
       {/* Input */}
       <form onSubmit={handleSubmit} className="flex items-center gap-3 rounded-2xl border border-stone-200 bg-white px-5 py-4 shadow-sm transition-shadow focus-within:shadow-md dark:border-stone-700/60 dark:bg-stone-900">
         {loading ? (
-          <svg className="h-4 w-4 animate-spin shrink-0 text-teal-500" viewBox="0 0 24 24" fill="none">
+          <svg className="h-4 w-4 animate-spin shrink-0 text-primary-500" viewBox="0 0 24 24" fill="none">
             <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"/>
             <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4l3-3-3-3v4a8 8 0 00-8 8h4z"/>
           </svg>
@@ -91,7 +91,7 @@ export function SmartSearch({ locale }: { locale: string }) {
         <button
           type="submit"
           disabled={!query.trim()}
-          className="shrink-0 rounded-xl bg-teal-600 px-5 py-2 text-sm font-semibold text-white transition-colors hover:bg-teal-700"
+          className="shrink-0 rounded-xl bg-primary-600 px-5 py-2 text-sm font-semibold text-white transition-colors hover:bg-primary-700"
         >
           Найти
         </button>

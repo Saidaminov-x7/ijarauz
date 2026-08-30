@@ -66,7 +66,7 @@ const TabsTrigger = forwardRef<HTMLButtonElement, TabsTriggerProps>(
         onClick={() => context?.onValueChange(value)}
         data-state={isActive ? 'active' : 'inactive'}
         className={cn(
-          'inline-flex items-center justify-center whitespace-nowrap rounded-md px-3 py-1.5 text-sm font-medium transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-500 disabled:pointer-events-none disabled:opacity-50',
+          'inline-flex items-center justify-center whitespace-nowrap rounded-md px-3 py-1.5 text-sm font-medium transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 disabled:pointer-events-none disabled:opacity-50',
           isActive
             ? 'bg-white text-stone-900 shadow-sm dark:bg-stone-900 dark:text-stone-50'
             : 'text-stone-500 hover:text-stone-900 dark:text-stone-400 dark:hover:text-stone-100',
@@ -93,7 +93,7 @@ const TabsContent = forwardRef<HTMLDivElement, TabsContentProps>(
     return (
       <div
         ref={ref}
-        className={cn('mt-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-500', className)}
+        className={cn('mt-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500', className)}
         {...props}
       >
         {children}

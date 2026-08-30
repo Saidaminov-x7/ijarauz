@@ -73,7 +73,7 @@ export default function MapCluster({ apartments, onMarkerClick, className = '' }
             <div className="min-w-45">
               <h3 className="font-semibold">{apartment.title}</h3>
               <p className="text-sm text-stone-600">{apartment.location}</p>
-              <p className="mt-1 font-bold text-teal-600">${apartment.price}</p>
+              <p className="mt-1 font-bold text-primary-600">${apartment.price}</p>
             </div>
           </Popup>
         </Marker>

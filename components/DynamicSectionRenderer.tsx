@@ -100,7 +100,7 @@ export function DynamicSectionRenderer({
             return (
               <div key={section.id} className="my-10 flex flex-col items-center text-center">
                 {c.badgeText && (
-                  <span className="inline-block px-3 py-1 mb-4 text-xs font-semibold rounded-full bg-teal-500/10 text-teal-600 dark:text-teal-400 border border-teal-500/20">
+                  <span className="inline-block px-3 py-1 mb-4 text-xs font-semibold rounded-full bg-primary-500/10 text-primary-600 dark:text-primary-400 border border-primary-500/20">
                     {c.badgeText}
                   </span>
                 )}
@@ -150,7 +150,7 @@ export function DynamicSectionRenderer({
                       key={idx}
                       className="flex flex-col items-center text-center p-6 rounded-2xl border border-stone-200/80 bg-white dark:border-white/5 dark:bg-[#1E1E1E] shadow-sm"
                     >
-                      <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-teal-50 text-teal-600 dark:bg-teal-950/50 dark:text-teal-400">
+                      <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-primary-50 text-primary-600 dark:bg-primary-950/50 dark:text-primary-400">
                         <DynamicIcon name={item.icon} size={24} />
                       </div>
                       <h3 className="mb-2 text-base font-bold text-stone-900 dark:text-white">{item.title}</h3>
@@ -172,7 +172,7 @@ export function DynamicSectionRenderer({
                   <h2 className="text-2xl font-bold text-stone-900 dark:text-white sm:text-3xl">{title}</h2>
                   <Link
                     href={`/${locale}/catalog`}
-                    className="flex items-center gap-1 text-sm font-semibold text-teal-600 hover:text-teal-700 dark:text-teal-400 whitespace-nowrap shrink-0"
+                    className="flex items-center gap-1 text-sm font-semibold text-primary-600 hover:text-primary-700 dark:text-primary-400 whitespace-nowrap shrink-0"
                   >
                     {viewAllText} <Icons.ArrowRight size={16} />
                   </Link>
@@ -202,14 +202,14 @@ export function DynamicSectionRenderer({
             return (
               <div
                 key={section.id}
-                className="relative overflow-hidden rounded-3xl bg-linear-to-r from-teal-700 via-teal-800 to-stone-900 p-8 sm:p-12 text-white shadow-xl"
+                className="relative overflow-hidden rounded-3xl bg-linear-to-r from-primary-700 via-primary-800 to-stone-900 p-8 sm:p-12 text-white shadow-xl"
               >
                 <div className="relative z-10 flex flex-col md:flex-row items-center justify-between gap-6">
                   <div className="max-w-2xl text-center md:text-left">
                     <h2 className="mb-4 text-2xl font-extrabold tracking-tight sm:text-3xl md:text-4xl">{title}</h2>
-                    <p className="mb-2 md:mb-0 text-sm sm:text-base text-teal-100">{text}</p>
+                    <p className="mb-2 md:mb-0 text-sm sm:text-base text-primary-100">{text}</p>
                   </div>
-                  <Button size="lg" className="bg-white text-teal-900 hover:bg-stone-100 font-semibold shrink-0" asChild>
+                  <Button size="lg" className="bg-white text-primary-900 hover:bg-stone-100 font-semibold shrink-0" asChild>
                     <Link href={`/${locale}${buttonLink.startsWith('/') ? buttonLink : `/${buttonLink}`}`}>
                       {buttonText}
                     </Link>
@@ -235,9 +235,9 @@ export function DynamicSectionRenderer({
                     <Link
                       key={idx}
                       href={`/${locale}${cat.href?.startsWith('/') ? cat.href : `/${cat.href || 'catalog'}`}`}
-                      className="flex flex-col items-center justify-center p-4 rounded-2xl border border-stone-200/80 bg-white hover:border-teal-500 hover:shadow-md transition-all dark:border-white/5 dark:bg-[#1E1E1E]"
+                      className="flex flex-col items-center justify-center p-4 rounded-2xl border border-stone-200/80 bg-white hover:border-primary-500 hover:shadow-md transition-all dark:border-white/5 dark:bg-[#1E1E1E]"
                     >
-                      <div className="mb-3 flex h-12 w-12 items-center justify-center rounded-xl bg-teal-50 text-teal-600 dark:bg-teal-950/50 dark:text-teal-400">
+                      <div className="mb-3 flex h-12 w-12 items-center justify-center rounded-xl bg-primary-50 text-primary-600 dark:bg-primary-950/50 dark:text-primary-400">
                         <DynamicIcon name={cat.icon} size={22} />
                       </div>
                       <span className="text-xs font-bold text-stone-900 dark:text-white text-center truncate max-w-full">
@@ -289,12 +289,12 @@ export function DynamicSectionRenderer({
                         // eslint-disable-next-line @next/next/no-img-element
                         <img src={m.photoUrl} alt={m.name} className="w-20 h-20 rounded-full object-cover mb-4" />
                       ) : (
-                        <div className="w-20 h-20 rounded-full bg-teal-100 dark:bg-teal-950/60 text-teal-700 dark:text-teal-400 flex items-center justify-center mb-4 text-2xl font-bold">
+                        <div className="w-20 h-20 rounded-full bg-primary-100 dark:bg-primary-950/60 text-primary-700 dark:text-primary-400 flex items-center justify-center mb-4 text-2xl font-bold">
                           {m.name ? m.name[0] : 'U'}
                         </div>
                       )}
                       <h3 className="font-bold text-base text-stone-900 dark:text-white truncate max-w-full">{m.name}</h3>
-                      <p className="text-xs text-teal-600 dark:text-teal-400 mt-1 truncate max-w-full">{m.role}</p>
+                      <p className="text-xs text-primary-600 dark:text-primary-400 mt-1 truncate max-w-full">{m.role}</p>
                     </div>
                   ))}
                 </div>
@@ -346,21 +346,21 @@ export function DynamicSectionRenderer({
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                   {c.email && (
                     <div className="p-6 rounded-2xl border border-stone-200/80 bg-white dark:border-white/5 dark:bg-[#1E1E1E] text-center">
-                      <Icons.Mail className="mx-auto mb-3 text-teal-600 dark:text-teal-400" size={24} />
+                      <Icons.Mail className="mx-auto mb-3 text-primary-600 dark:text-primary-400" size={24} />
                       <h3 className="font-bold text-stone-900 dark:text-white text-sm mb-1">Email</h3>
                       <p className="text-xs text-stone-500 dark:text-stone-400 break-all">{c.email}</p>
                     </div>
                   )}
                   {c.phone && (
                     <div className="p-6 rounded-2xl border border-stone-200/80 bg-white dark:border-white/5 dark:bg-[#1E1E1E] text-center">
-                      <Icons.Phone className="mx-auto mb-3 text-teal-600 dark:text-teal-400" size={24} />
+                      <Icons.Phone className="mx-auto mb-3 text-primary-600 dark:text-primary-400" size={24} />
                       <h3 className="font-bold text-stone-900 dark:text-white text-sm mb-1">Телефон</h3>
                       <p className="text-xs text-stone-500 dark:text-stone-400">{c.phone}</p>
                     </div>
                   )}
                   {c.address && (
                     <div className="p-6 rounded-2xl border border-stone-200/80 bg-white dark:border-white/5 dark:bg-[#1E1E1E] text-center">
-                      <Icons.MapPin className="mx-auto mb-3 text-teal-600 dark:text-teal-400" size={24} />
+                      <Icons.MapPin className="mx-auto mb-3 text-primary-600 dark:text-primary-400" size={24} />
                       <h3 className="font-bold text-stone-900 dark:text-white text-sm mb-1">Адрес</h3>
                       <p className="text-xs text-stone-500 dark:text-stone-400">{c.address}</p>
                     </div>
@@ -374,12 +374,12 @@ export function DynamicSectionRenderer({
                       </span>
                     )}
                     {c.socials?.telegram && (
-                      <a href={c.socials.telegram} target="_blank" rel="noreferrer" className="flex items-center gap-1.5 hover:text-teal-600">
+                      <a href={c.socials.telegram} target="_blank" rel="noreferrer" className="flex items-center gap-1.5 hover:text-primary-600">
                         <DynamicIcon name="Send" size={14} /> Telegram
                       </a>
                     )}
                     {c.socials?.instagram && (
-                      <a href={c.socials.instagram} target="_blank" rel="noreferrer" className="flex items-center gap-1.5 hover:text-teal-600">
+                      <a href={c.socials.instagram} target="_blank" rel="noreferrer" className="flex items-center gap-1.5 hover:text-primary-600">
                         <DynamicIcon name="Instagram" size={14} /> Instagram
                       </a>
                     )}
@@ -406,7 +406,7 @@ export function DynamicSectionRenderer({
                     { value: stats.dailyViews, label: 'Просмотров в день' },
                   ].map((s, i) => (
                     <div key={i} className="text-center">
-                      <div className="mb-2 text-3xl sm:text-4xl font-bold text-teal-600 dark:text-teal-400">
+                      <div className="mb-2 text-3xl sm:text-4xl font-bold text-primary-600 dark:text-primary-400">
                         {s.value.toLocaleString()}
                       </div>
                       <div className="text-sm text-stone-600 dark:text-stone-400">{s.label}</div>

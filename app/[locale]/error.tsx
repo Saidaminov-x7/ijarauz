@@ -32,7 +32,7 @@ export default function LocaleError({
       <button
         type="button"
         onClick={() => reset()}
-        className="mt-6 inline-flex items-center gap-2 rounded-xl bg-teal-600 px-6 py-3 text-sm font-semibold text-white transition-colors hover:bg-teal-700"
+        className="mt-6 inline-flex items-center gap-2 rounded-xl bg-primary-600 px-6 py-3 text-sm font-semibold text-white transition-colors hover:bg-primary-700"
       >
         <RotateCcw size={16} />
         Повторить попытку

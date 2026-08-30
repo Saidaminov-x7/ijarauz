@@ -34,7 +34,7 @@ export function SearchInput({ locale, className = '', placeholder = 'Поиск.
         onChange={(e) => setQuery(e.target.value)}
         placeholder={placeholder}
         // Установлена сбалансированная высота h-12 и удобный отступ слева pl-11
-        className={`w-full h-12 rounded-xl border border-stone-200 bg-white py-2 pl-11 pr-4 text-sm transition-shadow duration-200 focus:border-teal-500 focus:outline-none focus:ring-2 focus:ring-teal-500/20 dark:border-stone-700 dark:bg-stone-800 dark:text-white ${isMobile ? 'pr-10' : ''}`}
+        className={`w-full h-12 rounded-xl border border-stone-200 bg-white py-2 pl-11 pr-4 text-sm transition-shadow duration-200 focus:border-primary-500 focus:outline-none focus:ring-2 focus:ring-primary-500/20 dark:border-stone-700 dark:bg-stone-800 dark:text-white ${isMobile ? 'pr-10' : ''}`}
       />
       
       {isMobile && query && (

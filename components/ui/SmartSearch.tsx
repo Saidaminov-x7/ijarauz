@@ -84,7 +84,7 @@ export function SmartSearch({
         value={query}
         onChange={(e) => setQuery(e.target.value)}
         placeholder={placeholder}
-        className={`w-full rounded-lg border border-stone-200 bg-white px-4 py-2 pl-10 text-sm focus:border-teal-500 focus:outline-none focus:ring-1 focus:ring-teal-500 dark:border-stone-700 dark:bg-stone-800 dark:text-white ${isMobile ? 'pr-10' : ''}`}
+        className={`w-full rounded-lg border border-stone-200 bg-white px-4 py-2 pl-10 text-sm focus:border-primary-500 focus:outline-none focus:ring-1 focus:ring-primary-500 dark:border-stone-700 dark:bg-stone-800 dark:text-white ${isMobile ? 'pr-10' : ''}`}
       />
       <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-stone-400" />
       {query && (

@@ -146,7 +146,7 @@ export function ListingDetailClient({ listing, coordinates, locale }: Props) {
         <button
           type="button"
           onClick={handleBack}
-          className="inline-flex items-center gap-2 rounded-xl border border-stone-200 bg-white px-4 py-2 text-xs font-semibold text-stone-700 shadow-xs hover:border-teal-500 hover:text-teal-600 dark:border-white/10 dark:bg-[#1A1A1A] dark:text-stone-300 dark:hover:border-teal-500 transition-colors cursor-pointer"
+          className="inline-flex items-center gap-2 rounded-xl border border-stone-200 bg-white px-4 py-2 text-xs font-semibold text-stone-700 shadow-xs hover:border-primary-500 hover:text-primary-600 dark:border-white/10 dark:bg-[#1A1A1A] dark:text-stone-300 dark:hover:border-primary-500 transition-colors cursor-pointer"
         >
           <ArrowLeft size={15} />
           <span>Назад в каталог</span>
@@ -156,7 +156,7 @@ export function ListingDetailClient({ listing, coordinates, locale }: Props) {
           <button
             type="button"
             onClick={() => setIsShareModalOpen(true)}
-            className="flex h-9 px-3.5 items-center gap-1.5 rounded-xl border border-stone-200 text-stone-600 hover:text-teal-600 hover:border-teal-500 bg-white dark:border-white/10 dark:bg-[#1A1A1A] dark:text-stone-300 dark:hover:border-teal-500 transition-colors text-xs font-semibold cursor-pointer shadow-xs"
+            className="flex h-9 px-3.5 items-center gap-1.5 rounded-xl border border-stone-200 text-stone-600 hover:text-primary-600 hover:border-primary-500 bg-white dark:border-white/10 dark:bg-[#1A1A1A] dark:text-stone-300 dark:hover:border-primary-500 transition-colors text-xs font-semibold cursor-pointer shadow-xs"
             title="Поделиться"
           >
             <Share2 size={14} />
@@ -173,8 +173,8 @@ export function ListingDetailClient({ listing, coordinates, locale }: Props) {
             className={cn(
               'flex h-9 px-3.5 items-center gap-1.5 rounded-xl border transition-colors text-xs font-semibold cursor-pointer shadow-xs',
               isInCompare
-                ? 'border-teal-500 bg-teal-50 text-teal-600 dark:bg-teal-950/40 dark:text-teal-400'
-                : 'border-stone-200 text-stone-600 hover:text-teal-600 bg-white dark:bg-[#1A1A1A] dark:border-white/10 dark:text-stone-300'
+                ? 'border-primary-500 bg-primary-50 text-primary-600 dark:bg-primary-950/40 dark:text-primary-400'
+                : 'border-stone-200 text-stone-600 hover:text-primary-600 bg-white dark:bg-[#1A1A1A] dark:border-white/10 dark:text-stone-300'
             )}
             title={isInCompare ? 'В сравнении' : 'Сравнить'}
           >
@@ -197,8 +197,8 @@ export function ListingDetailClient({ listing, coordinates, locale }: Props) {
       <div className="mb-6 space-y-2">
         <div className="flex items-center gap-2 flex-wrap">
           {isVerified && (
-            <span className="inline-flex items-center gap-1 rounded-full bg-teal-500/15 text-teal-700 dark:text-teal-300 border border-teal-500/30 px-3 py-0.5 text-xs font-bold shadow-xs">
-              <ShieldCheck size={14} className="text-teal-600 dark:text-teal-400" /> Проверено Ijarauz (0% комиссии)
+            <span className="inline-flex items-center gap-1 rounded-full bg-primary-500/15 text-primary-700 dark:text-primary-300 border border-primary-500/30 px-3 py-0.5 text-xs font-bold shadow-xs">
+              <ShieldCheck size={14} className="text-primary-600 dark:text-primary-400" /> Проверено Ijarauz (0% комиссии)
             </span>
           )}
           {listing.isPromoted && listing.promotionTier === 'URGENT' && (
@@ -218,7 +218,7 @@ export function ListingDetailClient({ listing, coordinates, locale }: Props) {
         </h1>
 
         <p className="flex items-center gap-1.5 text-sm text-stone-500 dark:text-stone-400 font-medium">
-          <MapPin size={16} className="text-teal-500 shrink-0" />
+          <MapPin size={16} className="text-primary-500 shrink-0" />
           <span>{listing.district ? `${listing.city}, ${listing.district}` : listing.city}</span>
           <span className="text-stone-300 dark:text-stone-600">•</span>
           <span>Опубликовано недавно</span>
@@ -254,7 +254,7 @@ export function ListingDetailClient({ listing, coordinates, locale }: Props) {
                 key={label}
                 className="rounded-2xl border border-stone-200/80 bg-white p-4.5 text-center dark:border-white/10 dark:bg-[#1A1A1A] shadow-xs"
               >
-                <div className="mx-auto mb-2 flex h-9 w-9 items-center justify-center rounded-xl bg-teal-50 dark:bg-teal-950/40 text-teal-600 dark:text-teal-400">
+                <div className="mx-auto mb-2 flex h-9 w-9 items-center justify-center rounded-xl bg-primary-50 dark:bg-primary-950/40 text-primary-600 dark:text-primary-400">
                   <Icon size={18} />
                 </div>
                 <div className="text-base font-extrabold text-stone-900 dark:text-white">{value}</div>
@@ -266,7 +266,7 @@ export function ListingDetailClient({ listing, coordinates, locale }: Props) {
           {/* Описание объекта */}
           <div className="rounded-2xl border border-stone-200/80 bg-white p-6 dark:border-white/10 dark:bg-[#1A1A1A] shadow-xs space-y-3">
             <h2 className="text-lg font-bold text-stone-900 dark:text-white flex items-center gap-2">
-              <FileText size={18} className="text-teal-500" />
+              <FileText size={18} className="text-primary-500" />
               Описание объекта
             </h2>
             <p className="text-sm leading-relaxed text-stone-600 dark:text-stone-300 whitespace-pre-line">
@@ -279,7 +279,7 @@ export function ListingDetailClient({ listing, coordinates, locale }: Props) {
           {listing.features && listing.features.length > 0 && (
             <div className="rounded-2xl border border-stone-200/80 bg-white p-6 dark:border-white/10 dark:bg-[#1A1A1A] shadow-xs space-y-4">
               <h2 className="text-lg font-bold text-stone-900 dark:text-white flex items-center gap-2">
-                <Sparkles size={18} className="text-teal-500" />
+                <Sparkles size={18} className="text-primary-500" />
                 Удобства и оснащение
               </h2>
               <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
@@ -293,7 +293,7 @@ export function ListingDetailClient({ listing, coordinates, locale }: Props) {
                       key={feat}
                       className="flex items-center gap-2.5 p-3 rounded-xl bg-stone-50 dark:bg-white/5 border border-stone-100 dark:border-white/5 text-xs font-semibold text-stone-800 dark:text-stone-200"
                     >
-                      <Icon size={16} className="text-teal-500 shrink-0" />
+                      <Icon size={16} className="text-primary-500 shrink-0" />
                       <span className="truncate">{label}</span>
                     </div>
                   );
@@ -307,7 +307,7 @@ export function ListingDetailClient({ listing, coordinates, locale }: Props) {
             <div className="rounded-2xl border border-stone-200/80 bg-white p-6 dark:border-white/10 dark:bg-[#1A1A1A] shadow-xs space-y-4">
               <div className="flex items-center justify-between gap-2">
                 <div className="flex items-center gap-2 text-sm font-bold text-stone-900 dark:text-white">
-                  <TrendingDown size={18} className="text-teal-600 dark:text-teal-400" />
+                  <TrendingDown size={18} className="text-primary-600 dark:text-primary-400" />
                   <span>Динамика и история цен</span>
                 </div>
                 <span className="text-xs text-stone-400">
@@ -352,7 +352,7 @@ export function ListingDetailClient({ listing, coordinates, locale }: Props) {
           {/* Расположение на карте с блюром, кнопками показа/скрытия и маршрутом */}
           <div className="rounded-2xl border border-stone-200/80 bg-white p-6 dark:border-white/10 dark:bg-[#1A1A1A] shadow-xs space-y-4">
             <h2 className="text-lg font-bold text-stone-900 dark:text-white flex items-center gap-2">
-              <Compass size={18} className="text-teal-500" />
+              <Compass size={18} className="text-primary-500" />
               Расположение на карте
             </h2>
             <MapView lat={coordinates.lat} lng={coordinates.lng} label={listing.title} />
@@ -380,7 +380,7 @@ export function ListingDetailClient({ listing, coordinates, locale }: Props) {
                     {listing.type === 'daily' ? '/ сутки' : '/ месяц'}
                   </span>
                 </div>
-                <span className="text-xs font-bold text-teal-600 dark:text-teal-400 bg-teal-50 dark:bg-teal-950/40 px-2.5 py-1 rounded-lg border border-teal-500/20">
+                <span className="text-xs font-bold text-primary-600 dark:text-primary-400 bg-primary-50 dark:bg-primary-950/40 px-2.5 py-1 rounded-lg border border-primary-500/20">
                   ≈ {priceInUzs} сум
                 </span>
               </div>
@@ -399,7 +399,7 @@ export function ListingDetailClient({ listing, coordinates, locale }: Props) {
                     className="h-11 w-11 rounded-xl object-cover border border-white/20 shadow-sm"
                   />
                 ) : (
-                  <div className="h-11 w-11 rounded-xl bg-gradient-to-br from-teal-500 to-emerald-600 text-white flex items-center justify-center font-bold text-base shadow-sm">
+                  <div className="h-11 w-11 rounded-xl bg-gradient-to-br from-primary-500 to-emerald-600 text-white flex items-center justify-center font-bold text-base shadow-sm">
                     {((listing.author?.name || (listing as any).owner?.name || 'В')[0]).toUpperCase()}
                   </div>
                 )}
@@ -407,7 +407,7 @@ export function ListingDetailClient({ listing, coordinates, locale }: Props) {
                   <h4 className="text-sm font-bold text-stone-900 dark:text-white truncate">
                     {listing.author?.name || (listing as any).owner?.name || 'Владелец жилья'}
                   </h4>
-                  <p className="text-[11px] text-teal-600 dark:text-teal-400 font-semibold flex items-center gap-1">
+                  <p className="text-[11px] text-primary-600 dark:text-primary-400 font-semibold flex items-center gap-1">
                     <BadgeCheck size={13} /> Номер подтверждён
                   </p>
                 </div>
@@ -435,7 +435,7 @@ export function ListingDetailClient({ listing, coordinates, locale }: Props) {
                 <button
                   type="button"
                   onClick={handleRevealPhone}
-                  className="w-full h-11 flex items-center justify-center gap-2 rounded-xl bg-teal-600 hover:bg-teal-500 text-white font-bold text-xs shadow-md shadow-teal-600/20 transition-all cursor-pointer"
+                  className="w-full h-11 flex items-center justify-center gap-2 rounded-xl bg-primary-600 hover:bg-primary-500 text-white font-bold text-xs shadow-md shadow-primary-600/20 transition-all cursor-pointer"
                 >
                   <Phone size={15} />
                   Показать номер телефона
@@ -445,7 +445,7 @@ export function ListingDetailClient({ listing, coordinates, locale }: Props) {
               <button
                 type="button"
                 onClick={() => setIsViewingModalOpen(true)}
-                className="w-full h-10 flex items-center justify-center gap-2 rounded-xl border border-teal-600/30 bg-teal-50 hover:bg-teal-100 dark:bg-teal-950/30 dark:hover:bg-teal-900/50 text-teal-700 dark:text-teal-300 font-semibold text-xs transition-colors cursor-pointer"
+                className="w-full h-10 flex items-center justify-center gap-2 rounded-xl border border-primary-600/30 bg-primary-50 hover:bg-primary-100 dark:bg-primary-950/30 dark:hover:bg-primary-900/50 text-primary-700 dark:text-primary-300 font-semibold text-xs transition-colors cursor-pointer"
               >
                 <Calendar size={15} />
                 Записаться на просмотр
@@ -472,7 +472,7 @@ export function ListingDetailClient({ listing, coordinates, locale }: Props) {
               </div>
               <div className="flex justify-between pt-2 border-t border-dashed border-stone-200 dark:border-white/10 text-stone-900 dark:text-white font-bold">
                 <span>Итого при заселении:</span>
-                <span className="text-teal-600 dark:text-teal-400">${listing.price + depositAmount}</span>
+                <span className="text-primary-600 dark:text-primary-400">${listing.price + depositAmount}</span>
               </div>
             </div>
 
@@ -550,7 +550,7 @@ export function ListingDetailClient({ listing, coordinates, locale }: Props) {
         onClose={() => setIsViewingModalOpen(false)}
         title={
           <div className="flex items-center gap-2">
-            <Calendar size={18} className="text-teal-500" />
+            <Calendar size={18} className="text-primary-500" />
             <span>Запись на просмотр квартиры</span>
           </div>
         }
@@ -565,7 +565,7 @@ export function ListingDetailClient({ listing, coordinates, locale }: Props) {
               required
               value={preferredDate}
               onChange={(e) => setPreferredDate(e.target.value)}
-              className="w-full h-10 px-3.5 rounded-xl border border-stone-200 dark:border-white/10 bg-stone-50 dark:bg-white/5 text-xs text-stone-900 dark:text-white outline-none focus:border-teal-500"
+              className="w-full h-10 px-3.5 rounded-xl border border-stone-200 dark:border-white/10 bg-stone-50 dark:bg-white/5 text-xs text-stone-900 dark:text-white outline-none focus:border-primary-500"
             />
           </div>
 
@@ -578,7 +578,7 @@ export function ListingDetailClient({ listing, coordinates, locale }: Props) {
               value={viewingMessage}
               onChange={(e) => setViewingMessage(e.target.value)}
               placeholder="Здравствуйте! Хотели бы прийти вдвоем посмотреть квартиру..."
-              className="w-full p-3 rounded-xl border border-stone-200 dark:border-white/10 bg-stone-50 dark:bg-white/5 text-xs text-stone-900 dark:text-white outline-none focus:border-teal-500 resize-none"
+              className="w-full p-3 rounded-xl border border-stone-200 dark:border-white/10 bg-stone-50 dark:bg-white/5 text-xs text-stone-900 dark:text-white outline-none focus:border-primary-500 resize-none"
             />
           </div>
 

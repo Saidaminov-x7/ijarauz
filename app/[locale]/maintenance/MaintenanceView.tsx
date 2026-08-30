@@ -99,11 +99,11 @@ export function MaintenanceView({ locale, initialSettings }: MaintenanceViewProp
     <div className="min-h-screen bg-stone-950 text-stone-100 flex flex-col items-center justify-center p-6 text-center relative overflow-hidden">
       {/* Декоративный фон */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-teal-500/10 rounded-full blur-3xl pointer-events-none" />
+        <div className="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-primary-500/10 rounded-full blur-3xl pointer-events-none" />
       </div>
 
       <div className="max-w-lg w-full space-y-6 animate-in fade-in zoom-in duration-300 relative z-10">
-        <div className="relative mx-auto w-24 h-24 rounded-3xl bg-teal-500/10 border border-teal-500/20 flex items-center justify-center text-teal-400">
+        <div className="relative mx-auto w-24 h-24 rounded-3xl bg-primary-500/10 border border-primary-500/20 flex items-center justify-center text-primary-400">
           <Hammer className="w-12 h-12 animate-bounce" />
           <div className="absolute -top-1 -right-1 w-6 h-6 rounded-full bg-amber-500 text-stone-950 flex items-center justify-center font-bold text-xs">
             !
@@ -129,7 +129,7 @@ export function MaintenanceView({ locale, initialSettings }: MaintenanceViewProp
           <button
             onClick={handleManualCheck}
             disabled={isCheckingStatus}
-            className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl bg-teal-600 hover:bg-teal-500 text-white text-sm font-semibold transition-all shadow-lg shadow-teal-500/20 disabled:opacity-50"
+            className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl bg-primary-600 hover:bg-primary-500 text-white text-sm font-semibold transition-all shadow-lg shadow-primary-500/20 disabled:opacity-50"
           >
             <RefreshCw className={`w-4 h-4 ${isCheckingStatus ? 'animate-spin' : ''}`} />
             Проверить доступ
@@ -140,7 +140,7 @@ export function MaintenanceView({ locale, initialSettings }: MaintenanceViewProp
               onClick={() => setShowPasswordModal(true)}
               className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl bg-stone-800 hover:bg-stone-700 border border-stone-700 text-stone-200 text-sm font-semibold transition-all"
             >
-              <KeyRound className="w-4 h-4 text-teal-400" />
+              <KeyRound className="w-4 h-4 text-primary-400" />
               Ввести пароль
             </button>
           )}
@@ -159,7 +159,7 @@ export function MaintenanceView({ locale, initialSettings }: MaintenanceViewProp
             </button>
 
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-xl bg-teal-500/10 border border-teal-500/20 text-teal-400 flex items-center justify-center">
+              <div className="w-10 h-10 rounded-xl bg-primary-500/10 border border-primary-500/20 text-primary-400 flex items-center justify-center">
                 <Lock className="w-5 h-5" />
               </div>
               <div>
@@ -180,7 +180,7 @@ export function MaintenanceView({ locale, initialSettings }: MaintenanceViewProp
                   placeholder="Введите пароль..."
                   autoFocus
                   required
-                  className="w-full px-4 py-2.5 rounded-xl bg-stone-950 border border-stone-800 text-white placeholder-stone-500 text-sm focus:outline-none focus:border-teal-500 transition-colors"
+                  className="w-full px-4 py-2.5 rounded-xl bg-stone-950 border border-stone-800 text-white placeholder-stone-500 text-sm focus:outline-none focus:border-primary-500 transition-colors"
                 />
               </div>
 
@@ -202,7 +202,7 @@ export function MaintenanceView({ locale, initialSettings }: MaintenanceViewProp
                 <button
                   type="submit"
                   disabled={isVerifying || !password.trim()}
-                  className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-teal-600 hover:bg-teal-500 text-white text-sm font-semibold transition-all disabled:opacity-50"
+                  className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-primary-600 hover:bg-primary-500 text-white text-sm font-semibold transition-all disabled:opacity-50"
                 >
                   {isVerifying ? (
                     <RefreshCw className="w-4 h-4 animate-spin" />

@@ -154,9 +154,9 @@ export function ImageUpload({
               onDragEnd={handleDragEnd}
               className={`relative group aspect-video rounded-xl overflow-hidden border transition-all cursor-grab active:cursor-grabbing ${
                 draggedIndex === index
-                  ? 'opacity-40 scale-95 border-teal-500'
+                  ? 'opacity-40 scale-95 border-primary-500'
                   : index === 0
-                  ? 'border-teal-500 ring-2 ring-teal-500/30'
+                  ? 'border-primary-500 ring-2 ring-primary-500/30'
                   : 'border-stone-200 dark:border-white/10'
               }`}
             >
@@ -167,7 +167,7 @@ export function ImageUpload({
               />
 
               {index === 0 && (
-                <span className="absolute top-2 left-2 px-2 py-0.5 rounded-md bg-teal-600 text-white text-[10px] font-bold shadow-md flex items-center gap-1">
+                <span className="absolute top-2 left-2 px-2 py-0.5 rounded-md bg-primary-600 text-white text-[10px] font-bold shadow-md flex items-center gap-1">
                   <CheckCircle2 size={11} />
                   Обложка
                 </span>

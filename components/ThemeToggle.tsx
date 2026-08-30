@@ -11,7 +11,7 @@ const BTN_CLASS =
   'hover:border-stone-300 hover:bg-stone-50 hover:text-stone-900 ' +
   'dark:border-white/10 dark:bg-stone-900 dark:text-stone-300 ' +
   'dark:hover:border-white/20 dark:hover:bg-stone-800 dark:hover:text-white ' +
-  'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-500/50';
+  'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500/50';
 
 export function ThemeToggle() {
   const { resolvedTheme, setTheme } = useTheme();

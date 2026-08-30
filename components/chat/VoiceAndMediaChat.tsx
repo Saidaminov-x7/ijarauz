@@ -101,7 +101,7 @@ export function VoiceAndMediaChat({ onSendMessage }: VoiceAndMediaChatProps) {
             disabled={isUploading || isRecording}
             className="hidden"
           />
-          {isUploading ? <Loader2 size={18} className="animate-spin text-teal-500" /> : <ImageIcon size={18} />}
+          {isUploading ? <Loader2 size={18} className="animate-spin text-primary-500" /> : <ImageIcon size={18} />}
         </label>
 
         {/* Поле ввода текста / Индикатор записи */}
@@ -125,7 +125,7 @@ export function VoiceAndMediaChat({ onSendMessage }: VoiceAndMediaChatProps) {
             value={text}
             onChange={(e) => setText(e.target.value)}
             placeholder="Напишите сообщение арендодателю..."
-            className="flex-1 h-10 px-4 rounded-xl border border-stone-200 dark:border-white/10 bg-stone-50 dark:bg-white/5 text-sm text-stone-900 dark:text-white placeholder-stone-400 outline-none focus:border-teal-500 focus:ring-1 focus:ring-teal-500 transition-all"
+            className="flex-1 h-10 px-4 rounded-xl border border-stone-200 dark:border-white/10 bg-stone-50 dark:bg-white/5 text-sm text-stone-900 dark:text-white placeholder-stone-400 outline-none focus:border-primary-500 focus:ring-1 focus:ring-primary-500 transition-all"
           />
         )}
 
@@ -133,7 +133,7 @@ export function VoiceAndMediaChat({ onSendMessage }: VoiceAndMediaChatProps) {
         {text.trim() ? (
           <button
             type="submit"
-            className="flex h-10 w-10 items-center justify-center rounded-xl bg-teal-600 text-white hover:bg-teal-500 transition-colors shadow-sm flex-shrink-0 cursor-pointer"
+            className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary-600 text-white hover:bg-primary-500 transition-colors shadow-sm flex-shrink-0 cursor-pointer"
           >
             <Send size={16} />
           </button>

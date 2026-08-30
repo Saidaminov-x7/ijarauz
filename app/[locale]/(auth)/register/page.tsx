@@ -132,7 +132,7 @@ export default function RegisterPage() {
                 <FormControl>
                   <input
                     placeholder="Ваше имя"
-                    className="h-11 w-full rounded-xl border border-white/10 bg-white/5 px-4 text-sm text-white placeholder-stone-500 outline-none transition-all focus:border-teal-500/50 focus:ring-2 focus:ring-teal-500/20"
+                    className="h-11 w-full rounded-xl border border-white/10 bg-white/5 px-4 text-sm text-white placeholder-stone-500 outline-none transition-all focus:border-primary-500/50 focus:ring-2 focus:ring-primary-500/20"
                     {...field}
                   />
                 </FormControl>
@@ -151,7 +151,7 @@ export default function RegisterPage() {
                   <input
                     type="email"
                     placeholder="example@mail.com"
-                    className="h-11 w-full rounded-xl border border-white/10 bg-white/5 px-4 text-sm text-white placeholder-stone-500 outline-none transition-all focus:border-teal-500/50 focus:ring-2 focus:ring-teal-500/20"
+                    className="h-11 w-full rounded-xl border border-white/10 bg-white/5 px-4 text-sm text-white placeholder-stone-500 outline-none transition-all focus:border-primary-500/50 focus:ring-2 focus:ring-primary-500/20"
                     {...field}
                   />
                 </FormControl>
@@ -169,7 +169,7 @@ export default function RegisterPage() {
                 <FormControl>
                   <input
                     placeholder="+998 90 123 45 67"
-                    className="h-11 w-full rounded-xl border border-white/10 bg-white/5 px-4 text-sm text-white placeholder-stone-500 outline-none transition-all focus:border-teal-500/50 focus:ring-2 focus:ring-teal-500/20"
+                    className="h-11 w-full rounded-xl border border-white/10 bg-white/5 px-4 text-sm text-white placeholder-stone-500 outline-none transition-all focus:border-primary-500/50 focus:ring-2 focus:ring-primary-500/20"
                     {...field}
                   />
                 </FormControl>
@@ -189,7 +189,7 @@ export default function RegisterPage() {
                     <input
                       type={showPass ? 'text' : 'password'}
                       placeholder="••••••••"
-                      className="h-11 w-full rounded-xl border border-white/10 bg-white/5 px-4 pr-10 text-sm text-white placeholder-stone-500 outline-none transition-all focus:border-teal-500/50 focus:ring-2 focus:ring-teal-500/20"
+                      className="h-11 w-full rounded-xl border border-white/10 bg-white/5 px-4 pr-10 text-sm text-white placeholder-stone-500 outline-none transition-all focus:border-primary-500/50 focus:ring-2 focus:ring-primary-500/20"
                       {...field}
                     />
                     <button type="button" onClick={() => setShowPass(v => !v)} className="absolute right-3 top-1/2 -translate-y-1/2 text-stone-500 hover:text-stone-300">
@@ -211,7 +211,7 @@ export default function RegisterPage() {
                 { ok: /[0-9]/.test(form.watch('password')), text: 'Есть цифры' },
                 { ok: !isWeakPassword(form.watch('password')), text: 'Не простой' },
               ].map(({ ok, text }) => (
-                <div key={text} className={`flex items-center gap-1 text-xs ${ok ? 'text-teal-400' : 'text-stone-500'}`}>
+                <div key={text} className={`flex items-center gap-1 text-xs ${ok ? 'text-primary-400' : 'text-stone-500'}`}>
                   <CheckCircle2 size={11} className={ok ? 'opacity-100' : 'opacity-30'} />
                   {text}
                 </div>
@@ -230,7 +230,7 @@ export default function RegisterPage() {
                     <input
                       type={showConfirm ? 'text' : 'password'}
                       placeholder="••••••••"
-                      className="h-11 w-full rounded-xl border border-white/10 bg-white/5 px-4 pr-10 text-sm text-white placeholder-stone-500 outline-none transition-all focus:border-teal-500/50 focus:ring-2 focus:ring-teal-500/20"
+                      className="h-11 w-full rounded-xl border border-white/10 bg-white/5 px-4 pr-10 text-sm text-white placeholder-stone-500 outline-none transition-all focus:border-primary-500/50 focus:ring-2 focus:ring-primary-500/20"
                       {...field}
                     />
                     <button type="button" onClick={() => setShowConfirm(v => !v)} className="absolute right-3 top-1/2 -translate-y-1/2 text-stone-500 hover:text-stone-300">
@@ -254,7 +254,7 @@ export default function RegisterPage() {
                     id="agreeTerms"
                     checked={field.value}
                     onChange={field.onChange}
-                    className="mt-1 h-4 w-4 rounded border-white/20 bg-white/5 text-teal-600 focus:ring-teal-500/30 cursor-pointer flex-shrink-0"
+                    className="mt-1 h-4 w-4 rounded border-white/20 bg-white/5 text-primary-600 focus:ring-primary-500/30 cursor-pointer flex-shrink-0"
                   />
                   <label htmlFor="agreeTerms" className="text-xs text-stone-400 leading-relaxed cursor-pointer select-none">
                     Я принимаю{' '}
@@ -262,7 +262,7 @@ export default function RegisterPage() {
                       href={`/${locale}/terms`}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="text-teal-400 hover:text-teal-300 underline underline-offset-2"
+                      className="text-primary-400 hover:text-primary-300 underline underline-offset-2"
                     >
                       Условия использования
                     </a>
@@ -271,7 +271,7 @@ export default function RegisterPage() {
                       href={`/${locale}/privacy`}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="text-teal-400 hover:text-teal-300 underline underline-offset-2"
+                      className="text-primary-400 hover:text-primary-300 underline underline-offset-2"
                     >
                       Политику конфиденциальности
                     </a>{' '}
@@ -286,7 +286,7 @@ export default function RegisterPage() {
           <button
             type="submit"
             disabled={isLoading || !form.watch('agreeTerms')}
-            className="flex h-11 w-full items-center justify-center rounded-xl bg-teal-600 font-semibold text-white shadow-lg shadow-teal-900/30 transition-all hover:bg-teal-500 active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed mt-2"
+            className="flex h-11 w-full items-center justify-center rounded-xl bg-primary-600 font-semibold text-white shadow-lg shadow-primary-900/30 transition-all hover:bg-primary-500 active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed mt-2"
           >
             {isLoading ? (
               <svg className="h-5 w-5 animate-spin" viewBox="0 0 24 24" fill="none">
@@ -310,7 +310,7 @@ export default function RegisterPage() {
         <button
           type="button"
           onClick={() => router.push(`/${locale}/login`)}
-          className="font-semibold text-teal-400 hover:text-teal-300 transition-colors"
+          className="font-semibold text-primary-400 hover:text-primary-300 transition-colors"
         >
           Войти
         </button>

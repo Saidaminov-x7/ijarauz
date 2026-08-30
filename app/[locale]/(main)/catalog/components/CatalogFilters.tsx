@@ -103,7 +103,7 @@ export function CatalogFilters({ locale, query }: CatalogFiltersProps) {
           <Filter size={16} />
           {t('filters')}
           {Object.values(filters).some(Boolean) && (
-            <span className="ml-2 flex h-4 w-4 items-center justify-center rounded-full bg-teal-100 text-xs text-teal-600 dark:bg-teal-900 dark:text-teal-400">
+            <span className="ml-2 flex h-4 w-4 items-center justify-center rounded-full bg-primary-100 text-xs text-primary-600 dark:bg-primary-900 dark:text-primary-400">
               {Object.values(filters).filter(Boolean).length}
             </span>
           )}

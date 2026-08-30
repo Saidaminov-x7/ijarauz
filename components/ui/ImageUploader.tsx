@@ -67,7 +67,7 @@ export function ImageUploader({ files, onChange, max = 10 }: ImageUploaderProps)
           onClick={() => inputRef.current?.click()}
           className={cn(
             'flex aspect-square flex-col items-center justify-center gap-1 rounded-xl border-2 border-dashed border-stone-200 text-stone-400 transition',
-            'hover:border-teal-400 hover:text-teal-500 dark:border-white/10 dark:hover:border-teal-600'
+            'hover:border-primary-400 hover:text-primary-500 dark:border-white/10 dark:hover:border-primary-600'
           )}
         >
           <ImagePlus size={20} />
