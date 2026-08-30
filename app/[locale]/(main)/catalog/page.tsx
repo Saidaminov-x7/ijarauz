@@ -583,10 +583,10 @@ function CatalogContent() {
             </AnimatePresence>
 
             {/* Сетка объявлений: если фильтр ОТКРЫТ -> 3 колонки на десктопе, если фильтр ЗАКРЫТ -> 4 колонки! */}
-            <motion.div layout className="flex-1 min-w-0">
+            <div className="flex-1 min-w-0">
               {loading ? (
                 <div
-                  className={`grid gap-5 transition-all duration-300 ${
+                  className={`grid gap-5 ${
                     isFiltersOpen
                       ? 'grid-cols-1 sm:grid-cols-2 xl:grid-cols-3'
                       : 'grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4'
@@ -604,27 +604,23 @@ function CatalogContent() {
                   ))}
                 </div>
               ) : apartments.length > 0 ? (
-                <motion.div
-                  layout
-                  variants={containerVariants}
-                  initial="hidden"
-                  animate="show"
-                  className={`grid gap-5 transition-all duration-300 ${
+                <div
+                  className={`grid gap-5 ${
                     isFiltersOpen
                       ? 'grid-cols-1 sm:grid-cols-2 xl:grid-cols-3'
                       : 'grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4'
                   }`}
                 >
                   {apartments.map((apartment) => (
-                    <motion.div layout key={apartment.id} variants={itemVariants}>
+                    <div key={apartment.id} className="transition-opacity duration-300">
                       <ApartmentCard
                         apartment={apartment}
                         locale={locale}
                         activeAmenities={selectedAmenities}
                       />
-                    </motion.div>
+                    </div>
                   ))}
-                </motion.div>
+                </div>
               ) : (
                 <div className="space-y-8">
                   {/* Empty State Card */}
@@ -666,7 +662,7 @@ function CatalogContent() {
                   )}
                 </div>
               )}
-            </motion.div>
+            </div>
           </div>
         </LayoutGroup>
       </main>

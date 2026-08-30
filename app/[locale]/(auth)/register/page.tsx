@@ -92,10 +92,10 @@ export default function RegisterPage() {
       router.push(`/${locale}/profile`);
     } catch (error: any) {
       const status = error.response?.status;
-      const backendMsg = error.response?.data?.message;
+      const backendMsg = error.response?.data?.message || error.response?.data?.error;
       if (status === 409 || (backendMsg && backendMsg.toLowerCase().includes('exist'))) {
-        setServerError('Пользователь с таким email уже существует');
-      } else if (status === 400 && backendMsg) {
+        setServerError('Пользователь с таким email или телефоном уже существует');
+      } else if (backendMsg) {
         setServerError(backendMsg);
       } else if (!error.response) {
         setServerError('Нет соединения с сервером. Проверьте интернет.');

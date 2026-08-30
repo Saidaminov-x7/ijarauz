@@ -249,19 +249,10 @@ export const getApartments = async (
       return filterApartmentsClient(apartments, query, filters);
     }
 
-    // Если бэкенд пустой — загружаем 100 реалистичных демо-объявлений по Узбекистану
-    const { generate100DemoApartments } = await import('@/lib/demoApartments');
-    const demoList = generate100DemoApartments();
-    return filterApartmentsClient(demoList, query, filters);
+    return [];
   } catch (error) {
-    console.error('Error fetching apartments from API, loading demo data:', error);
-    try {
-      const { generate100DemoApartments } = await import('@/lib/demoApartments');
-      const demoList = generate100DemoApartments();
-      return filterApartmentsClient(demoList, query, filters);
-    } catch {
-      return [];
-    }
+    console.error('Error fetching apartments from API:', error);
+    return [];
   }
 };
 
@@ -325,12 +316,6 @@ export const getApartmentById = async (id: string): Promise<Apartment | null> =>
     await cacheApartmentDetails('ru', id, apartment);
     return apartment;
   } catch (error) {
-    // Демо-поиск объекта
-    try {
-      const { generate100DemoApartments } = await import('@/lib/demoApartments');
-      const found = generate100DemoApartments().find((a) => String(a.id) === String(id));
-      if (found) return found;
-    } catch {}
     return null;
   }
 };
