@@ -37,7 +37,7 @@ export function ForgotPasswordForm({ locale }: ForgotPasswordFormProps) {
     setIsLoading(true);
     setServerError(null);
     try {
-      await forgotPassword(data.email.trim().toLowerCase());
+      await forgotPassword(data.email.trim().toLowerCase(), locale);
       setIsSubmitted(true);
     } catch (error: any) {
       const msg = error?.response?.data?.message || 'Не удалось отправить запрос. Попробуйте позже.';

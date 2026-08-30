@@ -273,7 +273,10 @@
     "submit": "Save",
     "loading": "Saving...",
     "successTitle": "Password changed",
-    "successMessage": "Your password has been successfully changed"
+    "successMessage": "Your password has been successfully changed",
+    "invalidLinkTitle": "Invalid or expired link",
+    "invalidLinkMessage": "The password reset token is missing or invalid. Please request a new link.",
+    "requestReset": "Request password reset"
   },
   "NotFound": {
     "title": "Page not found",

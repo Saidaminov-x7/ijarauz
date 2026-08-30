@@ -103,8 +103,8 @@ export const getMe = async () => {
   }
 };
 
-export const forgotPassword = async (email: string) => {
-  const response = await api.post('/auth/forgot-password', { email });
+export const forgotPassword = async (email: string, locale?: string) => {
+  const response = await api.post('/auth/forgot-password', { email, locale: locale || 'ru' });
   return response.data;
 };
 
