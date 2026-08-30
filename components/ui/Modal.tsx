@@ -48,7 +48,7 @@ export const Modal: React.FC<ModalProps> = ({
             onClick={onClose}
           />
           <motion.div
-            className={`relative w-full ${maxWidth} rounded-2xl bg-white p-6 shadow-2xl dark:bg-[#1A1A1A] border border-stone-200 dark:border-white/10 z-10`}
+            className={`relative w-full ${maxWidth} rounded-theme font-theme bg-white p-6 shadow-2xl dark:bg-[#1A1A1A] border border-stone-200 dark:border-white/10 z-10`}
             initial={{ opacity: 0, scale: prefersReducedMotion ? 1 : 0.96 }}
             animate={{ opacity: 1, scale: 1 }}
             exit={{ opacity: 0, scale: prefersReducedMotion ? 1 : 0.96 }}

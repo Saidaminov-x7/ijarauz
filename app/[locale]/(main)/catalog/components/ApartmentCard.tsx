@@ -104,7 +104,7 @@ export function ApartmentCard({ apartment, locale, activeAmenities = [] }: Apart
   const badge = getCategoryBadge();
 
   return (
-    <div className="group relative overflow-hidden rounded-2xl border border-stone-200/80 bg-white transition-[transform,box-shadow] duration-200 hover:-translate-y-1 hover:shadow-xl hover:shadow-stone-900/8 dark:border-white/5 dark:bg-[#1E1E1E] dark:hover:shadow-black/40">
+    <div className="group relative overflow-hidden rounded-theme font-theme border border-stone-200/80 bg-white transition-[transform,box-shadow] duration-200 hover:-translate-y-1 hover:shadow-xl hover:shadow-stone-900/8 dark:border-white/5 dark:bg-[#1E1E1E] dark:hover:shadow-black/40">
       <Link href={`/${locale}/catalog/${apartment.id}`} className="block">
         <div
           onMouseLeave={() => setActiveImgIndex(0)}

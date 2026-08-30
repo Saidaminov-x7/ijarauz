@@ -27,6 +27,12 @@ const config: Config = {
           950: "color-mix(in srgb, var(--color-primary) 50%, black)",
         },
       },
+      borderRadius: {
+        theme: "var(--border-radius, 0.75rem)",
+      },
+      fontFamily: {
+        theme: ["var(--font-family)", "Inter", "sans-serif"],
+      },
     },
   },
   plugins: [],

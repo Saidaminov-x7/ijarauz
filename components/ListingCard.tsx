@@ -100,7 +100,7 @@ export function ListingCard({ item, locale }: { item: Listing; locale: string })
     <Link
       href={`/${locale}/catalog/${item.id}`}
       className={cn(
-        'group flex flex-col overflow-hidden rounded-2xl border transition-[transform,box-shadow] duration-200 hover:-translate-y-1 hover:shadow-xl dark:bg-[#222222] dark:hover:shadow-black/40',
+        'group flex flex-col overflow-hidden rounded-theme font-theme border transition-[transform,box-shadow] duration-200 hover:-translate-y-1 hover:shadow-xl dark:bg-[#222222] dark:hover:shadow-black/40',
         item.promotionTier === 'URGENT'
           ? 'border-rose-500/50 shadow-md shadow-rose-500/10 bg-rose-50/20 dark:bg-rose-950/10'
           : item.promotionTier === 'TOP'
