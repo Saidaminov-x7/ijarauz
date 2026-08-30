@@ -38,17 +38,50 @@ import { CSS } from '@dnd-kit/utilities';
 const cityOptions = Object.keys(regions);
 
 const listingSchema = z.object({
-  title: z.string().min(5, 'Минимум 5 символов').max(200),
-  description: z.string().min(20, 'Минимум 20 символов'),
-  price: z.string().regex(/^\d+$/, 'Введите корректное число'),
+  title: z
+    .string()
+    .min(5, 'Название должно содержать минимум 5 символов')
+    .max(120, 'Название не должно превышать 120 символов'),
+  description: z
+    .string()
+    .min(20, 'Описание должно содержать минимум 20 символов')
+    .max(3000, 'Описание не должно превышать 3000 символов'),
+  price: z
+    .string()
+    .min(1, 'Укажите цену')
+    .regex(/^\d+$/, 'Цена должна содержать только цифры')
+    .refine((val) => Number(val) > 0, 'Цена должна быть больше 0')
+    .refine((val) => Number(val) <= 1000000000, 'Слишком большая сумма'),
   type: z.enum(['APARTMENT', 'HOUSE', 'ROOM', 'COMMERCIAL', 'LAND']),
   city: z.string().min(2, 'Укажите город'),
   district: z.string().min(2, 'Укажите район'),
-  address: z.string().optional(),
-  rooms: z.string().regex(/^\d+$/, 'Число комнат'),
-  area: z.string().regex(/^\d+$/, 'Площадь в м²'),
-  floor: z.string().optional(),
-  totalFloors: z.string().optional(),
+  address: z.string().max(200, 'Адрес слишком длинный').optional(),
+  rooms: z
+    .string()
+    .min(1, 'Укажите число комнат')
+    .regex(/^\d+$/, 'Введите целое число')
+    .refine((val) => Number(val) >= 1 && Number(val) <= 50, 'Число комнат от 1 до 50'),
+  area: z
+    .string()
+    .min(1, 'Укажите площадь')
+    .regex(/^\d+(\.\d+)?$/, 'Введите корректную площадь')
+    .refine((val) => Number(val) >= 5 && Number(val) <= 10000, 'Площадь от 5 до 10 000 м²'),
+  floor: z
+    .string()
+    .optional()
+    .refine((val) => !val || (Number(val) >= -3 && Number(val) <= 150), 'Некорректный этаж'),
+  totalFloors: z
+    .string()
+    .optional()
+    .refine((val) => !val || (Number(val) >= 1 && Number(val) <= 150), 'Некорректная этажность'),
+}).refine((data) => {
+  if (data.floor && data.totalFloors) {
+    return Number(data.floor) <= Number(data.totalFloors);
+  }
+  return true;
+}, {
+  message: 'Этаж не может быть выше общего количества этажей в здании',
+  path: ['floor'],
 });
 
 type ListingFormValues = z.infer<typeof listingSchema>;

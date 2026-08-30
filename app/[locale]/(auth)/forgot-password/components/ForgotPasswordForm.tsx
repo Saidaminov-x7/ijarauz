@@ -8,6 +8,7 @@ import { useForm } from 'react-hook-form';
 import * as z from 'zod';
 import { MailCheck, AlertCircle } from 'lucide-react';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/Form';
+import { forgotPassword } from '@/lib/api';
 
 const forgotPasswordSchema = z.object({
   email: z.string().min(1, 'Email обязателен').email('Введите корректный email'),
@@ -36,11 +37,11 @@ export function ForgotPasswordForm({ locale }: ForgotPasswordFormProps) {
     setIsLoading(true);
     setServerError(null);
     try {
-      // TODO: wire to real backend endpoint when available
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      await forgotPassword(data.email.trim().toLowerCase());
       setIsSubmitted(true);
     } catch (error: any) {
-      setServerError('Не удалось отправить письмо. Попробуйте позже.');
+      const msg = error?.response?.data?.message || 'Не удалось отправить запрос. Попробуйте позже.';
+      setServerError(msg);
     } finally {
       setIsLoading(false);
     }

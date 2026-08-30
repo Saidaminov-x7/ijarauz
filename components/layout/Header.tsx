@@ -198,16 +198,60 @@ export function Header({ locale: localeProp }: { locale?: string }) {
     (r) => pathname === `/${locale}${r}` || pathname.startsWith(`/${locale}${r}/`)
   );
 
+  const [smartBackInfo, setSmartBackInfo] = useState<{ isHome: boolean; text: string; href?: string }>({
+    isHome: true,
+    text: 'Вернуться домой',
+  });
+
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    try {
+      const prev = sessionStorage.getItem('ijara_prev_page');
+      if (prev && !prev.includes('/login') && !prev.includes('/register') && !prev.includes('/forgot-password') && !prev.includes('/reset-password')) {
+        const isPrevHome = prev === `/${locale}` || prev === `/${locale}/` || prev === '/' || prev === '';
+        if (isPrevHome) {
+          setSmartBackInfo({
+            isHome: true,
+            text: locale === 'uz' ? 'Bosh sahifaga qaytish' : locale === 'en' ? 'Back to home' : 'Вернуться домой',
+            href: to('/'),
+          });
+        } else {
+          setSmartBackInfo({
+            isHome: false,
+            text: locale === 'uz' ? 'Orqaga' : locale === 'en' ? 'Back' : 'Назад',
+            href: prev,
+          });
+        }
+      } else {
+        setSmartBackInfo({
+          isHome: true,
+          text: locale === 'uz' ? 'Bosh sahifaga qaytish' : locale === 'en' ? 'Back to home' : 'Вернуться домой',
+          href: to('/'),
+        });
+      }
+    } catch {
+      // fallback
+    }
+  }, [pathname, locale]);
+
   if (isAuthPage) {
+    const handleSmartBack = (e: React.MouseEvent) => {
+      if (!smartBackInfo.isHome && window.history.length > 1) {
+        e.preventDefault();
+        router.back();
+      }
+    };
+
     return (
       <header className="sticky top-0 z-40 w-full border-b border-stone-200/80 bg-white/95 dark:border-white/10 dark:bg-[#1A1A1A]/95 h-20 flex items-center">
         <div className="mx-auto flex w-full max-w-[1440px] items-center justify-between px-4 sm:px-6 lg:px-8">
           <Link
-            href={to('/')}
-            className="flex items-center gap-2 rounded-xl border border-stone-200 bg-white px-4 py-2 text-xs font-semibold text-stone-700 hover:bg-stone-50 dark:border-white/10 dark:bg-stone-900 dark:text-stone-300 dark:hover:bg-stone-800 shadow-xs"
+            href={smartBackInfo.href || to('/')}
+            onClick={handleSmartBack}
+            className="flex items-center gap-2 rounded-xl border border-stone-200 bg-white px-4 py-2 text-xs font-semibold text-stone-700 hover:bg-stone-50 dark:border-white/10 dark:bg-stone-900 dark:text-stone-300 dark:hover:bg-stone-800 shadow-xs transition-colors"
           >
             <ArrowLeft size={15} />
-            <span>Вернуться домой</span>
+            <span>{smartBackInfo.text}</span>
           </Link>
 
           <Link

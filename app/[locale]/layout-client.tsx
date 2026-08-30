@@ -11,6 +11,7 @@ import { AnalyticsTracker } from '@/components/analytics/AnalyticsTracker';
 import { YandexMetrika } from '@/components/analytics/YandexMetrika';
 import { DesignTokensInjector } from '@/components/DesignTokensInjector';
 import { GlobalErrorListener } from '@/components/GlobalErrorListener';
+import { NavigationHistoryTracker } from '@/components/NavigationHistoryTracker';
 import AuthInitializer from '@/components/AuthInitializer';
 import './globals.css';
 import React, { Suspense } from 'react';
@@ -41,6 +42,7 @@ export default function LocaleLayout({
       <ThemeProvider>
         <NextIntlClientProvider locale={validLocale} messages={messages} timeZone="Asia/Tashkent">
           <QueryProvider initialSiteSettings={initialSiteSettings}>
+            <NavigationHistoryTracker />
             <AuthInitializer />
             <GlobalErrorListener />
             <DesignTokensInjector />
