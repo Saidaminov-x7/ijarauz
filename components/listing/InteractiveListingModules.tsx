@@ -197,17 +197,21 @@ export function LandlordReviewsSection({
   listingId,
   landlordName = "Владелец",
   rating = 5.0,
+  onReviewAdded,
 }: {
   listingId?: string;
   landlordName?: string;
   rating?: number;
+  onReviewAdded?: (newAverageRating: number, newTotalReviews: number) => void;
 }) {
   const { isAuthenticated } = useAuthStore();
   const [reviews, setReviews] = useState<ReviewItem[]>([]);
   const [averageRating, setAverageRating] = useState(rating);
+  const [totalReviewsCount, setTotalReviewsCount] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
   const [newComment, setNewComment] = useState('');
   const [newRating, setNewRating] = useState(5);
+  const [hoverRating, setHoverRating] = useState(0);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   useEffect(() => {
@@ -218,6 +222,7 @@ export function LandlordReviewsSection({
       .then((data) => {
         if (!isMounted) return;
         setReviews(data.items || []);
+        setTotalReviewsCount(data.totalReviews || 0);
         if (data.totalReviews > 0) {
           setAverageRating(data.averageRating);
         }
@@ -245,9 +250,20 @@ export function LandlordReviewsSection({
       const created = await createListingReview(listingId, newRating, newComment.trim());
       const updatedReviews = [created, ...reviews];
       setReviews(updatedReviews);
+      
+      const newTotal = totalReviewsCount + 1;
+      setTotalReviewsCount(newTotal);
+
       const totalScore = updatedReviews.reduce((acc, r) => acc + r.rating, 0);
-      setAverageRating(Number((totalScore / updatedReviews.length).toFixed(1)));
+      const computedAvg = Number((totalScore / updatedReviews.length).toFixed(1));
+      setAverageRating(computedAvg);
+
+      if (onReviewAdded) {
+        onReviewAdded(computedAvg, newTotal);
+      }
+
       setNewComment('');
+      setNewRating(5);
       toast.success('Спасибо! Ваш отзыв опубликован и учтен в рейтинге.');
     } catch (err: any) {
       toast.error(err?.response?.data?.message || 'Не удалось отправить отзыв');
@@ -269,7 +285,8 @@ export function LandlordReviewsSection({
         </div>
         <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-900/40 text-amber-600 dark:text-amber-400 font-bold text-sm">
           <Star size={16} className="fill-amber-400 text-amber-400" />
-          {averageRating.toFixed(1)} / 5.0
+          <span>{averageRating.toFixed(1)} / 5.0</span>
+          <span className="text-stone-400 font-normal text-xs">({totalReviewsCount})</span>
         </div>
       </div>
 
@@ -291,7 +308,20 @@ export function LandlordReviewsSection({
               className="p-4 rounded-xl border border-stone-100 dark:border-white/5 bg-stone-50/70 dark:bg-white/5 space-y-2"
             >
               <div className="flex items-center justify-between">
-                <span className="text-xs font-bold text-stone-900 dark:text-white">{rev.author}</span>
+                <div className="flex items-center gap-2.5">
+                  {rev.authorAvatar ? (
+                    <img
+                      src={rev.authorAvatar}
+                      alt={rev.author}
+                      className="h-7 w-7 rounded-full object-cover border border-stone-200 dark:border-white/10"
+                    />
+                  ) : (
+                    <div className="h-7 w-7 rounded-full bg-primary-100 dark:bg-primary-950 text-primary-700 dark:text-primary-300 flex items-center justify-center text-xs font-bold">
+                      {rev.author.charAt(0).toUpperCase()}
+                    </div>
+                  )}
+                  <span className="text-xs font-bold text-stone-900 dark:text-white">{rev.author}</span>
+                </div>
                 <span className="text-[11px] text-stone-400">
                   {new Date(rev.createdAt).toLocaleDateString('ru-RU', {
                     day: 'numeric',
@@ -301,8 +331,12 @@ export function LandlordReviewsSection({
                 </span>
               </div>
               <div className="flex items-center gap-1 text-amber-400">
-                {Array.from({ length: rev.rating }).map((_, i) => (
-                  <Star key={i} size={13} className="fill-amber-400" />
+                {Array.from({ length: 5 }).map((_, i) => (
+                  <Star
+                    key={i}
+                    size={13}
+                    className={i < rev.rating ? 'fill-amber-400 text-amber-400' : 'text-stone-200 dark:text-stone-700'}
+                  />
                 ))}
               </div>
               <p className="text-xs text-stone-600 dark:text-stone-300 leading-relaxed">
@@ -320,29 +354,41 @@ export function LandlordReviewsSection({
         </h4>
         <div className="flex items-center gap-2">
           <span className="text-xs text-stone-500">Ваша оценка:</span>
-          {[1, 2, 3, 4, 5].map((val) => (
-            <button
-              type="button"
-              key={val}
-              onClick={() => setNewRating(val)}
-              className="text-amber-400 hover:scale-110 transition-transform cursor-pointer"
-            >
-              <Star size={18} className={val <= newRating ? 'fill-amber-400' : 'text-stone-300 dark:text-stone-600'} />
-            </button>
-          ))}
+          <div className="flex items-center gap-1" onMouseLeave={() => setHoverRating(0)}>
+            {[1, 2, 3, 4, 5].map((val) => {
+              const active = hoverRating ? val <= hoverRating : val <= newRating;
+              return (
+                <button
+                  type="button"
+                  key={val}
+                  onMouseEnter={() => setHoverRating(val)}
+                  onClick={() => setNewRating(val)}
+                  className="text-amber-400 hover:scale-125 transition-transform cursor-pointer p-0.5"
+                >
+                  <Star
+                    size={20}
+                    className={active ? 'fill-amber-400 text-amber-400' : 'text-stone-300 dark:text-stone-600'}
+                  />
+                </button>
+              );
+            })}
+          </div>
+          <span className="text-xs font-bold text-amber-500 ml-1">
+            {hoverRating || newRating} / 5
+          </span>
         </div>
         <textarea
           value={newComment}
           onChange={(e) => setNewComment(e.target.value)}
           placeholder="Опишите ваши впечатления от общения с хозяином и состояния квартиры..."
-          rows={2}
-          className="w-full p-3 rounded-xl border border-stone-200 dark:border-white/10 bg-white dark:bg-white/5 text-xs text-stone-900 dark:text-white placeholder-stone-400 outline-none focus:border-blue-500 transition-all resize-none"
+          rows={3}
+          className="w-full p-3 rounded-xl border border-stone-200 dark:border-white/10 bg-white dark:bg-white/5 text-xs text-stone-900 dark:text-white placeholder-stone-400 outline-none focus:border-primary-500 transition-all resize-none"
         />
         <div className="flex justify-end">
           <button
             type="submit"
             disabled={isSubmitting || !newComment.trim()}
-            className="btn btn-primary text-xs py-2 px-5 cursor-pointer disabled:opacity-50"
+            className="rounded-xl bg-primary-600 hover:bg-primary-700 text-white font-semibold text-xs py-2 px-5 cursor-pointer disabled:opacity-50 transition-colors shadow-sm"
           >
             {isSubmitting ? 'Отправка...' : 'Опубликовать отзыв'}
           </button>

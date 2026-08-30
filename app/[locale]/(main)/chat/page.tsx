@@ -10,7 +10,7 @@ import {
 } from 'lucide-react';
 import { useAuthStore } from '@/store/useAuthStore';
 import { Apartment } from '@/types';
-import { getApartments, getChatConversations, getChatMessages, sendChatMessage, type ChatConversationItem } from '@/lib/api';
+import { getApartments, getApartmentById, getChatConversations, getChatMessages, sendChatMessage, type ChatConversationItem } from '@/lib/api';
 import { VoiceAndMediaChat } from '@/components/chat/VoiceAndMediaChat';
 import { toast } from 'sonner';
 
@@ -150,6 +150,7 @@ function ChatContent() {
   const [contacts, setContacts] = useState<ChatContact[]>([AI_CONTACT]);
   const [selectedContactId, setSelectedContactId] = useState<string>(peerIdParam || 'ai-assistant');
   const [activeListingId, setActiveListingId] = useState<string | null>(listingIdParam || null);
+  const [attachedListing, setAttachedListing] = useState<Apartment | null>(null);
   const [searchContact, setSearchContact] = useState<string>('');
   const [inputText, setInputText] = useState('');
   const [isTyping, setIsTyping] = useState(false);
@@ -166,6 +167,25 @@ function ChatContent() {
       },
     ],
   });
+
+  // Синхронизация URL search params при переходах
+  useEffect(() => {
+    if (peerIdParam) {
+      setSelectedContactId(peerIdParam);
+    }
+    if (listingIdParam) {
+      setActiveListingId(listingIdParam);
+    }
+  }, [peerIdParam, listingIdParam]);
+
+  // Загрузка прикрепленного объявления для контекста диалога
+  useEffect(() => {
+    if (activeListingId) {
+      getApartmentById(activeListingId).then((apt) => {
+        if (apt) setAttachedListing(apt);
+      });
+    }
+  }, [activeListingId]);
 
   // Загрузка диалогов с сервера
   const fetchConversations = async () => {
@@ -188,10 +208,13 @@ function ChatContent() {
     if (peerIdParam && !peerContacts.some((p) => p.id === peerIdParam)) {
       peerContacts.unshift({
         id: peerIdParam,
-        name: 'Арендодатель',
+        name: attachedListing?.owner?.name || 'Арендодатель',
+        avatar: attachedListing?.owner?.avatar,
         lastMessage: 'Начните диалог с собственником',
         time: 'Сейчас',
         isAi: false,
+        listingTitle: attachedListing?.title,
+        listing: attachedListing,
       });
     }
 
@@ -200,9 +223,9 @@ function ChatContent() {
 
   useEffect(() => {
     fetchConversations();
-    const interval = setInterval(fetchConversations, 12000);
+    const interval = setInterval(fetchConversations, 10000);
     return () => clearInterval(interval);
-  }, [isAuthenticated, peerIdParam]);
+  }, [isAuthenticated, peerIdParam, attachedListing?.id]);
 
   // Загрузка истории сообщений для выбранного собеседника
   const fetchMessages = async () => {
@@ -229,7 +252,7 @@ function ChatContent() {
 
   useEffect(() => {
     fetchMessages();
-    const interval = setInterval(fetchMessages, 4000);
+    const interval = setInterval(fetchMessages, 3000);
     return () => clearInterval(interval);
   }, [selectedContactId, isAuthenticated, user?.id]);
 
@@ -731,8 +754,67 @@ function ChatContent() {
                 </div>
               </div>
 
+              {/* Attached Listing Bar (if talking to landlord about a listing) */}
+              {!selectedContact.isAi && (attachedListing || selectedContact.listing) && (
+                <div className="flex items-center justify-between gap-3 px-4 py-2.5 bg-primary-50/70 dark:bg-primary-950/30 border-b border-primary-100 dark:border-primary-900/30 shrink-0">
+                  <div className="flex items-center gap-3 min-w-0">
+                    <img
+                      src={attachedListing?.image || selectedContact.listing?.image || '/placeholder-apartment.jpg'}
+                      alt={attachedListing?.title || selectedContact.listing?.title || 'Объявление'}
+                      className="h-10 w-10 rounded-xl object-cover border border-primary-200 dark:border-primary-800 shrink-0"
+                    />
+                    <div className="min-w-0">
+                      <p className="text-xs font-bold text-stone-900 dark:text-white truncate">
+                        {attachedListing?.title || selectedContact.listing?.title}
+                      </p>
+                      <p className="text-[11px] font-semibold text-primary-600 dark:text-primary-400">
+                        ${attachedListing?.price || selectedContact.listing?.price} • {attachedListing?.city || selectedContact.listing?.city || 'Ташкент'}
+                      </p>
+                    </div>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => router.push(`/${locale}/catalog/${attachedListing?.id || selectedContact.listing?.id}`)}
+                    className="px-3 py-1.5 rounded-xl bg-white dark:bg-stone-800 text-xs font-semibold text-stone-700 dark:text-stone-300 border border-stone-200 dark:border-white/10 hover:bg-stone-50 transition-colors shrink-0 cursor-pointer shadow-xs"
+                  >
+                    К объявлению
+                  </button>
+                </div>
+              )}
+
               {/* Messages Flow Area */}
               <div ref={messagesContainerRef} className="flex-1 overflow-y-auto p-4 sm:p-6 space-y-4">
+                {currentMessages.length === 0 && !selectedContact.isAi && (
+                  <div className="p-8 text-center space-y-4 max-w-md mx-auto">
+                    <div className="h-12 w-12 rounded-2xl bg-primary-50 dark:bg-primary-950/40 text-primary-600 dark:text-primary-400 flex items-center justify-center mx-auto shadow-sm">
+                      <MessageSquare size={24} />
+                    </div>
+                    <div>
+                      <h4 className="text-sm font-bold text-stone-900 dark:text-white">Начните диалог с собственником</h4>
+                      <p className="text-xs text-stone-400 mt-1">
+                        Задайте интересующие вопросы по условиям аренды, дате просмотра или размеру залога.
+                      </p>
+                    </div>
+                    <div className="flex flex-col gap-2 pt-2">
+                      {[
+                        'Здравствуйте! Объявление ещё актуально?',
+                        'Когда можно приехать на просмотр жилья?',
+                        'Здравствуйте! Возможна ли аренда для студентов?',
+                        'Здравствуйте, какой размер залога при заселении?',
+                      ].map((promptText) => (
+                        <button
+                          key={promptText}
+                          type="button"
+                          onClick={() => handleSendMessage(promptText)}
+                          className="text-left text-xs p-3 rounded-xl border border-stone-200 dark:border-white/10 bg-white dark:bg-white/5 text-stone-700 dark:text-stone-200 hover:border-primary-500 hover:text-primary-600 transition-colors shadow-xs cursor-pointer"
+                        >
+                          💬 {promptText}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
                 {currentMessages.map((msg) => {
                   const isUser = msg.sender === 'user';
                   return (
@@ -743,6 +825,27 @@ function ChatContent() {
                             : 'bg-white text-stone-800 dark:bg-[#1E1E1E] dark:text-stone-200 rounded-bl-xs border border-stone-200/80 dark:border-white/5 shadow-xs'
                           }`}
                       >
+                        {/* Attached Listing Card inside message */}
+                        {msg.listing && (
+                          <div
+                            onClick={() => router.push(`/${locale}/catalog/${msg.listing.id}`)}
+                            className="mb-3 flex items-center gap-2.5 p-2 rounded-xl bg-black/10 dark:bg-white/10 cursor-pointer hover:opacity-90 transition-opacity"
+                          >
+                            {msg.listing.image && (
+                              <img
+                                src={msg.listing.image}
+                                alt={msg.listing.title}
+                                className="h-10 w-10 rounded-lg object-cover"
+                              />
+                            )}
+                            <div className="min-w-0 flex-1">
+                              <p className="text-xs font-bold truncate">{msg.listing.title}</p>
+                              <p className="text-[11px] opacity-80">${msg.listing.price} • {msg.listing.city}</p>
+                            </div>
+                            <ChevronRight size={14} className="opacity-60" />
+                          </div>
+                        )}
+
                         <p className="whitespace-pre-wrap">{msg.text}</p>
 
                         {/* Matched Listings Cards */}

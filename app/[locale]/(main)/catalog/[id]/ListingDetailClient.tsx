@@ -36,6 +36,7 @@ import { Gallery } from '@/components/ui/Gallery';
 import { MapView } from '@/components/ui/MapView';
 import { useFavoritesStore } from '@/store/useFavoritesStore';
 import { useCompareStore } from '@/store/useCompareStore';
+import { useAuthStore } from '@/store/useAuthStore';
 import { getSimilarListings, reportListing, getPriceHistory, createViewingRequest } from '@/lib/api';
 import { ListingCard } from '@/components/ListingCard';
 import { AMENITY_CONFIG } from '@/app/[locale]/(main)/catalog/components/AmenitiesFilter';
@@ -58,6 +59,10 @@ export function ListingDetailClient({ listing, coordinates, locale }: Props) {
   const toggleFavorite = useFavoritesStore((s) => s.toggle);
   const isInCompare = useCompareStore((s) => s.isInCompare(listing.id));
   const toggleCompare = useCompareStore((s) => s.toggle);
+  const currentUser = useAuthStore((s) => s.user);
+
+  const [currentRating, setCurrentRating] = useState<number>(listing.rating || 5.0);
+  const [currentReviewsCount, setCurrentReviewsCount] = useState<number>(listing.reviews || (listing as any).reviewsCount || 0);
 
   const [isShareModalOpen, setIsShareModalOpen] = useState(false);
   const [isPhoneRevealed, setIsPhoneRevealed] = useState(false);
@@ -248,7 +253,7 @@ export function ListingDetailClient({ listing, coordinates, locale }: Props) {
               { label: 'Комнат', value: `${listing.rooms} комн.`, icon: Home },
               { label: 'Общая площадь', value: `${listing.area} м²`, icon: Ruler },
               { label: 'Этаж', value: `${listing.floor}/${listing.totalFloors} эт.`, icon: Building2 },
-              { label: 'Рейтинг жилья', value: `${listing.rating || 4.9} ★`, icon: Star },
+              { label: 'Рейтинг жилья', value: `${currentRating.toFixed(1)} ★ (${currentReviewsCount})`, icon: Star },
             ].map(({ label, value, icon: Icon }) => (
               <div
                 key={label}
@@ -361,8 +366,12 @@ export function ListingDetailClient({ listing, coordinates, locale }: Props) {
           {/* Отзывы об арендодателе (интерактивные с пересчетом рейтинга) */}
           <LandlordReviewsSection
             listingId={String(listing.id)}
-            landlordName={listing.author?.name || 'Владелец'}
-            rating={listing.rating || 4.9}
+            landlordName={listing.author?.name || (listing as any).owner?.name || 'Владелец'}
+            rating={currentRating}
+            onReviewAdded={(newAvgRating, newCount) => {
+              setCurrentRating(newAvgRating);
+              setCurrentReviewsCount(newCount);
+            }}
           />
         </div>
 
@@ -414,14 +423,24 @@ export function ListingDetailClient({ listing, coordinates, locale }: Props) {
               </div>
 
               {/* Кнопка прямого чата с арендодателем */}
-              <button
-                type="button"
-                onClick={() => router.push(`/${locale}/chat?peerId=${listing.author?.id || (listing as any).ownerId || 'owner'}&listingId=${listing.id}`)}
-                className="w-full h-11 flex items-center justify-center gap-2 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs shadow-md shadow-blue-600/20 transition-all cursor-pointer"
-              >
-                <MessageSquare size={15} />
-                Написать собственнику (Чат)
-              </button>
+              {currentUser?.id && (currentUser.id === listing.author?.id || currentUser.id === (listing as any).ownerId || currentUser.id === (listing as any).owner?.id) ? (
+                <div className="w-full h-11 flex items-center justify-center gap-2 rounded-xl bg-stone-100 dark:bg-white/5 text-stone-600 dark:text-stone-300 font-semibold text-xs border border-stone-200 dark:border-white/10 select-none">
+                  <CheckCircle2 size={15} className="text-primary-500" />
+                  Это ваше объявление
+                </div>
+              ) : (
+                <button
+                  type="button"
+                  onClick={() => {
+                    const ownerId = listing.author?.id || (listing as any).ownerId || (listing as any).owner?.id;
+                    router.push(`/${locale}/chat?peerId=${ownerId}&listingId=${listing.id}`);
+                  }}
+                  className="w-full h-11 flex items-center justify-center gap-2 rounded-xl bg-primary-600 hover:bg-primary-500 text-white font-bold text-xs shadow-md shadow-primary-600/20 transition-all cursor-pointer"
+                >
+                  <MessageSquare size={15} />
+                  Написать собственнику (Чат)
+                </button>
+              )}
 
               {isPhoneRevealed ? (
                 <a
