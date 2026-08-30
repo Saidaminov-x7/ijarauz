@@ -156,6 +156,7 @@ function ChatContent() {
   const [selectedContactId, setSelectedContactId] = useState<string>(peerIdParam || 'ai-assistant');
   const [activeListingId, setActiveListingId] = useState<string | null>(listingIdParam || null);
   const [attachedListing, setAttachedListing] = useState<Apartment | null>(null);
+  const [searchContact, setSearchContact] = useState<string>('');
   const [inputText, setInputText] = useState('');
   const [isTyping, setIsTyping] = useState(false);
   const [replyingTo, setReplyingTo] = useState<{ id: string; text: string; senderName: string } | null>(null);

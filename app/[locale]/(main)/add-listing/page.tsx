@@ -52,7 +52,7 @@ const listingSchema = z.object({
     .regex(/^\d+$/, 'Цена должна содержать только цифры')
     .refine((val) => Number(val) > 0, 'Цена должна быть больше 0')
     .refine((val) => Number(val) <= 1000000000, 'Слишком большая сумма'),
-  currency: z.enum(['USD', 'UZS']).default('USD'),
+  currency: z.enum(['USD', 'UZS']),
   type: z.enum(['APARTMENT', 'HOUSE', 'ROOM', 'COMMERCIAL', 'LAND']),
   city: z.string().min(2, 'Укажите город'),
   district: z.string().min(2, 'Укажите район'),
