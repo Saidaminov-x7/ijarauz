@@ -1,0 +1,88 @@
+@import "tailwindcss";
+
+@config "../../tailwind.config.ts";
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+@theme {
+  --color-primary: var(--color-primary, #14b8a6);
+  --color-primary-50: color-mix(in srgb, var(--color-primary) 5%, white);
+  --color-primary-100: color-mix(in srgb, var(--color-primary) 10%, white);
+  --color-primary-200: color-mix(in srgb, var(--color-primary) 20%, white);
+  --color-primary-300: color-mix(in srgb, var(--color-primary) 40%, white);
+  --color-primary-400: color-mix(in srgb, var(--color-primary) 60%, white);
+  --color-primary-500: var(--color-primary);
+  --color-primary-600: var(--color-primary);
+  --color-primary-700: var(--color-secondary, color-mix(in srgb, var(--color-primary) 80%, black));
+  --color-primary-800: color-mix(in srgb, var(--color-primary) 70%, black);
+  --color-primary-900: color-mix(in srgb, var(--color-primary) 60%, black);
+  --color-primary-950: color-mix(in srgb, var(--color-primary) 50%, black);
+  --radius-theme: var(--border-radius, 0.75rem);
+  --font-theme: var(--font-family, 'Inter, sans-serif');
+}
+
+:root {
+  --color-primary: #14b8a6;
+  --color-secondary: #0f766e;
+  --color-bg: #f9fafb;
+  --color-text: #111827;
+  --border-radius: 0.75rem;
+  --font-family: 'Inter, sans-serif';
+}
+
+@layer base {
+  *, *::before, *::after { box-sizing: border-box; }
+  html, body { min-height: 100%; }
+
+  body {
+    background-color: #FAFAFA;
+    color: #171717;
+    -webkit-font-smoothing: antialiased;
+    font-family: var(--font-family, system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif);
+    transition: background-color 200ms ease, color 200ms ease;
+  }
+
+  /* Тёмная тема */
+  html.dark body { 
+    background-color: #0F0F10; 
+    color: #F3F4F6; 
+  }
+
+  /* Курсор-рука на всех интерактивных элементах */
+  button, [role="button"], a, summary, select,
+  input[type="checkbox"], input[type="radio"] {
+    cursor: pointer;
+  }
+  button:disabled, [role="button"][aria-disabled="true"] {
+    cursor: not-allowed;
+  }
+}
+
+@keyframes fade-up {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.animate-fade-up {
+  animation: fade-up 0.45s ease both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-fade-up,
+  .animate-\[fade-in_200ms_ease\] {
+    animation: none !important;
+  }
+}
+
+.rounded-theme {
+  border-radius: var(--border-radius, 0.75rem) !important;
+}
+
+.font-theme {
+  font-family: var(--font-family, 'Inter, sans-serif') !important;
+}
