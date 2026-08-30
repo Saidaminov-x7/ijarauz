@@ -207,9 +207,30 @@ export function Header({ locale: localeProp }: { locale?: string }) {
     if (typeof window === 'undefined') return;
     try {
       const prev = sessionStorage.getItem('ijara_prev_page');
-      if (prev && !prev.includes('/login') && !prev.includes('/register') && !prev.includes('/forgot-password') && !prev.includes('/reset-password')) {
-        const isPrevHome = prev === `/${locale}` || prev === `/${locale}/` || prev === '/' || prev === '';
-        if (isPrevHome) {
+      const lastPublic = sessionStorage.getItem('ijara_last_public_page');
+      
+      const isAuthOrProtected = (url: string | null) =>
+        !url ||
+        url.includes('/login') ||
+        url.includes('/register') ||
+        url.includes('/forgot-password') ||
+        url.includes('/reset-password') ||
+        url.includes('/add-listing') ||
+        url.includes('/profile');
+
+      let targetUrl = prev;
+      if (isAuthOrProtected(targetUrl)) {
+        targetUrl = lastPublic;
+      }
+
+      if (targetUrl) {
+        const isTargetHome =
+          targetUrl === `/${locale}` ||
+          targetUrl === `/${locale}/` ||
+          targetUrl === '/' ||
+          targetUrl === '';
+
+        if (isTargetHome) {
           setSmartBackInfo({
             isHome: true,
             text: locale === 'uz' ? 'Bosh sahifaga qaytish' : locale === 'en' ? 'Back to home' : 'Вернуться домой',
@@ -219,7 +240,7 @@ export function Header({ locale: localeProp }: { locale?: string }) {
           setSmartBackInfo({
             isHome: false,
             text: locale === 'uz' ? 'Orqaga' : locale === 'en' ? 'Back' : 'Назад',
-            href: prev,
+            href: targetUrl,
           });
         }
       } else {
@@ -236,9 +257,9 @@ export function Header({ locale: localeProp }: { locale?: string }) {
 
   if (isAuthPage) {
     const handleSmartBack = (e: React.MouseEvent) => {
-      if (!smartBackInfo.isHome && window.history.length > 1) {
+      if (!smartBackInfo.isHome && smartBackInfo.href) {
         e.preventDefault();
-        router.back();
+        router.push(smartBackInfo.href);
       }
     };
 
